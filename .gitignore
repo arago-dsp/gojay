@@ -3,7 +3,4 @@ vendor
 *.log
 *.test
 .vscode
-
-# test and coverage output
-.ci/*
-!.gitkeep
+.idea
