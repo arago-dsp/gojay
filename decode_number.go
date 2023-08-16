@@ -6,23 +6,25 @@ import (
 
 var digits []int8
 
-const maxInt64toMultiply = math.MaxInt64 / 10
-const maxInt32toMultiply = math.MaxInt32 / 10
-const maxInt16toMultiply = math.MaxInt16 / 10
-const maxInt8toMultiply = math.MaxInt8 / 10
-const maxUint8toMultiply = math.MaxUint8 / 10
-const maxUint16toMultiply = math.MaxUint16 / 10
-const maxUint32toMultiply = math.MaxUint32 / 10
-const maxUint64toMultiply = math.MaxUint64 / 10
-const maxUint32Length = 10
-const maxUint64Length = 20
-const maxUint16Length = 5
-const maxUint8Length = 3
-const maxInt32Length = 10
-const maxInt64Length = 19
-const maxInt16Length = 5
-const maxInt8Length = 3
-const invalidNumber = int8(-1)
+const (
+	maxInt64toMultiply  = math.MaxInt64 / 10
+	maxInt32toMultiply  = math.MaxInt32 / 10
+	maxInt16toMultiply  = math.MaxInt16 / 10
+	maxInt8toMultiply   = math.MaxInt8 / 10
+	maxUint8toMultiply  = math.MaxUint8 / 10
+	maxUint16toMultiply = math.MaxUint16 / 10
+	maxUint32toMultiply = math.MaxUint32 / 10
+	maxUint64toMultiply = math.MaxUint64 / 10
+	maxUint32Length     = 10
+	maxUint64Length     = 20
+	maxUint16Length     = 5
+	maxUint8Length      = 3
+	maxInt32Length      = 10
+	maxInt64Length      = 19
+	maxInt16Length      = 5
+	maxInt8Length       = 3
+	invalidNumber       = int8(-1)
+)
 
 var pow10uint64 = [21]uint64{
 	0,
@@ -111,7 +113,6 @@ func (dec *Decoder) getExponent() (int64, error) {
 		}
 	}
 	if start == end {
-
 		return 0, dec.raiseInvalidJSONErr(dec.cursor)
 	}
 	return dec.atoi64(start, end-1), nil

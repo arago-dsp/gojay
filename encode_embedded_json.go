@@ -1,7 +1,7 @@
 package gojay
 
 // EncodeEmbeddedJSON encodes an embedded JSON.
-// is basically sets the internal buf as the value pointed by v and calls the io.Writer.Write()
+// is basically sets the internal buf as the value pointed by v and calls the io.Writer.Write().
 func (enc *Encoder) EncodeEmbeddedJSON(v *EmbeddedJSON) error {
 	if enc.isPooled == 1 {
 		panic(InvalidUsagePooledEncoderError("Invalid usage of pooled encoder"))

@@ -14,6 +14,7 @@ func (t TestEncodingArrStrings) MarshalJSONArray(enc *Encoder) {
 		enc.AddString(e)
 	}
 }
+
 func (t TestEncodingArrStrings) IsNil() bool {
 	return len(t) == 0
 }
@@ -25,6 +26,7 @@ func (t TestEncodingArr) MarshalJSONArray(enc *Encoder) {
 		enc.AddObject(e)
 	}
 }
+
 func (t TestEncodingArr) IsNil() bool {
 	return t == nil
 }
@@ -36,6 +38,7 @@ func (t testEncodingArrInterfaces) MarshalJSONArray(enc *Encoder) {
 		enc.AddInterface(e)
 	}
 }
+
 func (t testEncodingArrInterfaces) IsNil() bool {
 	return t == nil
 }
@@ -183,6 +186,7 @@ func (t TestEncodingIntOmitEmpty) MarshalJSONArray(enc *Encoder) {
 		enc.AddIntOmitEmpty(e)
 	}
 }
+
 func (t TestEncodingIntOmitEmpty) IsNil() bool {
 	return t == nil
 }
@@ -194,6 +198,7 @@ func (t TestEncodingStringOmitEmpty) MarshalJSONArray(enc *Encoder) {
 		enc.AddStringOmitEmpty(e)
 	}
 }
+
 func (t TestEncodingStringOmitEmpty) IsNil() bool {
 	return t == nil
 }
@@ -205,6 +210,7 @@ func (t TestEncodingFloatOmitEmpty) MarshalJSONArray(enc *Encoder) {
 		enc.AddFloatOmitEmpty(e)
 	}
 }
+
 func (t TestEncodingFloatOmitEmpty) IsNil() bool {
 	return t == nil
 }
@@ -216,6 +222,7 @@ func (t TestEncodingFloat32OmitEmpty) MarshalJSONArray(enc *Encoder) {
 		enc.AddFloat32OmitEmpty(e)
 	}
 }
+
 func (t TestEncodingFloat32OmitEmpty) IsNil() bool {
 	return t == nil
 }
@@ -227,6 +234,7 @@ func (t TestEncodingBoolOmitEmpty) MarshalJSONArray(enc *Encoder) {
 		enc.AddBoolOmitEmpty(e)
 	}
 }
+
 func (t TestEncodingBoolOmitEmpty) IsNil() bool {
 	return len(t) == 0
 }
@@ -238,6 +246,7 @@ func (t TestEncodingArrOmitEmpty) MarshalJSONArray(enc *Encoder) {
 		enc.AddArrayOmitEmpty(e)
 	}
 }
+
 func (t TestEncodingArrOmitEmpty) IsNil() bool {
 	return len(t) == 0
 }
@@ -260,6 +269,7 @@ func (t TestEncodingObjOmitEmpty) MarshalJSONArray(enc *Encoder) {
 		enc.AddObjectOmitEmpty(e)
 	}
 }
+
 func (t TestEncodingObjOmitEmpty) IsNil() bool {
 	return t == nil
 }
@@ -338,7 +348,7 @@ func TestEncoderArrayFunc(t *testing.T) {
 }
 
 func TestEncodeArrayNullEmpty(t *testing.T) {
-	var testCases = []struct {
+	testCases := []struct {
 		name, baseJSON, expectedJSON string
 	}{
 		{
@@ -356,7 +366,7 @@ func TestEncodeArrayNullEmpty(t *testing.T) {
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
 			var b strings.Builder
-			var enc = NewEncoder(&b)
+			enc := NewEncoder(&b)
 			enc.writeString(testCase.baseJSON)
 			enc.AddArrayNullEmpty(&TestEncodingArrStrings{})
 			enc.ArrayNullEmpty(&TestEncodingArrStrings{"foo"})
@@ -365,7 +375,7 @@ func TestEncodeArrayNullEmpty(t *testing.T) {
 }
 
 func TestEncodeArrayKeyNullEmpty(t *testing.T) {
-	var testCases = []struct {
+	testCases := []struct {
 		name, baseJSON, expectedJSON string
 	}{
 		{
@@ -383,7 +393,7 @@ func TestEncodeArrayKeyNullEmpty(t *testing.T) {
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
 			var b strings.Builder
-			var enc = NewEncoder(&b)
+			enc := NewEncoder(&b)
 			enc.writeString(testCase.baseJSON)
 			enc.AddArrayKeyNullEmpty("foo", &TestEncodingArrStrings{})
 			enc.ArrayKeyNullEmpty("bar", &TestEncodingArrStrings{"foo"})

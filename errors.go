@@ -52,7 +52,7 @@ func (dec *Decoder) makeInvalidUnmarshalErr(v interface{}) error {
 const invalidMarshalErrorMsg = "Invalid type %T provided to Marshal"
 
 // InvalidMarshalError is a type representing an error returned when
-// Encoding did not find the proper way to encode
+// Encoding did not find the proper way to encode.
 type InvalidMarshalError string
 
 func (err InvalidMarshalError) Error() string {
@@ -60,7 +60,7 @@ func (err InvalidMarshalError) Error() string {
 }
 
 // NoReaderError is a type representing an error returned when
-// decoding requires a reader and none was given
+// decoding requires a reader and none was given.
 type NoReaderError string
 
 func (err NoReaderError) Error() string {
@@ -68,7 +68,7 @@ func (err NoReaderError) Error() string {
 }
 
 // InvalidUsagePooledDecoderError is a type representing an error returned
-// when decoding is called on a still pooled Decoder
+// when decoding is called on a still pooled Decoder.
 type InvalidUsagePooledDecoderError string
 
 func (err InvalidUsagePooledDecoderError) Error() string {
@@ -76,7 +76,7 @@ func (err InvalidUsagePooledDecoderError) Error() string {
 }
 
 // InvalidUsagePooledEncoderError is a type representing an error returned
-// when decoding is called on a still pooled Encoder
+// when decoding is called on a still pooled Encoder.
 type InvalidUsagePooledEncoderError string
 
 func (err InvalidUsagePooledEncoderError) Error() string {

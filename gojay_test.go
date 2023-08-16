@@ -32,7 +32,7 @@ type testObject struct {
 	testInterface   interface{}
 }
 
-// make sure it implements interfaces
+// make sure it implements interfaces.
 var _ MarshalerJSONObject = &testObject{}
 var _ UnmarshalerJSONObject = &testObject{}
 
@@ -120,6 +120,7 @@ func (t *testObject) NKeys() int {
 	return 29
 }
 
+//nolint:structcheck,unused
 type testObject0Keys struct {
 	testStr       string
 	testInt       int
@@ -139,7 +140,7 @@ type testObject0Keys struct {
 	testInterface interface{}
 }
 
-// make sure it implements interfaces
+// make sure it implements interfaces.
 var _ MarshalerJSONObject = &testObject0Keys{}
 var _ UnmarshalerJSONObject = &testObject0Keys{}
 
@@ -237,7 +238,7 @@ func (t *testObjectComplex) NKeys() int {
 	return 4
 }
 
-// make sure it implements interfaces
+// make sure it implements interfaces.
 var _ MarshalerJSONObject = &testObjectComplex{}
 var _ UnmarshalerJSONObject = &testObjectComplex{}
 

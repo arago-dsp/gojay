@@ -3,9 +3,10 @@ package benchmarks
 import (
 	"testing"
 
-	"github.com/francoispqt/gojay"
-	"github.com/francoispqt/gojay/benchmarks"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/arago-dsp/gojay"
+	"github.com/arago-dsp/gojay/benchmarks"
 )
 
 func TestGoJayDecodeObjLarge(t *testing.T) {

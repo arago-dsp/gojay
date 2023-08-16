@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/francoispqt/gojay"
+	"github.com/arago-dsp/gojay"
 )
 
 var bigf = []byte(`0.00058273999999999999`)

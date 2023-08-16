@@ -4,7 +4,7 @@ import (
 	"time"
 )
 
-// DecodeTime decodes time with the given format
+// DecodeTime decodes time with the given format.
 func (dec *Decoder) DecodeTime(v *time.Time, format string) error {
 	if dec.isPooled == 1 {
 		panic(InvalidUsagePooledDecoderError("Invalid usage of pooled decoder"))
@@ -14,7 +14,7 @@ func (dec *Decoder) DecodeTime(v *time.Time, format string) error {
 
 func (dec *Decoder) decodeTime(v *time.Time, format string) error {
 	if format == time.RFC3339 {
-		var ej = make(EmbeddedJSON, 0, 20)
+		ej := make(EmbeddedJSON, 0, 20)
 		if err := dec.decodeEmbeddedJSON(&ej); err != nil {
 			return err
 		}
@@ -37,12 +37,12 @@ func (dec *Decoder) decodeTime(v *time.Time, format string) error {
 
 // Add Values functions
 
-// AddTime decodes the JSON value within an object or an array to a *time.Time with the given format
+// AddTime decodes the JSON value within an object or an array to a *time.Time with the given format.
 func (dec *Decoder) AddTime(v *time.Time, format string) error {
 	return dec.Time(v, format)
 }
 
-// Time decodes the JSON value within an object or an array to a *time.Time with the given format
+// Time decodes the JSON value within an object or an array to a *time.Time with the given format.
 func (dec *Decoder) Time(v *time.Time, format string) error {
 	err := dec.decodeTime(v, format)
 	if err != nil {

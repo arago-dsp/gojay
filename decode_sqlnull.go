@@ -2,7 +2,7 @@ package gojay
 
 import "database/sql"
 
-// DecodeSQLNullString decodes a sql.NullString
+// DecodeSQLNullString decodes a sql.NullString.
 func (dec *Decoder) DecodeSQLNullString(v *sql.NullString) error {
 	if dec.isPooled == 1 {
 		panic(InvalidUsagePooledDecoderError("Invalid usage of pooled decoder"))
@@ -20,7 +20,7 @@ func (dec *Decoder) decodeSQLNullString(v *sql.NullString) error {
 	return nil
 }
 
-// DecodeSQLNullInt64 decodes a sql.NullInt64
+// DecodeSQLNullInt64 decodes a sql.NullInt64.
 func (dec *Decoder) DecodeSQLNullInt64(v *sql.NullInt64) error {
 	if dec.isPooled == 1 {
 		panic(InvalidUsagePooledDecoderError("Invalid usage of pooled decoder"))
@@ -38,7 +38,7 @@ func (dec *Decoder) decodeSQLNullInt64(v *sql.NullInt64) error {
 	return nil
 }
 
-// DecodeSQLNullFloat64 decodes a sql.NullString with the given format
+// DecodeSQLNullFloat64 decodes a sql.NullString with the given format.
 func (dec *Decoder) DecodeSQLNullFloat64(v *sql.NullFloat64) error {
 	if dec.isPooled == 1 {
 		panic(InvalidUsagePooledDecoderError("Invalid usage of pooled decoder"))
@@ -56,7 +56,7 @@ func (dec *Decoder) decodeSQLNullFloat64(v *sql.NullFloat64) error {
 	return nil
 }
 
-// DecodeSQLNullBool decodes a sql.NullString with the given format
+// DecodeSQLNullBool decodes a sql.NullString with the given format.
 func (dec *Decoder) DecodeSQLNullBool(v *sql.NullBool) error {
 	if dec.isPooled == 1 {
 		panic(InvalidUsagePooledDecoderError("Invalid usage of pooled decoder"))
@@ -76,12 +76,12 @@ func (dec *Decoder) decodeSQLNullBool(v *sql.NullBool) error {
 
 // Add Values functions
 
-// AddSQLNullString decodes the JSON value within an object or an array to qn *sql.NullString
+// AddSQLNullString decodes the JSON value within an object or an array to qn *sql.NullString.
 func (dec *Decoder) AddSQLNullString(v *sql.NullString) error {
 	return dec.SQLNullString(v)
 }
 
-// SQLNullString decodes the JSON value within an object or an array to an *sql.NullString
+// SQLNullString decodes the JSON value within an object or an array to an *sql.NullString.
 func (dec *Decoder) SQLNullString(v *sql.NullString) error {
 	var b *string
 	if err := dec.StringNull(&b); err != nil {
@@ -96,12 +96,12 @@ func (dec *Decoder) SQLNullString(v *sql.NullString) error {
 	return nil
 }
 
-// AddSQLNullInt64 decodes the JSON value within an object or an array to qn *sql.NullInt64
+// AddSQLNullInt64 decodes the JSON value within an object or an array to qn *sql.NullInt64.
 func (dec *Decoder) AddSQLNullInt64(v *sql.NullInt64) error {
 	return dec.SQLNullInt64(v)
 }
 
-// SQLNullInt64 decodes the JSON value within an object or an array to an *sql.NullInt64
+// SQLNullInt64 decodes the JSON value within an object or an array to an *sql.NullInt64.
 func (dec *Decoder) SQLNullInt64(v *sql.NullInt64) error {
 	var b *int64
 	if err := dec.Int64Null(&b); err != nil {
@@ -116,12 +116,12 @@ func (dec *Decoder) SQLNullInt64(v *sql.NullInt64) error {
 	return nil
 }
 
-// AddSQLNullFloat64 decodes the JSON value within an object or an array to qn *sql.NullFloat64
+// AddSQLNullFloat64 decodes the JSON value within an object or an array to qn *sql.NullFloat64.
 func (dec *Decoder) AddSQLNullFloat64(v *sql.NullFloat64) error {
 	return dec.SQLNullFloat64(v)
 }
 
-// SQLNullFloat64 decodes the JSON value within an object or an array to an *sql.NullFloat64
+// SQLNullFloat64 decodes the JSON value within an object or an array to an *sql.NullFloat64.
 func (dec *Decoder) SQLNullFloat64(v *sql.NullFloat64) error {
 	var b *float64
 	if err := dec.Float64Null(&b); err != nil {
@@ -136,12 +136,12 @@ func (dec *Decoder) SQLNullFloat64(v *sql.NullFloat64) error {
 	return nil
 }
 
-// AddSQLNullBool decodes the JSON value within an object or an array to an *sql.NullBool
+// AddSQLNullBool decodes the JSON value within an object or an array to an *sql.NullBool.
 func (dec *Decoder) AddSQLNullBool(v *sql.NullBool) error {
 	return dec.SQLNullBool(v)
 }
 
-// SQLNullBool decodes the JSON value within an object or an array to an *sql.NullBool
+// SQLNullBool decodes the JSON value within an object or an array to an *sql.NullBool.
 func (dec *Decoder) SQLNullBool(v *sql.NullBool) error {
 	var b *bool
 	if err := dec.BoolNull(&b); err != nil {

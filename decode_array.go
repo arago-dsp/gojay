@@ -15,6 +15,7 @@ func (dec *Decoder) DecodeArray(v UnmarshalerJSONArray) error {
 	_, err := dec.decodeArray(v)
 	return err
 }
+
 func (dec *Decoder) decodeArray(arr UnmarshalerJSONArray) (int, error) {
 	// remember last array index in case of nested arrays
 	lastArrayIndex := dec.arrayIndex
@@ -66,6 +67,7 @@ func (dec *Decoder) decodeArray(arr UnmarshalerJSONArray) (int, error) {
 	}
 	return 0, dec.raiseInvalidJSONErr(dec.cursor)
 }
+
 func (dec *Decoder) decodeArrayNull(v interface{}) (int, error) {
 	// remember last array index in case of nested arrays
 	lastArrayIndex := dec.arrayIndex
@@ -137,8 +139,8 @@ func (dec *Decoder) decodeArrayNull(v interface{}) (int, error) {
 }
 
 func (dec *Decoder) skipArray() (int, error) {
-	var arraysOpen = 1
-	var arraysClosed = 0
+	arraysOpen := 1
+	arraysClosed := 0
 	// var stringOpen byte = 0
 	for j := dec.cursor; j < dec.length || dec.read(); j++ {
 		switch dec.data[j] {
@@ -154,7 +156,7 @@ func (dec *Decoder) skipArray() (int, error) {
 		case '"':
 			j++
 			var isInEscapeSeq bool
-			var isFirstQuote = true
+			isFirstQuote := true
 			for ; j < dec.length || dec.read(); j++ {
 				if dec.data[j] != '"' {
 					continue

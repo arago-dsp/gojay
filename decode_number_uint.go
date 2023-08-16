@@ -51,6 +51,7 @@ func (dec *Decoder) decodeUint8(v *uint8) error {
 	}
 	return dec.raiseInvalidJSONErr(dec.cursor)
 }
+
 func (dec *Decoder) decodeUint8Null(v **uint8) error {
 	for ; dec.cursor < dec.length || dec.read(); dec.cursor++ {
 		switch c := dec.data[dec.cursor]; c {
@@ -96,8 +97,8 @@ func (dec *Decoder) decodeUint8Null(v **uint8) error {
 }
 
 func (dec *Decoder) getUint8() (uint8, error) {
-	var end = dec.cursor
-	var start = dec.cursor
+	end := dec.cursor
+	start := dec.cursor
 	// look for following numbers
 	for j := dec.cursor + 1; j < dec.length || dec.read(); j++ {
 		switch dec.data[j] {
@@ -163,6 +164,7 @@ func (dec *Decoder) decodeUint16(v *uint16) error {
 	}
 	return dec.raiseInvalidJSONErr(dec.cursor)
 }
+
 func (dec *Decoder) decodeUint16Null(v **uint16) error {
 	for ; dec.cursor < dec.length || dec.read(); dec.cursor++ {
 		switch c := dec.data[dec.cursor]; c {
@@ -208,8 +210,8 @@ func (dec *Decoder) decodeUint16Null(v **uint16) error {
 }
 
 func (dec *Decoder) getUint16() (uint16, error) {
-	var end = dec.cursor
-	var start = dec.cursor
+	end := dec.cursor
+	start := dec.cursor
 	// look for following numbers
 	for j := dec.cursor + 1; j < dec.length || dec.read(); j++ {
 		switch dec.data[j] {
@@ -275,6 +277,7 @@ func (dec *Decoder) decodeUint32(v *uint32) error {
 	}
 	return dec.raiseInvalidJSONErr(dec.cursor)
 }
+
 func (dec *Decoder) decodeUint32Null(v **uint32) error {
 	for ; dec.cursor < dec.length || dec.read(); dec.cursor++ {
 		switch c := dec.data[dec.cursor]; c {
@@ -320,8 +323,8 @@ func (dec *Decoder) decodeUint32Null(v **uint32) error {
 }
 
 func (dec *Decoder) getUint32() (uint32, error) {
-	var end = dec.cursor
-	var start = dec.cursor
+	end := dec.cursor
+	start := dec.cursor
 	// look for following numbers
 	for j := dec.cursor + 1; j < dec.length || dec.read(); j++ {
 		switch dec.data[j] {
@@ -349,6 +352,7 @@ func (dec *Decoder) DecodeUint64(v *uint64) error {
 	}
 	return dec.decodeUint64(v)
 }
+
 func (dec *Decoder) decodeUint64(v *uint64) error {
 	for ; dec.cursor < dec.length || dec.read(); dec.cursor++ {
 		switch c := dec.data[dec.cursor]; c {
@@ -386,6 +390,7 @@ func (dec *Decoder) decodeUint64(v *uint64) error {
 	}
 	return dec.raiseInvalidJSONErr(dec.cursor)
 }
+
 func (dec *Decoder) decodeUint64Null(v **uint64) error {
 	for ; dec.cursor < dec.length || dec.read(); dec.cursor++ {
 		switch c := dec.data[dec.cursor]; c {
@@ -431,8 +436,8 @@ func (dec *Decoder) decodeUint64Null(v **uint64) error {
 }
 
 func (dec *Decoder) getUint64() (uint64, error) {
-	var end = dec.cursor
-	var start = dec.cursor
+	end := dec.cursor
+	start := dec.cursor
 	// look for following numbers
 	for j := dec.cursor + 1; j < dec.length || dec.read(); j++ {
 		switch dec.data[j] {
@@ -450,8 +455,8 @@ func (dec *Decoder) getUint64() (uint64, error) {
 }
 
 func (dec *Decoder) atoui64(start, end int) uint64 {
-	var ll = end + 1 - start
-	var val = uint64(digits[dec.data[start]])
+	ll := end + 1 - start
+	val := uint64(digits[dec.data[start]])
 	end = end + 1
 	if ll < maxUint64Length {
 		for i := start + 1; i < end; i++ {
@@ -480,7 +485,7 @@ func (dec *Decoder) atoui64(start, end int) uint64 {
 }
 
 func (dec *Decoder) atoui32(start, end int) uint32 {
-	var ll = end + 1 - start
+	ll := end + 1 - start
 	var val uint32
 	val = uint32(digits[dec.data[start]])
 	end = end + 1
@@ -511,7 +516,7 @@ func (dec *Decoder) atoui32(start, end int) uint32 {
 }
 
 func (dec *Decoder) atoui16(start, end int) uint16 {
-	var ll = end + 1 - start
+	ll := end + 1 - start
 	var val uint16
 	val = uint16(digits[dec.data[start]])
 	end = end + 1
@@ -542,7 +547,7 @@ func (dec *Decoder) atoui16(start, end int) uint16 {
 }
 
 func (dec *Decoder) atoui8(start, end int) uint8 {
-	var ll = end + 1 - start
+	ll := end + 1 - start
 	var val uint8
 	val = uint8(digits[dec.data[start]])
 	end = end + 1

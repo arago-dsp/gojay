@@ -10,7 +10,7 @@ import (
 // v must implement UnmarshalerJSONArray.
 //
 // If a JSON value is not appropriate for a given target type, or if a JSON number
-// overflows the target type, UnmarshalJSONArray skips that field and completes the unmarshaling as best it can.
+// overflows the target type, UnmarshalJSONArray skips that field and completes the unmarshalling as best it can.
 func UnmarshalJSONArray(data []byte, v UnmarshalerJSONArray) error {
 	dec := borrowDecoder(nil, 0)
 	defer dec.Release()
@@ -32,7 +32,7 @@ func UnmarshalJSONArray(data []byte, v UnmarshalerJSONArray) error {
 // v must implement UnmarshalerJSONObject.
 //
 // If a JSON value is not appropriate for a given target type, or if a JSON number
-// overflows the target type, UnmarshalJSONObject skips that field and completes the unmarshaling as best it can.
+// overflows the target type, UnmarshalJSONObject skips that field and completes the unmarshalling as best it can.
 func UnmarshalJSONObject(data []byte, v UnmarshalerJSONObject) error {
 	dec := borrowDecoder(nil, 0)
 	defer dec.Release()
@@ -51,15 +51,16 @@ func UnmarshalJSONObject(data []byte, v UnmarshalerJSONObject) error {
 
 // Unmarshal parses the JSON-encoded data and stores the result in the value pointed to by v.
 // If v is nil, not an implementation of UnmarshalerJSONObject or UnmarshalerJSONArray or not one of the following types:
-// 	*string, **string, *int, **int, *int8, **int8, *int16, **int16, *int32, **int32, *int64, **int64, *uint8, **uint8, *uint16, **uint16,
-// 	*uint32, **uint32, *uint64, **uint64, *float64, **float64, *float32, **float32, *bool, **bool
+//
+//	*string, **string, *int, **int, *int8, **int8, *int16, **int16, *int32, **int32, *int64, **int64, *uint8, **uint8, *uint16, **uint16,
+//	*uint32, **uint32, *uint64, **uint64, *float64, **float64, *float32, **float32, *bool, **bool
+//
 // Unmarshal returns an InvalidUnmarshalError.
 //
-//
 // If a JSON value is not appropriate for a given target type, or if a JSON number
-// overflows the target type, Unmarshal skips that field and completes the unmarshaling as best it can.
+// overflows the target type, Unmarshal skips that field and completes the unmarshalling as best it can.
 // If no more serious errors are encountered, Unmarshal returns an UnmarshalTypeError describing the earliest such error.
-// In any case, it's not guaranteed that all the remaining fields following the problematic one will be unmarshaled into the target object.
+// In any case, it's not guaranteed that all the remaining fields following the problematic one will be unmarshalled into the target object.
 func Unmarshal(data []byte, v interface{}) error {
 	var err error
 	var dec *Decoder
@@ -67,7 +68,8 @@ func Unmarshal(data []byte, v interface{}) error {
 	case *string:
 		dec = borrowDecoder(nil, 0)
 		dec.length = len(data)
-		dec.data = data
+		dec.data = make([]byte, len(data))
+		copy(dec.data, data)
 		err = dec.decodeString(vt)
 	case **string:
 		dec = borrowDecoder(nil, 0)
@@ -251,8 +253,8 @@ type Decoder struct {
 //
 // See the documentation for Unmarshal for details about the conversion of JSON into a Go value.
 // The differences between Decode and Unmarshal are:
-// 	- Decode reads from an io.Reader in the Decoder, whereas Unmarshal reads from a []byte
-// 	- Decode leaves to the user the option of borrowing and releasing a Decoder, whereas Unmarshal internally always borrows a Decoder and releases it when the unmarshaling is completed
+//   - Decode reads from an io.Reader in the Decoder, whereas Unmarshal reads from a []byte
+//   - Decode leaves to the user the option of borrowing and releasing a Decoder, whereas Unmarshal internally always borrows a Decoder and releases it when the unmarshalling is completed
 func (dec *Decoder) Decode(v interface{}) error {
 	if dec.isPooled == 1 {
 		panic(InvalidUsagePooledDecoderError("Invalid usage of pooled decoder"))
@@ -347,9 +349,9 @@ func (dec *Decoder) read() bool {
 			if nLen == 0 {
 				nLen = 512
 			}
-			Buf := make([]byte, nLen, nLen)
-			copy(Buf, dec.data)
-			dec.data = Buf
+			buf := make([]byte, nLen)
+			copy(buf, dec.data)
+			dec.data = buf
 		}
 		var n int
 		var err error

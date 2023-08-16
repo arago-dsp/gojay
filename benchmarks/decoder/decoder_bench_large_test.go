@@ -4,10 +4,11 @@ import (
 	"testing"
 
 	"github.com/buger/jsonparser"
-	"github.com/francoispqt/gojay"
-	"github.com/francoispqt/gojay/benchmarks"
 	jsoniter "github.com/json-iterator/go"
 	"github.com/mailru/easyjson"
+
+	"github.com/arago-dsp/gojay"
+	"github.com/arago-dsp/gojay/benchmarks"
 )
 
 func BenchmarkJsonParserDecodeObjLarge(b *testing.B) {

@@ -1,6 +1,6 @@
 package gojay
 
-// EncodeString encodes a string to
+// EncodeString encodes a string to.
 func (enc *Encoder) EncodeString(s string) error {
 	if enc.isPooled == 1 {
 		panic(InvalidUsagePooledEncoderError("Invalid usage of pooled encoder"))
@@ -14,7 +14,7 @@ func (enc *Encoder) EncodeString(s string) error {
 	return nil
 }
 
-// encodeString encodes a string to
+// encodeString encodes a string to.
 func (enc *Encoder) encodeString(v string) ([]byte, error) {
 	enc.writeByte('"')
 	enc.writeStringEscape(v)
@@ -22,7 +22,7 @@ func (enc *Encoder) encodeString(v string) ([]byte, error) {
 	return enc.buf, nil
 }
 
-// AppendString appends a string to the buffer
+// AppendString appends a string to the buffer.
 func (enc *Encoder) AppendString(v string) {
 	enc.grow(len(v) + 2)
 	enc.writeByte('"')
@@ -30,41 +30,41 @@ func (enc *Encoder) AppendString(v string) {
 	enc.writeByte('"')
 }
 
-// AddString adds a string to be encoded, must be used inside a slice or array encoding (does not encode a key)
+// AddString adds a string to be encoded, must be used inside a slice or array encoding (does not encode a key).
 func (enc *Encoder) AddString(v string) {
 	enc.String(v)
 }
 
 // AddStringOmitEmpty adds a string to be encoded or skips it if it is zero value.
-// Must be used inside a slice or array encoding (does not encode a key)
+// Must be used inside a slice or array encoding (does not encode a key).
 func (enc *Encoder) AddStringOmitEmpty(v string) {
 	enc.StringOmitEmpty(v)
 }
 
 // AddStringNullEmpty adds a string to be encoded or skips it if it is zero value.
-// Must be used inside a slice or array encoding (does not encode a key)
+// Must be used inside a slice or array encoding (does not encode a key).
 func (enc *Encoder) AddStringNullEmpty(v string) {
 	enc.StringNullEmpty(v)
 }
 
-// AddStringKey adds a string to be encoded, must be used inside an object as it will encode a key
+// AddStringKey adds a string to be encoded, must be used inside an object as it will encode a key.
 func (enc *Encoder) AddStringKey(key, v string) {
 	enc.StringKey(key, v)
 }
 
 // AddStringKeyOmitEmpty adds a string to be encoded or skips it if it is zero value.
-// Must be used inside an object as it will encode a key
+// Must be used inside an object as it will encode a key.
 func (enc *Encoder) AddStringKeyOmitEmpty(key, v string) {
 	enc.StringKeyOmitEmpty(key, v)
 }
 
 // AddStringKeyNullEmpty adds a string to be encoded or skips it if it is zero value.
-// Must be used inside an object as it will encode a key
+// Must be used inside an object as it will encode a key.
 func (enc *Encoder) AddStringKeyNullEmpty(key, v string) {
 	enc.StringKeyNullEmpty(key, v)
 }
 
-// String adds a string to be encoded, must be used inside a slice or array encoding (does not encode a key)
+// String adds a string to be encoded, must be used inside a slice or array encoding (does not encode a key).
 func (enc *Encoder) String(v string) {
 	enc.grow(len(v) + 4)
 	r := enc.getPreviousRune()
@@ -78,7 +78,7 @@ func (enc *Encoder) String(v string) {
 }
 
 // StringOmitEmpty adds a string to be encoded or skips it if it is zero value.
-// Must be used inside a slice or array encoding (does not encode a key)
+// Must be used inside a slice or array encoding (does not encode a key).
 func (enc *Encoder) StringOmitEmpty(v string) {
 	if v == "" {
 		return
@@ -94,7 +94,7 @@ func (enc *Encoder) StringOmitEmpty(v string) {
 }
 
 // StringNullEmpty adds a string to be encoded or skips it if it is zero value.
-// Must be used inside a slice or array encoding (does not encode a key)
+// Must be used inside a slice or array encoding (does not encode a key).
 func (enc *Encoder) StringNullEmpty(v string) {
 	r := enc.getPreviousRune()
 	if v == "" {
@@ -115,7 +115,7 @@ func (enc *Encoder) StringNullEmpty(v string) {
 	enc.writeByte('"')
 }
 
-// StringKey adds a string to be encoded, must be used inside an object as it will encode a key
+// StringKey adds a string to be encoded, must be used inside an object as it will encode a key.
 func (enc *Encoder) StringKey(key, v string) {
 	if enc.hasKeys {
 		if !enc.keyExists(key) {
@@ -136,7 +136,7 @@ func (enc *Encoder) StringKey(key, v string) {
 }
 
 // StringKeyOmitEmpty adds a string to be encoded or skips it if it is zero value.
-// Must be used inside an object as it will encode a key
+// Must be used inside an object as it will encode a key.
 func (enc *Encoder) StringKeyOmitEmpty(key, v string) {
 	if enc.hasKeys {
 		if !enc.keyExists(key) {
@@ -160,7 +160,7 @@ func (enc *Encoder) StringKeyOmitEmpty(key, v string) {
 }
 
 // StringKeyNullEmpty adds a string to be encoded or skips it if it is zero value.
-// Must be used inside an object as it will encode a key
+// Must be used inside an object as it will encode a key.
 func (enc *Encoder) StringKeyNullEmpty(key, v string) {
 	if enc.hasKeys {
 		if !enc.keyExists(key) {

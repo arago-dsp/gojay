@@ -11,22 +11,13 @@ var encPool = sync.Pool{
 	},
 }
 
-var streamEncPool = sync.Pool{
-	New: func() interface{} {
-		return Stream.NewEncoder(nil)
-	},
-}
-
 func init() {
 	for i := 0; i < 32; i++ {
 		encPool.Put(NewEncoder(nil))
 	}
-	for i := 0; i < 32; i++ {
-		streamEncPool.Put(Stream.NewEncoder(nil))
-	}
 }
 
-// NewEncoder returns a new encoder or borrows one from the pool
+// NewEncoder returns a new encoder or borrows one from the pool.
 func NewEncoder(w io.Writer) *Encoder {
 	return &Encoder{w: w}
 }

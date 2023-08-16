@@ -1,12 +1,11 @@
 package gojay
 
-// TODO @afiune for now we are using the standard json unmarshaling but in
-// the future it would be great to implement one here inside this repo
+// TODO for now use the standard json unmarshalling but in the future it would be great to implement one here.
 import "encoding/json"
 
 // DecodeInterface reads the next JSON-encoded value from the decoder's input (io.Reader) and stores it in the value pointed to by i.
 //
-// i must be an interface poiter
+// i must be an interface pointer.
 func (dec *Decoder) DecodeInterface(i *interface{}) error {
 	if dec.isPooled == 1 {
 		panic(InvalidUsagePooledDecoderError("Invalid usage of pooled decoder"))

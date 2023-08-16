@@ -17,6 +17,7 @@ func (dec *Decoder) DecodeObject(j UnmarshalerJSONObject) error {
 	_, err := dec.decodeObject(j)
 	return err
 }
+
 func (dec *Decoder) decodeObject(j UnmarshalerJSONObject) (int, error) {
 	keys := j.NKeys()
 	for ; dec.cursor < dec.length || dec.read(); dec.cursor++ {
@@ -200,8 +201,8 @@ func (dec *Decoder) decodeObjectNull(v interface{}) (int, error) {
 }
 
 func (dec *Decoder) skipObject() (int, error) {
-	var objectsOpen = 1
-	var objectsClosed = 0
+	objectsOpen := 1
+	objectsClosed := 0
 	for j := dec.cursor; j < dec.length || dec.read(); j++ {
 		switch dec.data[j] {
 		case '}':
@@ -216,7 +217,7 @@ func (dec *Decoder) skipObject() (int, error) {
 		case '"':
 			j++
 			var isInEscapeSeq bool
-			var isFirstQuote = true
+			isFirstQuote := true
 			for ; j < dec.length || dec.read(); j++ {
 				if dec.data[j] != '"' {
 					continue
@@ -258,7 +259,7 @@ func (dec *Decoder) nextKey() (string, bool, error) {
 			continue
 		case '"':
 			dec.cursor = dec.cursor + 1
-			start, end, err := dec.getString()
+			start, end, err := dec.getStringNoEscape()
 			if err != nil {
 				return "", false, err
 			}

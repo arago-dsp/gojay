@@ -125,7 +125,7 @@ func TestEncoderStringEncodeAPIErrors(t *testing.T) {
 		enc.isPooled = 1
 		defer func() {
 			err := recover()
-			assert.NotNil(t, err, "err shouldnt be nil")
+			assert.NotNil(t, err, "err should not be nil")
 			assert.IsType(t, InvalidUsagePooledEncoderError(""), err, "err should be of type InvalidUsagePooledEncoderError")
 			assert.Equal(t, "Invalid usage of pooled encoder", err.(InvalidUsagePooledEncoderError).Error(), "err should be of type InvalidUsagePooledDecoderError")
 		}()
@@ -164,7 +164,7 @@ func TestEncoderStringMarshalAPI(t *testing.T) {
 }
 
 func TestEncoderStringNullEmpty(t *testing.T) {
-	var testCases = []struct {
+	testCases := []struct {
 		name         string
 		baseJSON     string
 		expectedJSON string
@@ -188,18 +188,19 @@ func TestEncoderStringNullEmpty(t *testing.T) {
 	for _, testCase := range testCases {
 		t.Run("true", func(t *testing.T) {
 			var b strings.Builder
-			var enc = NewEncoder(&b)
+			enc := NewEncoder(&b)
 			enc.writeString(testCase.baseJSON)
 			enc.StringNullEmpty("")
 			enc.AddStringNullEmpty("true")
-			enc.Write()
+			_, err := enc.Write()
+			assert.NoError(t, err)
 			assert.Equal(t, testCase.expectedJSON, b.String())
 		})
 	}
 }
 
 func TestEncoderStringNullEmpty2(t *testing.T) {
-	var testCases = []struct {
+	testCases := []struct {
 		name         string
 		baseJSON     string
 		expectedJSON string
@@ -213,17 +214,18 @@ func TestEncoderStringNullEmpty2(t *testing.T) {
 	for _, testCase := range testCases {
 		t.Run("true", func(t *testing.T) {
 			var b strings.Builder
-			var enc = NewEncoder(&b)
+			enc := NewEncoder(&b)
 			enc.writeString(testCase.baseJSON)
 			enc.StringNullEmpty("test")
-			enc.Write()
+			_, err := enc.Write()
+			assert.NoError(t, err)
 			assert.Equal(t, testCase.expectedJSON, b.String())
 		})
 	}
 }
 
 func TestEncoderStringNullKeyEmpty(t *testing.T) {
-	var testCases = []struct {
+	testCases := []struct {
 		name         string
 		baseJSON     string
 		expectedJSON string
@@ -242,11 +244,12 @@ func TestEncoderStringNullKeyEmpty(t *testing.T) {
 	for _, testCase := range testCases {
 		t.Run("true", func(t *testing.T) {
 			var b strings.Builder
-			var enc = NewEncoder(&b)
+			enc := NewEncoder(&b)
 			enc.writeString(testCase.baseJSON)
 			enc.StringKeyNullEmpty("foo", "")
 			enc.AddStringKeyNullEmpty("bar", "true")
-			enc.Write()
+			_, err := enc.Write()
+			assert.NoError(t, err)
 			assert.Equal(t, testCase.expectedJSON, b.String())
 		})
 	}

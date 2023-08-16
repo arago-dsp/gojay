@@ -1,11 +1,11 @@
 package gojay
 
-// AddNull adds a `null` to be encoded. Must be used while encoding an array.`
+// AddNull adds a `null` to be encoded. Must be used while encoding an array.`.
 func (enc *Encoder) AddNull() {
 	enc.Null()
 }
 
-// Null adds a `null` to be encoded. Must be used while encoding an array.`
+// Null adds a `null` to be encoded. Must be used while encoding an array.`.
 func (enc *Encoder) Null() {
 	enc.grow(5)
 	r := enc.getPreviousRune()
@@ -15,12 +15,12 @@ func (enc *Encoder) Null() {
 	enc.writeBytes(nullBytes)
 }
 
-// AddNullKey adds a `null` to be encoded. Must be used while encoding an array.`
+// AddNullKey adds a `null` to be encoded. Must be used while encoding an array.`.
 func (enc *Encoder) AddNullKey(key string) {
 	enc.NullKey(key)
 }
 
-// NullKey adds a `null` to be encoded. Must be used while encoding an array.`
+// NullKey adds a `null` to be encoded. Must be used while encoding an array.`.
 func (enc *Encoder) NullKey(key string) {
 	if enc.hasKeys {
 		if !enc.keyExists(key) {

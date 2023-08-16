@@ -20,6 +20,7 @@ func (t *testDecodeObj) UnmarshalJSONObject(dec *Decoder, key string) error {
 	}
 	return nil
 }
+
 func (t *testDecodeObj) NKeys() int {
 	return 1
 }
@@ -95,7 +96,6 @@ func allTypesTestCases() []allTypeDecodeTestCase {
 			},
 		},
 		{
-
 			v:    new(int),
 			d:    []byte(`1`),
 			name: "test decode int",
@@ -451,7 +451,7 @@ func allTypesTestCases() []allTypeDecodeTestCase {
 	}
 }
 
-// Unmarshal tests
+// Unmarshal tests.
 func TestUnmarshalAllTypes(t *testing.T) {
 	for _, testCase := range allTypesTestCases() {
 		testCase := testCase
@@ -462,7 +462,7 @@ func TestUnmarshalAllTypes(t *testing.T) {
 	}
 }
 
-// Decode tests
+// Decode tests.
 func TestDecodeAllTypes(t *testing.T) {
 	for _, testCase := range allTypesTestCases() {
 		testCase := testCase

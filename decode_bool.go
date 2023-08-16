@@ -10,6 +10,7 @@ func (dec *Decoder) DecodeBool(v *bool) error {
 	}
 	return dec.decodeBool(v)
 }
+
 func (dec *Decoder) decodeBool(v *bool) error {
 	for ; dec.cursor < dec.length || dec.read(); dec.cursor++ {
 		switch dec.data[dec.cursor] {
@@ -50,6 +51,7 @@ func (dec *Decoder) decodeBool(v *bool) error {
 	}
 	return nil
 }
+
 func (dec *Decoder) decodeBoolNull(v **bool) error {
 	for ; dec.cursor < dec.length || dec.read(); dec.cursor++ {
 		switch dec.data[dec.cursor] {

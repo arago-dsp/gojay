@@ -87,7 +87,9 @@ func TestEncoderObjectEncodeAPI(t *testing.T) {
 		err := enc.EncodeObject(&testObject{
 			"漢字", nil, 1, nil, 1, nil, 1, nil, 1, nil, 1, nil, 1, nil, 1, nil,
 			1, nil, 1, nil, 1.1, nil, 1.1, nil, true, nil,
-			&testObject{}, testSliceInts{}, interface{}("test"),
+			&testObject{},
+			testSliceInts{},
+			interface{}("test"),
 		})
 		assert.Nil(t, err, "Error should be nil")
 		assert.Equal(
@@ -104,7 +106,9 @@ func TestEncoderObjectMarshalAPI(t *testing.T) {
 		r, err := Marshal(&testObject{
 			"漢字", nil, 1, nil, 1, nil, 1, nil, 1, nil, 1, nil, 1, nil, 1,
 			nil, 1, nil, 1, nil, 1.1, nil, 1.1, nil, true, nil,
-			&testObject{}, testSliceInts{}, []interface{}{"h", "o", "l", "a"},
+			&testObject{},
+			testSliceInts{},
+			[]interface{}{"h", "o", "l", "a"},
 		})
 		assert.Nil(t, err, "Error should be nil")
 		assert.Equal(
@@ -430,7 +434,7 @@ func TestEncoderObjectEncodeAPIError(t *testing.T) {
 }
 
 func TestEncoderObjectKeyNullEmpty(t *testing.T) {
-	var testCases = []struct {
+	testCases := []struct {
 		name         string
 		baseJSON     string
 		expectedJSON string
@@ -449,18 +453,19 @@ func TestEncoderObjectKeyNullEmpty(t *testing.T) {
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
 			var b strings.Builder
-			var enc = NewEncoder(&b)
+			enc := NewEncoder(&b)
 			enc.writeString(testCase.baseJSON)
 			enc.AddObjectKeyNullEmpty("foo", (*TestEncoding)(nil))
 			enc.ObjectKeyNullEmpty("bar", &TestEncoding{})
-			enc.Write()
+			_, err := enc.Write()
+			assert.NoError(t, err)
 			assert.Equal(t, testCase.expectedJSON, b.String())
 		})
 	}
 }
 
 func TestEncoderObjectNullEmpty(t *testing.T) {
-	var testCases = []struct {
+	testCases := []struct {
 		name         string
 		baseJSON     string
 		expectedJSON string
@@ -479,11 +484,12 @@ func TestEncoderObjectNullEmpty(t *testing.T) {
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
 			var b strings.Builder
-			var enc = NewEncoder(&b)
+			enc := NewEncoder(&b)
 			enc.writeString(testCase.baseJSON)
 			enc.AddObjectNullEmpty((*TestEncoding)(nil))
 			enc.ObjectNullEmpty(&TestEncoding{})
-			enc.Write()
+			_, err := enc.Write()
+			assert.NoError(t, err)
 			assert.Equal(t, testCase.expectedJSON, b.String())
 		})
 	}
@@ -575,9 +581,9 @@ func TestEncodeObjectWithKeys(t *testing.T) {
 		"should not encode any key",
 		func(t *testing.T) {
 			var b strings.Builder
-			var enc = NewEncoder(&b)
-			var o = &ObjectWithKeys{}
-			var err = enc.EncodeObjectKeys(o, []string{})
+			enc := NewEncoder(&b)
+			o := &ObjectWithKeys{}
+			err := enc.EncodeObjectKeys(o, []string{})
 			assert.Nil(t, err)
 			assert.Equal(t, `{}`, b.String())
 		},
@@ -586,9 +592,9 @@ func TestEncodeObjectWithKeys(t *testing.T) {
 		"should encode some keys",
 		func(t *testing.T) {
 			var b strings.Builder
-			var enc = NewEncoder(&b)
-			var o = &ObjectWithKeys{Str: "hello", Int: 420}
-			var err = enc.EncodeObjectKeys(o, []string{"string", "int"})
+			enc := NewEncoder(&b)
+			o := &ObjectWithKeys{Str: "hello", Int: 420}
+			err := enc.EncodeObjectKeys(o, []string{"string", "int"})
 			assert.Nil(t, err)
 			assert.Equal(
 				t,
