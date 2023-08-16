@@ -9,7 +9,7 @@ import (
 )
 
 func TestConcurrencyMarshal(t *testing.T) {
-	var f = func(num int, t *testing.T) {
+	f := func(num int, t *testing.T) {
 		for {
 			b, err := Marshal(num)
 			if err != nil {

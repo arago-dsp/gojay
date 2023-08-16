@@ -2,7 +2,7 @@ package gojay
 
 import "strconv"
 
-// EncodeBool encodes a bool to JSON
+// EncodeBool encodes a bool to JSON.
 func (enc *Encoder) EncodeBool(v bool) error {
 	if enc.isPooled == 1 {
 		panic(InvalidUsagePooledEncoderError("Invalid usage of pooled encoder"))
@@ -16,7 +16,7 @@ func (enc *Encoder) EncodeBool(v bool) error {
 	return nil
 }
 
-// encodeBool encodes a bool to JSON
+// encodeBool encodes a bool to JSON.
 func (enc *Encoder) encodeBool(v bool) ([]byte, error) {
 	enc.grow(5)
 	if v {
@@ -27,17 +27,17 @@ func (enc *Encoder) encodeBool(v bool) ([]byte, error) {
 	return enc.buf, enc.err
 }
 
-// AddBool adds a bool to be encoded, must be used inside a slice or array encoding (does not encode a key)
+// AddBool adds a bool to be encoded, must be used inside a slice or array encoding (does not encode a key).
 func (enc *Encoder) AddBool(v bool) {
 	enc.Bool(v)
 }
 
-// AddBoolOmitEmpty adds a bool to be encoded, must be used inside a slice or array encoding (does not encode a key)
+// AddBoolOmitEmpty adds a bool to be encoded, must be used inside a slice or array encoding (does not encode a key).
 func (enc *Encoder) AddBoolOmitEmpty(v bool) {
 	enc.BoolOmitEmpty(v)
 }
 
-// AddBoolNullEmpty adds a bool to be encoded, must be used inside a slice or array encoding (does not encode a key)
+// AddBoolNullEmpty adds a bool to be encoded, must be used inside a slice or array encoding (does not encode a key).
 func (enc *Encoder) AddBoolNullEmpty(v bool) {
 	enc.BoolNullEmpty(v)
 }
@@ -59,7 +59,7 @@ func (enc *Encoder) AddBoolKeyNullEmpty(key string, v bool) {
 	enc.BoolKeyNullEmpty(key, v)
 }
 
-// Bool adds a bool to be encoded, must be used inside a slice or array encoding (does not encode a key)
+// Bool adds a bool to be encoded, must be used inside a slice or array encoding (does not encode a key).
 func (enc *Encoder) Bool(v bool) {
 	enc.grow(5)
 	r := enc.getPreviousRune()
@@ -73,9 +73,9 @@ func (enc *Encoder) Bool(v bool) {
 	}
 }
 
-// BoolOmitEmpty adds a bool to be encoded, must be used inside a slice or array encoding (does not encode a key)
+// BoolOmitEmpty adds a bool to be encoded, must be used inside a slice or array encoding (does not encode a key).
 func (enc *Encoder) BoolOmitEmpty(v bool) {
-	if v == false {
+	if !v {
 		return
 	}
 	enc.grow(5)
@@ -86,14 +86,14 @@ func (enc *Encoder) BoolOmitEmpty(v bool) {
 	enc.writeString("true")
 }
 
-// BoolNullEmpty adds a bool to be encoded, must be used inside a slice or array encoding (does not encode a key)
+// BoolNullEmpty adds a bool to be encoded, must be used inside a slice or array encoding (does not encode a key).
 func (enc *Encoder) BoolNullEmpty(v bool) {
 	enc.grow(5)
 	r := enc.getPreviousRune()
 	if r != '[' {
 		enc.writeByte(',')
 	}
-	if v == false {
+	if !v {
 		enc.writeBytes(nullBytes)
 		return
 	}
@@ -126,7 +126,7 @@ func (enc *Encoder) BoolKeyOmitEmpty(key string, v bool) {
 			return
 		}
 	}
-	if v == false {
+	if !v {
 		return
 	}
 	enc.grow(5 + len(key))
@@ -156,7 +156,7 @@ func (enc *Encoder) BoolKeyNullEmpty(key string, v bool) {
 	enc.writeByte('"')
 	enc.writeStringEscape(key)
 	enc.writeBytes(objKey)
-	if v == false {
+	if !v {
 		enc.writeBytes(nullBytes)
 		return
 	}

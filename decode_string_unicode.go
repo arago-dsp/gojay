@@ -51,7 +51,7 @@ func (dec *Decoder) parseUnicode() ([]byte, error) {
 		return nil, err
 	}
 	// no error start making new string
-	str := make([]byte, 16, 16)
+	str := make([]byte, 16)
 	i := 0
 	// check if code can be a surrogate utf16
 	if utf16.IsSurrogate(r) {

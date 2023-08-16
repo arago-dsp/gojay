@@ -461,7 +461,7 @@ func TestDecoderBoolNull(t *testing.T) {
 
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
-			var v = struct {
+			v := struct {
 				b *bool
 			}{}
 			err := Unmarshal([]byte(testCase.json), &v.b)
@@ -469,8 +469,8 @@ func TestDecoderBoolNull(t *testing.T) {
 		})
 	}
 	t.Run("decoder-api-invalid-json2", func(t *testing.T) {
-		var v = new(bool)
-		var dec = NewDecoder(strings.NewReader(`folse`))
+		v := new(bool)
+		dec := NewDecoder(strings.NewReader(`folse`))
 		err := dec.BoolNull(&v)
 		assert.NotNil(t, err, "Err must not be nil")
 		assert.IsType(t, InvalidJSONError(""), err, "err should be of type InvalidJSONError")

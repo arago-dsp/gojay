@@ -3,7 +3,7 @@ package main
 import (
 	"net/http"
 
-	"github.com/francoispqt/gojay"
+	"github.com/arago-dsp/gojay"
 )
 
 type message struct {

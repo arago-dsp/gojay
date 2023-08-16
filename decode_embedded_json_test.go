@@ -24,7 +24,7 @@ func (r *Request) UnmarshalJSONObject(dec *Decoder, key string) error {
 	case "params":
 		return dec.AddEmbeddedJSON(&r.params)
 	case "more":
-		dec.AddInt(&r.more)
+		return dec.AddInt(&r.more)
 	}
 	return nil
 }

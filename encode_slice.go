@@ -1,11 +1,11 @@
 package gojay
 
-// AddSliceString marshals the given []string s
+// AddSliceString marshals the given []string s.
 func (enc *Encoder) AddSliceString(s []string) {
 	enc.SliceString(s)
 }
 
-// SliceString marshals the given []string s
+// SliceString marshals the given []string s.
 func (enc *Encoder) SliceString(s []string) {
 	enc.Array(EncodeArrayFunc(func(enc *Encoder) {
 		for _, str := range s {
@@ -14,12 +14,12 @@ func (enc *Encoder) SliceString(s []string) {
 	}))
 }
 
-// AddSliceStringKey marshals the given []string s
+// AddSliceStringKey marshals the given []string s.
 func (enc *Encoder) AddSliceStringKey(k string, s []string) {
 	enc.SliceStringKey(k, s)
 }
 
-// SliceStringKey marshals the given []string s
+// SliceStringKey marshals the given []string s.
 func (enc *Encoder) SliceStringKey(k string, s []string) {
 	enc.ArrayKey(k, EncodeArrayFunc(func(enc *Encoder) {
 		for _, str := range s {
@@ -28,12 +28,12 @@ func (enc *Encoder) SliceStringKey(k string, s []string) {
 	}))
 }
 
-// AddSliceInt marshals the given []int s
+// AddSliceInt marshals the given []int s.
 func (enc *Encoder) AddSliceInt(s []int) {
 	enc.SliceInt(s)
 }
 
-// SliceInt marshals the given []int s
+// SliceInt marshals the given []int s.
 func (enc *Encoder) SliceInt(s []int) {
 	enc.Array(EncodeArrayFunc(func(enc *Encoder) {
 		for _, i := range s {
@@ -42,12 +42,12 @@ func (enc *Encoder) SliceInt(s []int) {
 	}))
 }
 
-// AddSliceIntKey marshals the given []int s
+// AddSliceIntKey marshals the given []int s.
 func (enc *Encoder) AddSliceIntKey(k string, s []int) {
 	enc.SliceIntKey(k, s)
 }
 
-// SliceIntKey marshals the given []int s
+// SliceIntKey marshals the given []int s.
 func (enc *Encoder) SliceIntKey(k string, s []int) {
 	enc.ArrayKey(k, EncodeArrayFunc(func(enc *Encoder) {
 		for _, i := range s {
@@ -56,12 +56,12 @@ func (enc *Encoder) SliceIntKey(k string, s []int) {
 	}))
 }
 
-// AddSliceFloat64 marshals the given []float64 s
+// AddSliceFloat64 marshals the given []float64 s.
 func (enc *Encoder) AddSliceFloat64(s []float64) {
 	enc.SliceFloat64(s)
 }
 
-// SliceFloat64 marshals the given []float64 s
+// SliceFloat64 marshals the given []float64 s.
 func (enc *Encoder) SliceFloat64(s []float64) {
 	enc.Array(EncodeArrayFunc(func(enc *Encoder) {
 		for _, i := range s {
@@ -70,12 +70,12 @@ func (enc *Encoder) SliceFloat64(s []float64) {
 	}))
 }
 
-// AddSliceFloat64Key marshals the given []float64 s
+// AddSliceFloat64Key marshals the given []float64 s.
 func (enc *Encoder) AddSliceFloat64Key(k string, s []float64) {
 	enc.SliceFloat64Key(k, s)
 }
 
-// SliceFloat64Key marshals the given []float64 s
+// SliceFloat64Key marshals the given []float64 s.
 func (enc *Encoder) SliceFloat64Key(k string, s []float64) {
 	enc.ArrayKey(k, EncodeArrayFunc(func(enc *Encoder) {
 		for _, i := range s {
@@ -84,12 +84,12 @@ func (enc *Encoder) SliceFloat64Key(k string, s []float64) {
 	}))
 }
 
-// AddSliceBool marshals the given []bool s
+// AddSliceBool marshals the given []bool s.
 func (enc *Encoder) AddSliceBool(s []bool) {
 	enc.SliceBool(s)
 }
 
-// SliceBool marshals the given []bool s
+// SliceBool marshals the given []bool s.
 func (enc *Encoder) SliceBool(s []bool) {
 	enc.Array(EncodeArrayFunc(func(enc *Encoder) {
 		for _, i := range s {
@@ -98,12 +98,12 @@ func (enc *Encoder) SliceBool(s []bool) {
 	}))
 }
 
-// AddSliceBoolKey marshals the given []bool s
+// AddSliceBoolKey marshals the given []bool s.
 func (enc *Encoder) AddSliceBoolKey(k string, s []bool) {
 	enc.SliceBoolKey(k, s)
 }
 
-// SliceBoolKey marshals the given []bool s
+// SliceBoolKey marshals the given []bool s.
 func (enc *Encoder) SliceBoolKey(k string, s []bool) {
 	enc.ArrayKey(k, EncodeArrayFunc(func(enc *Encoder) {
 		for _, i := range s {

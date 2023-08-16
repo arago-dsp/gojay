@@ -400,36 +400,36 @@ func (o *ObjectArrayNull) NKeys() int {
 
 func TestDecodeArrayNullPtr(t *testing.T) {
 	t.Run("sub obj should not be nil", func(t *testing.T) {
-		var o = &ObjectArrayNull{}
-		var err = UnmarshalJSONObject([]byte(`{"subarray": ["test"]}`), o)
+		o := &ObjectArrayNull{}
+		err := UnmarshalJSONObject([]byte(`{"subarray": ["test"]}`), o)
 		assert.Nil(t, err)
 		assert.NotNil(t, o.SubArray)
 		assert.Len(t, *o.SubArray, 1)
 	})
 	t.Run("sub array should be nil", func(t *testing.T) {
-		var o = &ObjectArrayNull{}
-		var err = UnmarshalJSONObject([]byte(`{"subarray": null}`), o)
+		o := &ObjectArrayNull{}
+		err := UnmarshalJSONObject([]byte(`{"subarray": null}`), o)
 		assert.Nil(t, err)
 		assert.Nil(t, o.SubArray)
 	})
 	t.Run("sub array err, not closing arr", func(t *testing.T) {
-		var o = &ObjectArrayNull{}
-		var err = UnmarshalJSONObject([]byte(`{"subarray": [    `), o)
+		o := &ObjectArrayNull{}
+		err := UnmarshalJSONObject([]byte(`{"subarray": [    `), o)
 		assert.NotNil(t, err)
 	})
 	t.Run("sub array err, invalid string", func(t *testing.T) {
-		var o = &ObjectArrayNull{}
-		var err = UnmarshalJSONObject([]byte(`{"subarray":[",]}`), o)
+		o := &ObjectArrayNull{}
+		err := UnmarshalJSONObject([]byte(`{"subarray":[",]}`), o)
 		assert.NotNil(t, err)
 	})
 	t.Run("sub array err, invalid null", func(t *testing.T) {
-		var o = &ObjectArrayNull{}
-		var err = UnmarshalJSONObject([]byte(`{"subarray":nll}`), o)
+		o := &ObjectArrayNull{}
+		err := UnmarshalJSONObject([]byte(`{"subarray":nll}`), o)
 		assert.NotNil(t, err)
 	})
 	t.Run("sub array err, empty", func(t *testing.T) {
-		var o = &ObjectArrayNull{}
-		var err = UnmarshalJSONObject([]byte(`{"subarray":`), o)
+		o := &ObjectArrayNull{}
+		err := UnmarshalJSONObject([]byte(`{"subarray":`), o)
 		assert.NotNil(t, err)
 	})
 }
@@ -717,4 +717,17 @@ func TestIndex(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestDecoderArrayPoolError(t *testing.T) {
+	result := testSliceArraysStrings{}
+	dec := NewDecoder(nil)
+	dec.Release()
+	defer func() {
+		err := recover()
+		assert.NotNil(t, err, "err shouldnt be nil")
+		assert.IsType(t, InvalidUsagePooledDecoderError(""), err, "err should be of type InvalidUsagePooledDecoderError")
+	}()
+	_ = dec.DecodeArray(&result)
+	assert.True(t, false, "should not be called as decoder should have panicked")
 }

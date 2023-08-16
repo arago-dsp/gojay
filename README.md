@@ -1,15 +1,6 @@
-[![Build Status](https://travis-ci.org/francoispqt/gojay.svg?branch=master)](https://travis-ci.org/francoispqt/gojay)
-[![codecov](https://codecov.io/gh/francoispqt/gojay/branch/master/graph/badge.svg)](https://codecov.io/gh/francoispqt/gojay)
-[![Go Report Card](https://goreportcard.com/badge/github.com/francoispqt/gojay)](https://goreportcard.com/report/github.com/francoispqt/gojay)
-[![Go doc](http://img.shields.io/badge/go-documentation-blue.svg?style=flat-square
-)](https://godoc.org/github.com/francoispqt/gojay)
-![MIT License](https://img.shields.io/badge/license-mit-blue.svg?style=flat-square)
-[![Sourcegraph](https://sourcegraph.com/github.com/francoispqt/gojay/-/badge.svg)](https://sourcegraph.com/github.com/francoispqt/gojay)
-![stability-stable](https://img.shields.io/badge/stability-stable-green.svg)
-
 # GoJay
 
-<img src="https://github.com/francoispqt/gojay/raw/master/gojay.png" width="200px">
+<img alt="gojay" src="https://raw.githubusercontent.com/arago-dsp/gojay/master/gojay.png?inline=false" width="200px">
 
 GoJay is a performant JSON encoder/decoder for Golang (currently the most performant, [see benchmarks](#benchmark-results)).
 
@@ -17,7 +8,7 @@ It has a simple API and doesn't use reflection. It relies on small interfaces to
 
 Gojay also comes with powerful stream decoding features and an even faster [Unsafe](#unsafe-api) API.
 
-There is also a [code generation tool](https://github.com/francoispqt/gojay/tree/master/gojay) to make usage easier and faster.
+There is also a [code generation tool](https://github.com/arago-dsp/gojay/tree/master/gojay) to make usage easier and faster.
 
 # Why another JSON parser?
 
@@ -30,13 +21,13 @@ This is how GoJay aims to be a very fast, JIT stream parser with 0 reflection, l
 # Get started
 
 ```bash
-go get github.com/francoispqt/gojay
+go get github.com/arago-dsp/gojay
 ```
 
 * [Encoder](#encoding)
 * [Decoder](#decoding)
 * [Stream API](#stream-api)
-* [Code Generation](https://github.com/francoispqt/gojay/tree/master/gojay)
+* [Code Generation](https://github.com/arago-dsp/gojay/tree/master/gojay)
 
 ## Decoding
 
@@ -45,9 +36,9 @@ Decoding is done through two different API similar to standard `encoding/json`:
 * [Decode](#decode-api)
 
 
-Example of basic stucture decoding with Unmarshal:
+Example of basic structure decoding with Unmarshal:
 ```go
-import "github.com/francoispqt/gojay"
+import "github.com/arago-dsp/gojay"
 
 type user struct {
     id int
@@ -379,7 +370,7 @@ Encoding is done through two different API similar to standard `encoding/json`:
 
 Example of basic structure encoding with Marshal:
 ```go
-import "github.com/francoispqt/gojay"
+import "github.com/arago-dsp/gojay"
 
 type user struct {
 	id    int
@@ -752,12 +743,12 @@ Benchmarks encode and decode three different data based on size (small, medium, 
 
 To run benchmark for decoder:
 ```bash
-cd $GOPATH/src/github.com/francoispqt/gojay/benchmarks/decoder && make bench
+cd $GOPATH/src/github.com/arago-dsp/gojay/benchmarks/decoder && make bench
 ```
 
 To run benchmark for encoder:
 ```bash
-cd $GOPATH/src/github.com/francoispqt/gojay/benchmarks/encoder && make bench
+cd $GOPATH/src/github.com/arago-dsp/gojay/benchmarks/encoder && make bench
 ```
 
 # Benchmark Results
@@ -766,9 +757,9 @@ cd $GOPATH/src/github.com/francoispqt/gojay/benchmarks/encoder && make bench
 <img src="https://images2.imgbox.com/78/01/49OExcPh_o.png" width="500px">
 
 ### Small Payload
-[benchmark code is here](https://github.com/francoispqt/gojay/blob/master/benchmarks/decoder/decoder_bench_small_test.go)
+[benchmark code is here](https://github.com/arago-dsp/gojay/blob/master/benchmarks/decoder/decoder_bench_small_test.go)
 
-[benchmark data is here](https://github.com/francoispqt/gojay/blob/master/benchmarks/benchmarks_small.go)
+[benchmark data is here](https://github.com/arago-dsp/gojay/blob/master/benchmarks/benchmarks_small.go)
 
 |                 | ns/op     | bytes/op     | allocs/op |
 |-----------------|-----------|--------------|-----------|
@@ -780,9 +771,9 @@ cd $GOPATH/src/github.com/francoispqt/gojay/benchmarks/encoder && make bench
 | **GoJay-unsafe**| **712**   | **112**      | **1**     |
 
 ### Medium Payload
-[benchmark code is here](https://github.com/francoispqt/gojay/blob/master/benchmarks/decoder/decoder_bench_medium_test.go)
+[benchmark code is here](https://github.com/arago-dsp/gojay/blob/master/benchmarks/decoder/decoder_bench_medium_test.go)
 
-[benchmark data is here](https://github.com/francoispqt/gojay/blob/master/benchmarks/benchmarks_medium.go)
+[benchmark data is here](https://github.com/arago-dsp/gojay/blob/master/benchmarks/benchmarks_medium.go)
 
 |                 | ns/op     | bytes/op | allocs/op |
 |-----------------|-----------|----------|-----------|
@@ -794,9 +785,9 @@ cd $GOPATH/src/github.com/francoispqt/gojay/benchmarks/encoder && make bench
 | **GoJay-unsafe**| **4809**  | **144**  | **7**     |
 
 ### Large Payload
-[benchmark code is here](https://github.com/francoispqt/gojay/blob/master/benchmarks/decoder/decoder_bench_large_test.go)
+[benchmark code is here](https://github.com/arago-dsp/gojay/blob/master/benchmarks/decoder/decoder_bench_large_test.go)
 
-[benchmark data is here](https://github.com/francoispqt/gojay/blob/master/benchmarks/benchmarks_large.go)
+[benchmark data is here](https://github.com/arago-dsp/gojay/blob/master/benchmarks/benchmarks_large.go)
 
 |                 | ns/op     | bytes/op    | allocs/op |
 |-----------------|-----------|-------------|-----------|
@@ -811,9 +802,9 @@ cd $GOPATH/src/github.com/francoispqt/gojay/benchmarks/encoder && make bench
 <img src="https://images2.imgbox.com/e9/cc/pnM8c7Gf_o.png" width="500px">
 
 ### Small Struct
-[benchmark code is here](https://github.com/francoispqt/gojay/blob/master/benchmarks/encoder/encoder_bench_small_test.go)
+[benchmark code is here](https://github.com/arago-dsp/gojay/blob/master/benchmarks/encoder/encoder_bench_small_test.go)
 
-[benchmark data is here](https://github.com/francoispqt/gojay/blob/master/benchmarks/benchmarks_small.go)
+[benchmark data is here](https://github.com/arago-dsp/gojay/blob/master/benchmarks/benchmarks_small.go)
 
 |                | ns/op    | bytes/op     | allocs/op |
 |----------------|----------|--------------|-----------|
@@ -824,9 +815,9 @@ cd $GOPATH/src/github.com/francoispqt/gojay/benchmarks/encoder && make bench
 | **GoJay-func** | **347**  | **0**        | **0**     |
 
 ### Medium Struct
-[benchmark code is here](https://github.com/francoispqt/gojay/blob/master/benchmarks/encoder/encoder_bench_medium_test.go)
+[benchmark code is here](https://github.com/arago-dsp/gojay/blob/master/benchmarks/encoder/encoder_bench_medium_test.go)
 
-[benchmark data is here](https://github.com/francoispqt/gojay/blob/master/benchmarks/benchmarks_medium.go)
+[benchmark data is here](https://github.com/arago-dsp/gojay/blob/master/benchmarks/benchmarks_medium.go)
 
 |             | ns/op    | bytes/op     | allocs/op |
 |-------------|----------|--------------|-----------|
@@ -836,9 +827,9 @@ cd $GOPATH/src/github.com/francoispqt/gojay/benchmarks/encoder && make bench
 | **GoJay**   | **1522** | **312**      | **14**    |
 
 ### Large Struct
-[benchmark code is here](https://github.com/francoispqt/gojay/blob/master/benchmarks/encoder/encoder_bench_large_test.go)
+[benchmark code is here](https://github.com/arago-dsp/gojay/blob/master/benchmarks/encoder/encoder_bench_large_test.go)
 
-[benchmark data is here](https://github.com/francoispqt/gojay/blob/master/benchmarks/benchmarks_large.go)
+[benchmark data is here](https://github.com/arago-dsp/gojay/blob/master/benchmarks/benchmarks_large.go)
 
 |             | ns/op     | bytes/op     | allocs/op |
 |-------------|-----------|--------------|-----------|
@@ -846,10 +837,3 @@ cd $GOPATH/src/github.com/francoispqt/gojay/benchmarks/encoder && make bench
 | JsonIter    | 35247     | 20255        | 328       |
 | EasyJson    | 32053     | 15474        | 327       |
 | **GoJay**   | **27847** | **9802**     | **318**   |
-
-# Contributing
-
-Contributions are welcome :)
-
-If you encounter issues please report it in Github and/or send an email at [francois@parquet.ninja](mailto:francois@parquet.ninja)
-

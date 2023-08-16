@@ -9,6 +9,7 @@ func (dec *Decoder) DecodeFloat64(v *float64) error {
 	}
 	return dec.decodeFloat64(v)
 }
+
 func (dec *Decoder) decodeFloat64(v *float64) error {
 	for ; dec.cursor < dec.length || dec.read(); dec.cursor++ {
 		switch c := dec.data[dec.cursor]; c {
@@ -47,6 +48,7 @@ func (dec *Decoder) decodeFloat64(v *float64) error {
 	}
 	return dec.raiseInvalidJSONErr(dec.cursor)
 }
+
 func (dec *Decoder) decodeFloat64Null(v **float64) error {
 	for ; dec.cursor < dec.length || dec.read(); dec.cursor++ {
 		switch c := dec.data[dec.cursor]; c {
@@ -106,8 +108,8 @@ func (dec *Decoder) getFloatNegative() (float64, error) {
 }
 
 func (dec *Decoder) getFloat() (float64, error) {
-	var end = dec.cursor
-	var start = dec.cursor
+	end := dec.cursor
+	start := dec.cursor
 	// look for following numbers
 	for j := dec.cursor + 1; j < dec.length || dec.read(); j++ {
 		switch dec.data[j] {
@@ -217,6 +219,7 @@ func (dec *Decoder) DecodeFloat32(v *float32) error {
 	}
 	return dec.decodeFloat32(v)
 }
+
 func (dec *Decoder) decodeFloat32(v *float32) error {
 	for ; dec.cursor < dec.length || dec.read(); dec.cursor++ {
 		switch c := dec.data[dec.cursor]; c {
@@ -255,6 +258,7 @@ func (dec *Decoder) decodeFloat32(v *float32) error {
 	}
 	return dec.raiseInvalidJSONErr(dec.cursor)
 }
+
 func (dec *Decoder) decodeFloat32Null(v **float32) error {
 	for ; dec.cursor < dec.length || dec.read(); dec.cursor++ {
 		switch c := dec.data[dec.cursor]; c {
@@ -314,8 +318,8 @@ func (dec *Decoder) getFloat32Negative() (float32, error) {
 }
 
 func (dec *Decoder) getFloat32() (float32, error) {
-	var end = dec.cursor
-	var start = dec.cursor
+	end := dec.cursor
+	start := dec.cursor
 	// look for following numbers
 	for j := dec.cursor + 1; j < dec.length || dec.read(); j++ {
 		switch dec.data[j] {

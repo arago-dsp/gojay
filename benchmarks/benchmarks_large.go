@@ -3,7 +3,7 @@ package benchmarks
 import (
 	"strconv"
 
-	"github.com/francoispqt/gojay"
+	"github.com/arago-dsp/gojay"
 )
 
 type DSUser struct {
@@ -54,9 +54,9 @@ func (m *DSTopic) MarshalJSONObject(enc *gojay.Encoder) {
 
 type DSTopics []*DSTopic
 
-func (t *DSTopics) UnmarshalJSONArray(dec *gojay.Decoder) error {
+func (m *DSTopics) UnmarshalJSONArray(dec *gojay.Decoder) error {
 	dsTopic := &DSTopic{}
-	*t = append(*t, dsTopic)
+	*m = append(*m, dsTopic)
 	return dec.AddObject(dsTopic)
 }
 

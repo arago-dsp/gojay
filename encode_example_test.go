@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/francoispqt/gojay"
+	"github.com/arago-dsp/gojay"
 )
 
 func ExampleMarshal_string() {
@@ -29,7 +29,7 @@ func ExampleMarshal_bool() {
 func ExampleNewEncoder() {
 	enc := gojay.BorrowEncoder(os.Stdout)
 
-	var str = "gojay"
+	str := "gojay"
 	err := enc.EncodeString(str)
 	if err != nil {
 		log.Fatal(err)
@@ -42,7 +42,7 @@ func ExampleBorrowEncoder() {
 	enc := gojay.BorrowEncoder(os.Stdout)
 	defer enc.Release()
 
-	var str = "gojay"
+	str := "gojay"
 	err := enc.EncodeString(str)
 	if err != nil {
 		log.Fatal(err)
@@ -55,7 +55,7 @@ func ExampleEncoder_EncodeString() {
 	enc := gojay.BorrowEncoder(os.Stdout)
 	defer enc.Release()
 
-	var str = "gojay"
+	str := "gojay"
 	err := enc.EncodeString(str)
 	if err != nil {
 		log.Fatal(err)

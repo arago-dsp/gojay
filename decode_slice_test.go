@@ -8,18 +8,24 @@ import (
 )
 
 type slicesTestObject struct {
-	sliceString  []string
-	sliceInt     []int
-	sliceFloat64 []float64
-	sliceBool    []bool
+	sliceString         []string
+	sliceStringNoEscape []string
+	sliceInt            []int
+	sliceInt8           []int8
+	sliceFloat64        []float64
+	sliceBool           []bool
 }
 
 func (s *slicesTestObject) UnmarshalJSONObject(dec *Decoder, k string) error {
 	switch k {
 	case "sliceString":
 		return dec.AddSliceString(&s.sliceString)
+	case "sliceStringNoEscape":
+		return dec.AddSliceStringNoEscape(&s.sliceStringNoEscape)
 	case "sliceInt":
 		return dec.AddSliceInt(&s.sliceInt)
+	case "sliceInt8":
+		return dec.AddSliceInt8(&s.sliceInt8)
 	case "sliceFloat64":
 		return dec.AddSliceFloat64(&s.sliceFloat64)
 	case "sliceBool":
@@ -49,6 +55,15 @@ func TestDecodeSlices(t *testing.T) {
 			},
 		},
 		{
+			name: "basic slice string no escape",
+			json: `{
+				"sliceStringNoEscape": ["foo","bar"]
+			}`,
+			expectedResult: slicesTestObject{
+				sliceStringNoEscape: []string{"foo", "bar"},
+			},
+		},
+		{
 			name: "basic slice bool",
 			json: `{
 				"sliceBool": [true,false]
@@ -64,6 +79,15 @@ func TestDecodeSlices(t *testing.T) {
 			}`,
 			expectedResult: slicesTestObject{
 				sliceInt: []int{1, 2, 3},
+			},
+		},
+		{
+			name: "basic slice int8",
+			json: `{
+				"sliceInt8": [1,2,3]
+			}`,
+			expectedResult: slicesTestObject{
+				sliceInt8: []int8{1, 2, 3},
 			},
 		},
 		{
@@ -90,9 +114,23 @@ func TestDecodeSlices(t *testing.T) {
 			err: true,
 		},
 		{
+			name: "err slice str no escape",
+			json: `{
+				"sliceStringNoEscape": [",""]
+			}`,
+			err: true,
+		},
+		{
 			name: "err slice int",
 			json: `{
 				"sliceInt": [1t,2,3]
+			}`,
+			err: true,
+		},
+		{
+			name: "err slice int8",
+			json: `{
+				"sliceInt8": [1t,2,3]
 			}`,
 			err: true,
 		},

@@ -1,6 +1,8 @@
 package gojay
 
 import (
+	"bytes"
+	"io"
 	"unsafe"
 )
 
@@ -13,6 +15,7 @@ func (dec *Decoder) DecodeString(v *string) error {
 	}
 	return dec.decodeString(v)
 }
+
 func (dec *Decoder) decodeString(v *string) error {
 	for ; dec.cursor < dec.length || dec.read(); dec.cursor++ {
 		switch dec.data[dec.cursor] {
@@ -59,7 +62,6 @@ func (dec *Decoder) decodeStringNull(v **string) error {
 		case '"':
 			dec.cursor++
 			start, end, err := dec.getString()
-
 			if err != nil {
 				return err
 			}
@@ -141,7 +143,7 @@ func (dec *Decoder) parseEscapedString() error {
 
 func (dec *Decoder) getString() (int, int, error) {
 	// extract key
-	var keyStart = dec.cursor
+	keyStart := dec.cursor
 	// var str *Builder
 	for dec.cursor < dec.length || dec.read() {
 		switch dec.data[dec.cursor] {
@@ -178,7 +180,7 @@ func (dec *Decoder) skipEscapedString() error {
 					return dec.raiseInvalidJSONErr(dec.cursor)
 				}
 				return nil
-			case 'u': // is unicode, we skip the following characters and place the cursor one one byte backward to avoid it breaking when returning to skipString
+			case 'u': // is unicode, we skip the following characters and place the cursor one byte backward to avoid it breaking when returning to skipString
 				if err := dec.skipString(); err != nil {
 					return err
 				}
@@ -257,4 +259,79 @@ func (dec *Decoder) StringNull(v **string) error {
 	}
 	dec.called |= 1
 	return nil
+}
+
+// StringNoEscape decodes the JSON value within an object or an array to a *string.
+// If next key is not a JSON string nor null, InvalidUnmarshalError will be returned.
+func (dec *Decoder) StringNoEscape(v *string) error {
+	err := dec.decodeStringNoEscape(v)
+	if err != nil {
+		return err
+	}
+	dec.called |= 1
+	return nil
+}
+
+func (dec *Decoder) decodeStringNoEscape(v *string) error {
+	for ; dec.cursor < dec.length || dec.read(); dec.cursor++ {
+		switch dec.data[dec.cursor] {
+		case ' ', '\n', '\t', '\r', ',':
+			// is string
+			continue
+		case '"':
+			dec.cursor++
+			start, end, err := dec.getStringNoEscape()
+			if err != nil {
+				return err
+			}
+			// we do minus one to remove the last quote
+			d := dec.data[start : end-1]
+			*v = *(*string)(unsafe.Pointer(&d))
+			dec.cursor = end
+			return nil
+		// is nil
+		case 'n':
+			dec.cursor++
+			err := dec.assertNull()
+			if err != nil {
+				return err
+			}
+			return nil
+		default:
+			dec.err = dec.makeInvalidUnmarshalErr(v)
+			err := dec.skipData()
+			if err != nil {
+				return err
+			}
+			return nil
+		}
+	}
+	return nil
+}
+
+func (dec *Decoder) getStringNoEscape() (int, int, error) {
+	// extract key
+	keyStart := dec.cursor
+
+	next := bytes.IndexByte(dec.data[keyStart:], '"')
+	if next == -1 && dec.r != nil {
+		nextRead := make([]byte, 512)
+		n, err := dec.r.Read(nextRead)
+		if err != nil {
+			if err != io.EOF {
+				dec.err = err
+			}
+		}
+		dec.data = append(dec.data, nextRead[0:n]...)
+		dec.length = dec.length + n
+		next = bytes.IndexByte(dec.data[keyStart:], '"')
+	}
+
+	if next == -1 {
+		return 0, 0, dec.raiseInvalidJSONErr(dec.cursor)
+	}
+
+	dec.cursor = keyStart + next + 1
+
+	return keyStart, dec.cursor, dec.err
 }

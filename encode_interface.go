@@ -48,7 +48,7 @@ func (enc *Encoder) Encode(v interface{}) error {
 	}
 }
 
-// AddInterface adds an interface{} to be encoded, must be used inside a slice or array encoding (does not encode a key)
+// AddInterface adds an interface{} to be encoded, must be used inside a slice or array encoding (does not encode a key).
 func (enc *Encoder) AddInterface(value interface{}) {
 	switch vt := value.(type) {
 	case string:
@@ -88,7 +88,7 @@ func (enc *Encoder) AddInterface(value interface{}) {
 	}
 }
 
-// AddInterfaceKey adds an interface{} to be encoded, must be used inside an object as it will encode a key
+// AddInterfaceKey adds an interface{} to be encoded, must be used inside an object as it will encode a key.
 func (enc *Encoder) AddInterfaceKey(key string, value interface{}) {
 	switch vt := value.(type) {
 	case string:
@@ -130,7 +130,7 @@ func (enc *Encoder) AddInterfaceKey(key string, value interface{}) {
 	}
 }
 
-// AddInterfaceKeyOmitEmpty adds an interface{} to be encoded, must be used inside an object as it will encode a key
+// AddInterfaceKeyOmitEmpty adds an interface{} to be encoded, must be used inside an object as it will encode a key.
 func (enc *Encoder) AddInterfaceKeyOmitEmpty(key string, v interface{}) {
 	switch vt := v.(type) {
 	case string:

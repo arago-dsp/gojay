@@ -2,7 +2,7 @@ package gojay
 
 import "strconv"
 
-// EncodeInt encodes an int to JSON
+// EncodeInt encodes an int to JSON.
 func (enc *Encoder) EncodeInt(n int) error {
 	if enc.isPooled == 1 {
 		panic(InvalidUsagePooledEncoderError("Invalid usage of pooled encoder"))
@@ -15,13 +15,13 @@ func (enc *Encoder) EncodeInt(n int) error {
 	return nil
 }
 
-// encodeInt encodes an int to JSON
+// encodeInt encodes an int to JSON.
 func (enc *Encoder) encodeInt(n int) ([]byte, error) {
 	enc.buf = strconv.AppendInt(enc.buf, int64(n), 10)
 	return enc.buf, nil
 }
 
-// EncodeInt64 encodes an int64 to JSON
+// EncodeInt64 encodes an int64 to JSON.
 func (enc *Encoder) EncodeInt64(n int64) error {
 	if enc.isPooled == 1 {
 		panic(InvalidUsagePooledEncoderError("Invalid usage of pooled encoder"))
@@ -34,13 +34,13 @@ func (enc *Encoder) EncodeInt64(n int64) error {
 	return nil
 }
 
-// encodeInt64 encodes an int to JSON
+// encodeInt64 encodes an int to JSON.
 func (enc *Encoder) encodeInt64(n int64) ([]byte, error) {
 	enc.buf = strconv.AppendInt(enc.buf, n, 10)
 	return enc.buf, nil
 }
 
-// AddInt adds an int to be encoded, must be used inside a slice or array encoding (does not encode a key)
+// AddInt adds an int to be encoded, must be used inside a slice or array encoding (does not encode a key).
 func (enc *Encoder) AddInt(v int) {
 	enc.Int(v)
 }
@@ -57,7 +57,7 @@ func (enc *Encoder) AddIntNullEmpty(v int) {
 	enc.IntNullEmpty(v)
 }
 
-// Int adds an int to be encoded, must be used inside a slice or array encoding (does not encode a key)
+// Int adds an int to be encoded, must be used inside a slice or array encoding (does not encode a key).
 func (enc *Encoder) Int(v int) {
 	enc.grow(10)
 	r := enc.getPreviousRune()
@@ -96,7 +96,7 @@ func (enc *Encoder) IntNullEmpty(v int) {
 	enc.buf = strconv.AppendInt(enc.buf, int64(v), 10)
 }
 
-// AddIntKey adds an int to be encoded, must be used inside an object as it will encode a key
+// AddIntKey adds an int to be encoded, must be used inside an object as it will encode a key.
 func (enc *Encoder) AddIntKey(key string, v int) {
 	enc.IntKey(key, v)
 }
@@ -113,7 +113,7 @@ func (enc *Encoder) AddIntKeyNullEmpty(key string, v int) {
 	enc.IntKeyNullEmpty(key, v)
 }
 
-// IntKey adds an int to be encoded, must be used inside an object as it will encode a key
+// IntKey adds an int to be encoded, must be used inside an object as it will encode a key.
 func (enc *Encoder) IntKey(key string, v int) {
 	if enc.hasKeys {
 		if !enc.keyExists(key) {
@@ -176,7 +176,7 @@ func (enc *Encoder) IntKeyNullEmpty(key string, v int) {
 	enc.buf = strconv.AppendInt(enc.buf, int64(v), 10)
 }
 
-// AddInt64 adds an int to be encoded, must be used inside a slice or array encoding (does not encode a key)
+// AddInt64 adds an int to be encoded, must be used inside a slice or array encoding (does not encode a key).
 func (enc *Encoder) AddInt64(v int64) {
 	enc.Int64(v)
 }
@@ -193,7 +193,7 @@ func (enc *Encoder) AddInt64NullEmpty(v int64) {
 	enc.Int64NullEmpty(v)
 }
 
-// Int64 adds an int to be encoded, must be used inside a slice or array encoding (does not encode a key)
+// Int64 adds an int to be encoded, must be used inside a slice or array encoding (does not encode a key).
 func (enc *Encoder) Int64(v int64) {
 	enc.grow(10)
 	r := enc.getPreviousRune()
@@ -232,7 +232,7 @@ func (enc *Encoder) Int64NullEmpty(v int64) {
 	enc.buf = strconv.AppendInt(enc.buf, v, 10)
 }
 
-// AddInt64Key adds an int64 to be encoded, must be used inside an object as it will encode a key
+// AddInt64Key adds an int64 to be encoded, must be used inside an object as it will encode a key.
 func (enc *Encoder) AddInt64Key(key string, v int64) {
 	enc.Int64Key(key, v)
 }
@@ -249,7 +249,7 @@ func (enc *Encoder) AddInt64KeyNullEmpty(key string, v int64) {
 	enc.Int64KeyNullEmpty(key, v)
 }
 
-// Int64Key adds an int64 to be encoded, must be used inside an object as it will encode a key
+// Int64Key adds an int64 to be encoded, must be used inside an object as it will encode a key.
 func (enc *Encoder) Int64Key(key string, v int64) {
 	if enc.hasKeys {
 		if !enc.keyExists(key) {
@@ -307,7 +307,7 @@ func (enc *Encoder) Int64KeyNullEmpty(key string, v int64) {
 	enc.buf = strconv.AppendInt(enc.buf, v, 10)
 }
 
-// AddInt32 adds an int to be encoded, must be used inside a slice or array encoding (does not encode a key)
+// AddInt32 adds an int to be encoded, must be used inside a slice or array encoding (does not encode a key).
 func (enc *Encoder) AddInt32(v int32) {
 	enc.Int64(int64(v))
 }
@@ -324,7 +324,7 @@ func (enc *Encoder) AddInt32NullEmpty(v int32) {
 	enc.Int64NullEmpty(int64(v))
 }
 
-// Int32 adds an int to be encoded, must be used inside a slice or array encoding (does not encode a key)
+// Int32 adds an int to be encoded, must be used inside a slice or array encoding (does not encode a key).
 func (enc *Encoder) Int32(v int32) {
 	enc.Int64(int64(v))
 }
@@ -341,7 +341,7 @@ func (enc *Encoder) Int32NullEmpty(v int32) {
 	enc.Int64NullEmpty(int64(v))
 }
 
-// AddInt32Key adds an int32 to be encoded, must be used inside an object as it will encode a key
+// AddInt32Key adds an int32 to be encoded, must be used inside an object as it will encode a key.
 func (enc *Encoder) AddInt32Key(key string, v int32) {
 	enc.Int64Key(key, int64(v))
 }
@@ -352,7 +352,7 @@ func (enc *Encoder) AddInt32KeyOmitEmpty(key string, v int32) {
 	enc.Int64KeyOmitEmpty(key, int64(v))
 }
 
-// Int32Key adds an int32 to be encoded, must be used inside an object as it will encode a key
+// Int32Key adds an int32 to be encoded, must be used inside an object as it will encode a key.
 func (enc *Encoder) Int32Key(key string, v int32) {
 	enc.Int64Key(key, int64(v))
 }
@@ -369,7 +369,7 @@ func (enc *Encoder) Int32KeyNullEmpty(key string, v int32) {
 	enc.Int64KeyNullEmpty(key, int64(v))
 }
 
-// AddInt16 adds an int to be encoded, must be used inside a slice or array encoding (does not encode a key)
+// AddInt16 adds an int to be encoded, must be used inside a slice or array encoding (does not encode a key).
 func (enc *Encoder) AddInt16(v int16) {
 	enc.Int64(int64(v))
 }
@@ -380,7 +380,7 @@ func (enc *Encoder) AddInt16OmitEmpty(v int16) {
 	enc.Int64OmitEmpty(int64(v))
 }
 
-// Int16 adds an int to be encoded, must be used inside a slice or array encoding (does not encode a key)
+// Int16 adds an int to be encoded, must be used inside a slice or array encoding (does not encode a key).
 func (enc *Encoder) Int16(v int16) {
 	enc.Int64(int64(v))
 }
@@ -397,7 +397,7 @@ func (enc *Encoder) Int16NullEmpty(v int16) {
 	enc.Int64NullEmpty(int64(v))
 }
 
-// AddInt16Key adds an int16 to be encoded, must be used inside an object as it will encode a key
+// AddInt16Key adds an int16 to be encoded, must be used inside an object as it will encode a key.
 func (enc *Encoder) AddInt16Key(key string, v int16) {
 	enc.Int64Key(key, int64(v))
 }
@@ -414,7 +414,7 @@ func (enc *Encoder) AddInt16KeyNullEmpty(key string, v int16) {
 	enc.Int64KeyNullEmpty(key, int64(v))
 }
 
-// Int16Key adds an int16 to be encoded, must be used inside an object as it will encode a key
+// Int16Key adds an int16 to be encoded, must be used inside an object as it will encode a key.
 func (enc *Encoder) Int16Key(key string, v int16) {
 	enc.Int64Key(key, int64(v))
 }
@@ -431,7 +431,7 @@ func (enc *Encoder) Int16KeyNullEmpty(key string, v int16) {
 	enc.Int64KeyNullEmpty(key, int64(v))
 }
 
-// AddInt8 adds an int to be encoded, must be used inside a slice or array encoding (does not encode a key)
+// AddInt8 adds an int to be encoded, must be used inside a slice or array encoding (does not encode a key).
 func (enc *Encoder) AddInt8(v int8) {
 	enc.Int64(int64(v))
 }
@@ -448,7 +448,7 @@ func (enc *Encoder) AddInt8NullEmpty(v int8) {
 	enc.Int64NullEmpty(int64(v))
 }
 
-// Int8 adds an int to be encoded, must be used inside a slice or array encoding (does not encode a key)
+// Int8 adds an int to be encoded, must be used inside a slice or array encoding (does not encode a key).
 func (enc *Encoder) Int8(v int8) {
 	enc.Int64(int64(v))
 }
@@ -465,7 +465,7 @@ func (enc *Encoder) Int8NullEmpty(v int8) {
 	enc.Int64NullEmpty(int64(v))
 }
 
-// AddInt8Key adds an int8 to be encoded, must be used inside an object as it will encode a key
+// AddInt8Key adds an int8 to be encoded, must be used inside an object as it will encode a key.
 func (enc *Encoder) AddInt8Key(key string, v int8) {
 	enc.Int64Key(key, int64(v))
 }
@@ -482,7 +482,7 @@ func (enc *Encoder) AddInt8KeyNullEmpty(key string, v int8) {
 	enc.Int64KeyNullEmpty(key, int64(v))
 }
 
-// Int8Key adds an int8 to be encoded, must be used inside an object as it will encode a key
+// Int8Key adds an int8 to be encoded, must be used inside an object as it will encode a key.
 func (enc *Encoder) Int8Key(key string, v int8) {
 	enc.Int64Key(key, int64(v))
 }

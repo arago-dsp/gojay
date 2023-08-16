@@ -227,7 +227,7 @@ func (s *SQLDecodeObject) NKeys() int {
 }
 
 func TestDecodeSQLNullKeys(t *testing.T) {
-	var testCases = []struct {
+	testCases := []struct {
 		name           string
 		json           string
 		expectedResult *SQLDecodeObject
@@ -399,9 +399,9 @@ func TestDecodeSQLNullKeys(t *testing.T) {
 
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
-			var o = &SQLDecodeObject{}
-			var dec = NewDecoder(strings.NewReader(testCase.json))
-			var err = dec.Decode(o)
+			o := &SQLDecodeObject{}
+			dec := NewDecoder(strings.NewReader(testCase.json))
+			err := dec.Decode(o)
 
 			if testCase.err {
 				require.NotNil(t, err)
@@ -416,5 +416,4 @@ func TestDecodeSQLNullKeys(t *testing.T) {
 			)
 		})
 	}
-
 }

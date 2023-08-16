@@ -1,11 +1,10 @@
 package gojay
 
 import (
-	"strings"
-	"testing"
-
 	"fmt"
 	"math"
+	"strings"
+	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -65,7 +64,6 @@ func TestEncoderNumberEncodeAPI(t *testing.T) {
 			`1.12`,
 			builder.String(),
 			"Result of marshalling is different as the one expected")
-
 	})
 }
 
@@ -107,7 +105,6 @@ func TestEncoderNumberEncodeAPIErrors(t *testing.T) {
 		err := enc.EncodeInt64(1)
 		assert.NotNil(t, err, "err should not be nil")
 		assert.Equal(t, "Test Error", err.Error(), "err should be of type InvalidUsagePooledEncoderError")
-
 	})
 	t.Run("encode-uint64-pool-error", func(t *testing.T) {
 		builder := &strings.Builder{}
@@ -127,7 +124,6 @@ func TestEncoderNumberEncodeAPIErrors(t *testing.T) {
 		err := enc.EncodeUint64(1)
 		assert.NotNil(t, err, "err should not be nil")
 		assert.Equal(t, "Test Error", err.Error(), "err should be of type InvalidUsagePooledEncoderError")
-
 	})
 	t.Run("encode-float64-pool-error", func(t *testing.T) {
 		builder := &strings.Builder{}

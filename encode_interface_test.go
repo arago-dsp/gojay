@@ -114,7 +114,9 @@ var encoderTestCases = []struct {
 		v: &testObject{
 			"漢字", nil, 1, nil, 1, nil, 1, nil, 1, nil, 1, nil,
 			1, nil, 1, nil, 1, nil, 1, nil, 1.1, nil, 1.1, nil, true, nil,
-			&testObject{}, testSliceInts{}, []interface{}{"h", "o", "l", "a"},
+			&testObject{},
+			testSliceInts{},
+			[]interface{}{"h", "o", "l", "a"},
 		},
 		expectations: func(t *testing.T, b string, err error) {
 			assert.Nil(t, err, "err should be nil")
@@ -126,7 +128,7 @@ var encoderTestCases = []struct {
 		expectations: func(t *testing.T, b string, err error) {
 			assert.NotNil(t, err, "err should be nil")
 			assert.IsType(t, InvalidMarshalError(""), err, "err should be of type InvalidMarshalError")
-			var s = struct{}{}
+			s := struct{}{}
 			assert.Equal(t, fmt.Sprintf(invalidMarshalErrorMsg, &s), err.Error(), "err message should be equal to invalidMarshalErrorMsg")
 		},
 	},
