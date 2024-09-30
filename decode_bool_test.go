@@ -5,9 +5,12 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestDecoderBool(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name           string
 		json           string
@@ -18,7 +21,7 @@ func TestDecoderBool(t *testing.T) {
 			name: "true-basic",
 			json: "true",
 			expectations: func(t *testing.T, v bool, err error) {
-				assert.Nil(t, err, "err should be nil")
+				require.NoError(t, err)
 				assert.True(t, v, "result should be true")
 			},
 		},
@@ -26,7 +29,7 @@ func TestDecoderBool(t *testing.T) {
 			name: "false-basic",
 			json: "false",
 			expectations: func(t *testing.T, v bool, err error) {
-				assert.Nil(t, err, "err should be nil")
+				require.NoError(t, err)
 				assert.False(t, v, "result should be false")
 			},
 		},
@@ -34,7 +37,7 @@ func TestDecoderBool(t *testing.T) {
 			name: "null-basic",
 			json: "null",
 			expectations: func(t *testing.T, v bool, err error) {
-				assert.Nil(t, err, "err should be nil")
+				require.NoError(t, err)
 				assert.False(t, v, "result should be false")
 			},
 		},
@@ -42,7 +45,7 @@ func TestDecoderBool(t *testing.T) {
 			name: "true-error",
 			json: "taue",
 			expectations: func(t *testing.T, v bool, err error) {
-				assert.NotNil(t, err, "err should be nil")
+				require.Error(t, err)
 				assert.IsType(t, InvalidJSONError(""), err, "err should be of type InvalidJSONError")
 				assert.False(t, v, "result should be false")
 			},
@@ -51,7 +54,7 @@ func TestDecoderBool(t *testing.T) {
 			name: "true-error2",
 			json: "trae",
 			expectations: func(t *testing.T, v bool, err error) {
-				assert.NotNil(t, err, "err should be nil")
+				require.Error(t, err)
 				assert.IsType(t, InvalidJSONError(""), err, "err should be of type InvalidJSONError")
 				assert.False(t, v, "result should be false")
 			},
@@ -60,7 +63,7 @@ func TestDecoderBool(t *testing.T) {
 			name: "true-error3",
 			json: "trua",
 			expectations: func(t *testing.T, v bool, err error) {
-				assert.NotNil(t, err, "err should be nil")
+				require.Error(t, err)
 				assert.IsType(t, InvalidJSONError(""), err, "err should be of type InvalidJSONError")
 				assert.False(t, v, "result should be false")
 			},
@@ -69,7 +72,7 @@ func TestDecoderBool(t *testing.T) {
 			name: "true-error4",
 			json: "truea",
 			expectations: func(t *testing.T, v bool, err error) {
-				assert.NotNil(t, err, "err should be nil")
+				require.Error(t, err)
 				assert.IsType(t, InvalidJSONError(""), err, "err should be of type InvalidJSONError")
 				assert.False(t, v, "result should be false")
 			},
@@ -78,7 +81,7 @@ func TestDecoderBool(t *testing.T) {
 			name: "true-error5",
 			json: "t",
 			expectations: func(t *testing.T, v bool, err error) {
-				assert.NotNil(t, err, "err should be nil")
+				require.Error(t, err)
 				assert.IsType(t, InvalidJSONError(""), err, "err should be of type InvalidJSONError")
 				assert.False(t, v, "result should be false")
 			},
@@ -87,7 +90,7 @@ func TestDecoderBool(t *testing.T) {
 			name: "true-error6",
 			json: "a",
 			expectations: func(t *testing.T, v bool, err error) {
-				assert.NotNil(t, err, "err should be nil")
+				require.Error(t, err)
 				assert.IsType(t, InvalidJSONError(""), err, "err should be of type InvalidJSONError")
 				assert.False(t, v, "result should be false")
 			},
@@ -96,7 +99,7 @@ func TestDecoderBool(t *testing.T) {
 			name: "false-error",
 			json: "fulse",
 			expectations: func(t *testing.T, v bool, err error) {
-				assert.NotNil(t, err, "err should be nil")
+				require.Error(t, err)
 				assert.IsType(t, InvalidJSONError(""), err, "err should be of type InvalidJSONError")
 				assert.False(t, v, "result should be false")
 			},
@@ -105,7 +108,7 @@ func TestDecoderBool(t *testing.T) {
 			name: "false-error2",
 			json: "fause",
 			expectations: func(t *testing.T, v bool, err error) {
-				assert.NotNil(t, err, "err should be nil")
+				require.Error(t, err)
 				assert.IsType(t, InvalidJSONError(""), err, "err should be of type InvalidJSONError")
 				assert.False(t, v, "result should be false")
 			},
@@ -114,7 +117,7 @@ func TestDecoderBool(t *testing.T) {
 			name: "false-error3",
 			json: "falze",
 			expectations: func(t *testing.T, v bool, err error) {
-				assert.NotNil(t, err, "err should be nil")
+				require.Error(t, err)
 				assert.IsType(t, InvalidJSONError(""), err, "err should be of type InvalidJSONError")
 				assert.False(t, v, "result should be false")
 			},
@@ -123,7 +126,7 @@ func TestDecoderBool(t *testing.T) {
 			name: "false-error4",
 			json: "falso",
 			expectations: func(t *testing.T, v bool, err error) {
-				assert.NotNil(t, err, "err should be nil")
+				require.Error(t, err)
 				assert.IsType(t, InvalidJSONError(""), err, "err should be of type InvalidJSONError")
 				assert.False(t, v, "result should be false")
 			},
@@ -132,7 +135,7 @@ func TestDecoderBool(t *testing.T) {
 			name: "false-error5",
 			json: "falsea",
 			expectations: func(t *testing.T, v bool, err error) {
-				assert.NotNil(t, err, "err should be nil")
+				require.Error(t, err)
 				assert.IsType(t, InvalidJSONError(""), err, "err should be of type InvalidJSONError")
 				assert.False(t, v, "result should be false")
 			},
@@ -141,7 +144,7 @@ func TestDecoderBool(t *testing.T) {
 			name: "false-error6",
 			json: "f",
 			expectations: func(t *testing.T, v bool, err error) {
-				assert.NotNil(t, err, "err should be nil")
+				require.Error(t, err)
 				assert.IsType(t, InvalidJSONError(""), err, "err should be of type InvalidJSONError")
 				assert.False(t, v, "result should be false")
 			},
@@ -150,7 +153,7 @@ func TestDecoderBool(t *testing.T) {
 			name: "false-error7",
 			json: "a",
 			expectations: func(t *testing.T, v bool, err error) {
-				assert.NotNil(t, err, "err should be nil")
+				require.Error(t, err)
 				assert.IsType(t, InvalidJSONError(""), err, "err should be of type InvalidJSONError")
 				assert.False(t, v, "result should be false")
 			},
@@ -159,7 +162,7 @@ func TestDecoderBool(t *testing.T) {
 			name: "null-error",
 			json: "nall",
 			expectations: func(t *testing.T, v bool, err error) {
-				assert.NotNil(t, err, "err should be nil")
+				require.Error(t, err)
 				assert.IsType(t, InvalidJSONError(""), err, "err should be of type InvalidJSONError")
 				assert.False(t, v, "result should be false")
 			},
@@ -168,7 +171,7 @@ func TestDecoderBool(t *testing.T) {
 			name: "null-error2",
 			json: "nual",
 			expectations: func(t *testing.T, v bool, err error) {
-				assert.NotNil(t, err, "err should be nil")
+				require.Error(t, err)
 				assert.IsType(t, InvalidJSONError(""), err, "err should be of type InvalidJSONError")
 				assert.False(t, v, "result should be false")
 			},
@@ -177,7 +180,7 @@ func TestDecoderBool(t *testing.T) {
 			name: "null-error3",
 			json: "nula",
 			expectations: func(t *testing.T, v bool, err error) {
-				assert.NotNil(t, err, "err should be nil")
+				require.Error(t, err)
 				assert.IsType(t, InvalidJSONError(""), err, "err should be of type InvalidJSONError")
 				assert.False(t, v, "result should be false")
 			},
@@ -186,7 +189,7 @@ func TestDecoderBool(t *testing.T) {
 			name: "null-error4",
 			json: "nulle",
 			expectations: func(t *testing.T, v bool, err error) {
-				assert.NotNil(t, err, "err should be nil")
+				require.Error(t, err)
 				assert.IsType(t, InvalidJSONError(""), err, "err should be of type InvalidJSONError")
 				assert.False(t, v, "result should be false")
 			},
@@ -195,7 +198,7 @@ func TestDecoderBool(t *testing.T) {
 			name: "null-error5",
 			json: "n",
 			expectations: func(t *testing.T, v bool, err error) {
-				assert.NotNil(t, err, "err should be nil")
+				require.Error(t, err)
 				assert.IsType(t, InvalidJSONError(""), err, "err should be of type InvalidJSONError")
 				assert.False(t, v, "result should be false")
 			},
@@ -204,7 +207,7 @@ func TestDecoderBool(t *testing.T) {
 			name: "null-error6",
 			json: "a",
 			expectations: func(t *testing.T, v bool, err error) {
-				assert.NotNil(t, err, "err should be nil")
+				require.Error(t, err)
 				assert.IsType(t, InvalidJSONError(""), err, "err should be of type InvalidJSONError")
 				assert.False(t, v, "result should be false")
 			},
@@ -213,7 +216,7 @@ func TestDecoderBool(t *testing.T) {
 			name: "null-skip",
 			json: "{}",
 			expectations: func(t *testing.T, v bool, err error) {
-				assert.NotNil(t, err, "err should not be nil")
+				require.Error(t, err)
 				assert.IsType(t, InvalidUnmarshalError(""), err, "err should be of type InvalidUnmarshalError")
 				assert.False(t, v, "result should be false")
 			},
@@ -222,7 +225,7 @@ func TestDecoderBool(t *testing.T) {
 			name: "null-skip",
 			json: "",
 			expectations: func(t *testing.T, v bool, err error) {
-				assert.Nil(t, err, "err should not be nil")
+				require.NoError(t, err)
 				assert.False(t, v, "result should be false")
 			},
 		},
@@ -230,6 +233,8 @@ func TestDecoderBool(t *testing.T) {
 
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			json := []byte(testCase.json)
 			var v bool
 			err := Unmarshal(json, &v)
@@ -239,6 +244,8 @@ func TestDecoderBool(t *testing.T) {
 }
 
 func TestDecoderBoolNull(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name           string
 		json           string
@@ -249,7 +256,7 @@ func TestDecoderBoolNull(t *testing.T) {
 			name: "true-basic",
 			json: "true",
 			expectations: func(t *testing.T, v *bool, err error) {
-				assert.Nil(t, err, "err should be nil")
+				require.NoError(t, err)
 				assert.True(t, *v, "result should be true")
 			},
 		},
@@ -257,7 +264,7 @@ func TestDecoderBoolNull(t *testing.T) {
 			name: "false-basic",
 			json: "false",
 			expectations: func(t *testing.T, v *bool, err error) {
-				assert.Nil(t, err, "err should be nil")
+				require.NoError(t, err)
 				assert.False(t, *v, "result should be false")
 			},
 		},
@@ -265,7 +272,7 @@ func TestDecoderBoolNull(t *testing.T) {
 			name: "null-basic",
 			json: "null",
 			expectations: func(t *testing.T, v *bool, err error) {
-				assert.Nil(t, err, "err should be nil")
+				require.NoError(t, err)
 				assert.Nil(t, v, "result should be nil")
 			},
 		},
@@ -273,7 +280,7 @@ func TestDecoderBoolNull(t *testing.T) {
 			name: "true-error",
 			json: "taue",
 			expectations: func(t *testing.T, v *bool, err error) {
-				assert.NotNil(t, err, "err should be nil")
+				require.Error(t, err)
 				assert.IsType(t, InvalidJSONError(""), err, "err should be of type InvalidJSONError")
 				assert.Nil(t, v, "result should be false")
 			},
@@ -282,7 +289,7 @@ func TestDecoderBoolNull(t *testing.T) {
 			name: "true-error2",
 			json: "trae",
 			expectations: func(t *testing.T, v *bool, err error) {
-				assert.NotNil(t, err, "err should be nil")
+				require.Error(t, err)
 				assert.IsType(t, InvalidJSONError(""), err, "err should be of type InvalidJSONError")
 				assert.Nil(t, v, "result should be nil")
 			},
@@ -291,7 +298,7 @@ func TestDecoderBoolNull(t *testing.T) {
 			name: "true-error3",
 			json: "trua",
 			expectations: func(t *testing.T, v *bool, err error) {
-				assert.NotNil(t, err, "err should be nil")
+				require.Error(t, err)
 				assert.IsType(t, InvalidJSONError(""), err, "err should be of type InvalidJSONError")
 				assert.Nil(t, v, "result should be nil")
 			},
@@ -300,7 +307,7 @@ func TestDecoderBoolNull(t *testing.T) {
 			name: "true-error4",
 			json: "truea",
 			expectations: func(t *testing.T, v *bool, err error) {
-				assert.NotNil(t, err, "err should be nil")
+				require.Error(t, err)
 				assert.IsType(t, InvalidJSONError(""), err, "err should be of type InvalidJSONError")
 				assert.Nil(t, v, "result should be nil")
 			},
@@ -309,7 +316,7 @@ func TestDecoderBoolNull(t *testing.T) {
 			name: "true-error5",
 			json: "t",
 			expectations: func(t *testing.T, v *bool, err error) {
-				assert.NotNil(t, err, "err should be nil")
+				require.Error(t, err)
 				assert.IsType(t, InvalidJSONError(""), err, "err should be of type InvalidJSONError")
 				assert.Nil(t, v, "result should be nil")
 			},
@@ -318,7 +325,7 @@ func TestDecoderBoolNull(t *testing.T) {
 			name: "true-error6",
 			json: "a",
 			expectations: func(t *testing.T, v *bool, err error) {
-				assert.NotNil(t, err, "err should be nil")
+				require.Error(t, err)
 				assert.IsType(t, InvalidJSONError(""), err, "err should be of type InvalidJSONError")
 				assert.Nil(t, v, "result should be nil")
 			},
@@ -327,7 +334,7 @@ func TestDecoderBoolNull(t *testing.T) {
 			name: "false-error",
 			json: "fulse",
 			expectations: func(t *testing.T, v *bool, err error) {
-				assert.NotNil(t, err, "err should be nil")
+				require.Error(t, err)
 				assert.IsType(t, InvalidJSONError(""), err, "err should be of type InvalidJSONError")
 				assert.Nil(t, v, "result should be nil")
 			},
@@ -336,7 +343,7 @@ func TestDecoderBoolNull(t *testing.T) {
 			name: "false-error2",
 			json: "fause",
 			expectations: func(t *testing.T, v *bool, err error) {
-				assert.NotNil(t, err, "err should be nil")
+				require.Error(t, err)
 				assert.IsType(t, InvalidJSONError(""), err, "err should be of type InvalidJSONError")
 				assert.Nil(t, v, "result should be nil")
 			},
@@ -345,7 +352,7 @@ func TestDecoderBoolNull(t *testing.T) {
 			name: "false-error3",
 			json: "falze",
 			expectations: func(t *testing.T, v *bool, err error) {
-				assert.NotNil(t, err, "err should be nil")
+				require.Error(t, err)
 				assert.IsType(t, InvalidJSONError(""), err, "err should be of type InvalidJSONError")
 				assert.Nil(t, v, "result should be nil")
 			},
@@ -354,7 +361,7 @@ func TestDecoderBoolNull(t *testing.T) {
 			name: "false-error4",
 			json: "falso",
 			expectations: func(t *testing.T, v *bool, err error) {
-				assert.NotNil(t, err, "err should be nil")
+				require.Error(t, err)
 				assert.IsType(t, InvalidJSONError(""), err, "err should be of type InvalidJSONError")
 				assert.Nil(t, v, "result should be nil")
 			},
@@ -363,7 +370,7 @@ func TestDecoderBoolNull(t *testing.T) {
 			name: "false-error5",
 			json: "falsea",
 			expectations: func(t *testing.T, v *bool, err error) {
-				assert.NotNil(t, err, "err should be nil")
+				require.Error(t, err)
 				assert.IsType(t, InvalidJSONError(""), err, "err should be of type InvalidJSONError")
 				assert.Nil(t, v, "result should be nil")
 			},
@@ -372,7 +379,7 @@ func TestDecoderBoolNull(t *testing.T) {
 			name: "false-error6",
 			json: "f",
 			expectations: func(t *testing.T, v *bool, err error) {
-				assert.NotNil(t, err, "err should be nil")
+				require.Error(t, err)
 				assert.IsType(t, InvalidJSONError(""), err, "err should be of type InvalidJSONError")
 				assert.Nil(t, v, "result should be nil")
 			},
@@ -381,7 +388,7 @@ func TestDecoderBoolNull(t *testing.T) {
 			name: "false-error7",
 			json: "a",
 			expectations: func(t *testing.T, v *bool, err error) {
-				assert.NotNil(t, err, "err should be nil")
+				require.Error(t, err)
 				assert.IsType(t, InvalidJSONError(""), err, "err should be of type InvalidJSONError")
 				assert.Nil(t, v, "result should be nil")
 			},
@@ -390,7 +397,7 @@ func TestDecoderBoolNull(t *testing.T) {
 			name: "null-error",
 			json: "nall",
 			expectations: func(t *testing.T, v *bool, err error) {
-				assert.NotNil(t, err, "err should be nil")
+				require.Error(t, err)
 				assert.IsType(t, InvalidJSONError(""), err, "err should be of type InvalidJSONError")
 				assert.Nil(t, v, "result should be nil")
 			},
@@ -399,7 +406,7 @@ func TestDecoderBoolNull(t *testing.T) {
 			name: "null-error2",
 			json: "nual",
 			expectations: func(t *testing.T, v *bool, err error) {
-				assert.NotNil(t, err, "err should be nil")
+				require.Error(t, err)
 				assert.IsType(t, InvalidJSONError(""), err, "err should be of type InvalidJSONError")
 				assert.Nil(t, v, "result should be nil")
 			},
@@ -408,7 +415,7 @@ func TestDecoderBoolNull(t *testing.T) {
 			name: "null-error3",
 			json: "nula",
 			expectations: func(t *testing.T, v *bool, err error) {
-				assert.NotNil(t, err, "err should be nil")
+				require.Error(t, err)
 				assert.IsType(t, InvalidJSONError(""), err, "err should be of type InvalidJSONError")
 				assert.Nil(t, v, "result should be nil")
 			},
@@ -417,7 +424,7 @@ func TestDecoderBoolNull(t *testing.T) {
 			name: "null-error4",
 			json: "nulle",
 			expectations: func(t *testing.T, v *bool, err error) {
-				assert.NotNil(t, err, "err should be nil")
+				require.Error(t, err)
 				assert.IsType(t, InvalidJSONError(""), err, "err should be of type InvalidJSONError")
 				assert.Nil(t, v, "result should be nil")
 			},
@@ -426,7 +433,7 @@ func TestDecoderBoolNull(t *testing.T) {
 			name: "null-error5",
 			json: "n",
 			expectations: func(t *testing.T, v *bool, err error) {
-				assert.NotNil(t, err, "err should be nil")
+				require.Error(t, err)
 				assert.IsType(t, InvalidJSONError(""), err, "err should be of type InvalidJSONError")
 				assert.Nil(t, v, "result should be nil")
 			},
@@ -435,7 +442,7 @@ func TestDecoderBoolNull(t *testing.T) {
 			name: "null-error6",
 			json: "a",
 			expectations: func(t *testing.T, v *bool, err error) {
-				assert.NotNil(t, err, "err should be nil")
+				require.Error(t, err)
 				assert.IsType(t, InvalidJSONError(""), err, "err should be of type InvalidJSONError")
 				assert.Nil(t, v, "result should be nil")
 			},
@@ -444,7 +451,7 @@ func TestDecoderBoolNull(t *testing.T) {
 			name: "null-skip",
 			json: "{}",
 			expectations: func(t *testing.T, v *bool, err error) {
-				assert.NotNil(t, err, "err should not be nil")
+				require.Error(t, err)
 				assert.IsType(t, InvalidUnmarshalError(""), err, "err should be of type InvalidUnmarshalError")
 				assert.Nil(t, v, "result should be nil")
 			},
@@ -453,7 +460,7 @@ func TestDecoderBoolNull(t *testing.T) {
 			name: "null-skip",
 			json: "",
 			expectations: func(t *testing.T, v *bool, err error) {
-				assert.Nil(t, err, "err should not be nil")
+				require.NoError(t, err)
 				assert.Nil(t, v, "result should be nil")
 			},
 		},
@@ -461,6 +468,8 @@ func TestDecoderBoolNull(t *testing.T) {
 
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			v := struct {
 				b *bool
 			}{}
@@ -469,30 +478,36 @@ func TestDecoderBoolNull(t *testing.T) {
 		})
 	}
 	t.Run("decoder-api-invalid-json2", func(t *testing.T) {
+		t.Parallel()
+
 		v := new(bool)
 		dec := NewDecoder(strings.NewReader(`folse`))
 		err := dec.BoolNull(&v)
-		assert.NotNil(t, err, "Err must not be nil")
+		require.Error(t, err)
 		assert.IsType(t, InvalidJSONError(""), err, "err should be of type InvalidJSONError")
 	})
 }
 
 func TestDecoderBoolDecoderAPI(t *testing.T) {
+	t.Parallel()
+
 	var v bool
 	dec := BorrowDecoder(strings.NewReader("true"))
 	defer dec.Release()
 	err := dec.DecodeBool(&v)
-	assert.Nil(t, err, "Err must be nil")
-	assert.Equal(t, true, v, "v must be equal to true")
+	require.NoError(t, err)
+	assert.True(t, v, "v must be equal to true")
 }
 
 func TestDecoderBoolPoolError(t *testing.T) {
+	t.Parallel()
+
 	v := true
 	dec := NewDecoder(nil)
 	dec.Release()
 	defer func() {
 		err := recover()
-		assert.NotNil(t, err, "err shouldnt be nil")
+		require.Error(t, err.(error), "err shouldn't be nil")
 		assert.IsType(t, InvalidUsagePooledDecoderError(""), err, "err should be of type InvalidUsagePooledDecoderError")
 	}()
 	_ = dec.DecodeBool(&v)

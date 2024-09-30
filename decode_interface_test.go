@@ -6,9 +6,12 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestDecodeInterfaceBasic(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name            string
 		json            string
@@ -133,13 +136,13 @@ func TestDecodeInterfaceBasic(t *testing.T) {
 			err := dec.DecodeInterface(&i)
 			if testCase.err {
 				t.Log(err)
-				assert.NotNil(t, err, "err should not be nil")
+				require.Error(t, err)
 				if testCase.errType != nil {
 					assert.IsType(t, testCase.errType, err, "err should be of the given type")
 				}
 				return
 			}
-			assert.Nil(t, err, "err should be nil")
+			require.NoError(t, err)
 			if !testCase.skipCheckResult {
 				assert.Equal(t, testCase.expectedResult, i, "value at given index should be the same as expected results")
 			}
@@ -148,19 +151,21 @@ func TestDecodeInterfaceBasic(t *testing.T) {
 
 	for _, testCase := range testCases {
 		t.Run("Decode()"+testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			var i interface{}
 			dec := BorrowDecoder(strings.NewReader(testCase.json))
 			defer dec.Release()
 			err := dec.Decode(&i)
 			if testCase.err {
 				t.Log(err)
-				assert.NotNil(t, err, "err should not be nil")
+				require.Error(t, err)
 				if testCase.errType != nil {
 					assert.IsType(t, testCase.errType, err, "err should be of the given type")
 				}
 				return
 			}
-			assert.Nil(t, err, "err should be nil")
+			require.NoError(t, err)
 			if !testCase.skipCheckResult {
 				assert.Equal(t, testCase.expectedResult, i, "value at given index should be the same as expected results")
 			}
@@ -169,6 +174,8 @@ func TestDecodeInterfaceBasic(t *testing.T) {
 }
 
 func TestDecodeInterfaceAsInterface(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name            string
 		json            string
@@ -268,13 +275,13 @@ func TestDecodeInterfaceAsInterface(t *testing.T) {
 			err := dec.Decode(&s)
 			if testCase.err {
 				t.Log(err)
-				assert.NotNil(t, err, "err should not be nil")
+				require.Error(t, err)
 				if testCase.errType != nil {
 					assert.IsType(t, testCase.errType, err, "err should be of the given type")
 				}
 				return
 			}
-			assert.Nil(t, err, "err should be nil")
+			require.NoError(t, err)
 			if !testCase.skipCheckResult {
 				assert.Equal(t, testCase.expectedResult, s, "value at given index should be the same as expected results")
 			}
@@ -283,19 +290,21 @@ func TestDecodeInterfaceAsInterface(t *testing.T) {
 
 	for _, testCase := range testCases {
 		t.Run("DecodeInterface()"+testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			var s interface{}
 			dec := BorrowDecoder(strings.NewReader(testCase.json))
 			defer dec.Release()
 			err := dec.DecodeInterface(&s)
 			if testCase.err {
 				t.Log(err)
-				assert.NotNil(t, err, "err should not be nil")
+				require.Error(t, err)
 				if testCase.errType != nil {
 					assert.IsType(t, testCase.errType, err, "err should be of the given type")
 				}
 				return
 			}
-			assert.Nil(t, err, "err should be nil")
+			require.NoError(t, err)
 			if !testCase.skipCheckResult {
 				assert.Equal(t, testCase.expectedResult, s, "value at given index should be the same as expected results")
 			}
@@ -304,6 +313,8 @@ func TestDecodeInterfaceAsInterface(t *testing.T) {
 }
 
 func TestDecodeAsTestObject(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name            string
 		json            string
@@ -404,19 +415,21 @@ func TestDecodeAsTestObject(t *testing.T) {
 	}
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			s := testObject{}
 			dec := BorrowDecoder(strings.NewReader(testCase.json))
 			defer dec.Release()
 			err := dec.Decode(&s)
 			if testCase.err {
 				t.Log(err)
-				assert.NotNil(t, err, "err should not be nil")
+				require.Error(t, err)
 				if testCase.errType != nil {
 					assert.IsType(t, testCase.errType, err, "err should be of the given type")
 				}
 				return
 			}
-			assert.Nil(t, err, "err should be nil")
+			require.NoError(t, err)
 			if !testCase.skipCheckResult {
 				assert.Equal(t, testCase.expectedResult, s, "value at given index should be the same as expected results")
 			}
@@ -425,7 +438,9 @@ func TestDecodeAsTestObject(t *testing.T) {
 }
 
 func TestUnmarshalInterface(t *testing.T) {
-	json := []byte(`{
+	t.Parallel()
+
+	bytes := []byte(`{
     "testInterface": {
       "number": 1988,
       "null": null,
@@ -442,8 +457,8 @@ func TestUnmarshalInterface(t *testing.T) {
     }
 	}`)
 	v := &testObject{}
-	err := Unmarshal(json, v)
-	assert.Nil(t, err, "Err must be nil")
+	err := Unmarshal(bytes, v)
+	require.NoError(t, err)
 	expectedInterface := map[string]interface{}{
 		"array-of-objects": []interface{}{
 			map[string]interface{}{"k": "v"},
@@ -462,6 +477,8 @@ func TestUnmarshalInterface(t *testing.T) {
 }
 
 func TestUnmarshalInterfaceError(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name string
 		json []byte
@@ -499,9 +516,11 @@ func TestUnmarshalInterfaceError(t *testing.T) {
 	}
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			v := &testObject{}
 			err := Unmarshal(testCase.json, v)
-			assert.NotNil(t, err, "Err must be not nil")
+			require.Error(t, err)
 			t.Log(err)
 			assert.IsType(t, &json.SyntaxError{}, err, "err should be a json.SyntaxError{}")
 		})
@@ -509,12 +528,14 @@ func TestUnmarshalInterfaceError(t *testing.T) {
 }
 
 func TestDecodeInterfacePoolError(t *testing.T) {
+	t.Parallel()
+
 	result := interface{}(1)
 	dec := NewDecoder(nil)
 	dec.Release()
 	defer func() {
 		err := recover()
-		assert.NotNil(t, err, "err shouldnt be nil")
+		require.Error(t, err.(error), "err shouldn't be nil")
 		assert.IsType(t, InvalidUsagePooledDecoderError(""), err, "err should be of type InvalidUsagePooledDecoderError")
 	}()
 	_ = dec.DecodeInterface(&result)
@@ -522,10 +543,12 @@ func TestDecodeInterfacePoolError(t *testing.T) {
 }
 
 func TestDecodeNull(t *testing.T) {
+	t.Parallel()
+
 	var i interface{}
 	dec := BorrowDecoder(strings.NewReader("null"))
 	defer dec.Release()
 	err := dec.DecodeInterface(&i)
-	assert.Nil(t, err, "err should be nil")
+	require.NoError(t, err)
 	assert.Equal(t, interface{}(nil), i, "value at given index should be the same as expected results")
 }

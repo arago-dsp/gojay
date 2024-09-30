@@ -1,7 +1,6 @@
 package gojay
 
 import (
-	"fmt"
 	"reflect"
 	"strconv"
 	"strings"
@@ -12,6 +11,8 @@ import (
 )
 
 func TestDecoderInt(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name           string
 		json           string
@@ -266,7 +267,7 @@ func TestDecoderInt(t *testing.T) {
 			name: "fuzz-crasher",
 			json: "0E-0",
 			expectedResult: func() int {
-				r, err := strconv.ParseFloat("0E-0", 10)
+				r, err := strconv.ParseFloat("0E-0", 64)
 				require.NoError(t, err)
 
 				return int(r)
@@ -277,7 +278,7 @@ func TestDecoderInt(t *testing.T) {
 			name: "exponent-negative-zero",
 			json: "10E-0",
 			expectedResult: func() int {
-				r, err := strconv.ParseFloat("10E-0", 10)
+				r, err := strconv.ParseFloat("10E-0", 64)
 				require.NoError(t, err)
 
 				return int(r)
@@ -287,64 +288,81 @@ func TestDecoderInt(t *testing.T) {
 	}
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			json := []byte(testCase.json)
 			var v int
 			err := Unmarshal(json, &v)
 			if testCase.err {
-				assert.NotNil(t, err, "Err must not be nil")
+				require.Error(t, err)
 				if testCase.errType != nil && err != nil {
 					assert.IsType(
 						t,
 						testCase.errType,
 						err,
-						fmt.Sprintf("err should be of type %s", reflect.TypeOf(err).String()),
+						"err should be of type %s", reflect.TypeOf(err).String(),
 					)
 				}
 			} else {
-				assert.Nil(t, err, "Err must be nil")
+				require.NoError(t, err)
 			}
-			assert.Equal(t, testCase.expectedResult, v, fmt.Sprintf("v must be equal to %d", testCase.expectedResult))
+			assert.Equal(t, testCase.expectedResult, v, "v must be equal to %d", testCase.expectedResult)
 		})
 	}
 	t.Run("pool-error", func(t *testing.T) {
-		result := int(1)
+		t.Parallel()
+
+		result := 1
 		dec := NewDecoder(nil)
 		dec.Release()
 		defer func() {
 			err := recover()
-			assert.NotNil(t, err, "err shouldnt be nil")
-			assert.IsType(t, InvalidUsagePooledDecoderError(""), err, "err should be of type InvalidUsagePooledDecoderError")
+			require.Error(t, err.(error), "err shouldnt be nil")
+			assert.IsType(
+				t,
+				InvalidUsagePooledDecoderError(""),
+				err,
+				"err should be of type InvalidUsagePooledDecoderError",
+			)
 		}()
 		_ = dec.DecodeInt(&result)
 		assert.True(t, false, "should not be called as decoder should have panicked")
 	})
 	t.Run("decoder-api", func(t *testing.T) {
+		t.Parallel()
+
 		var v int
 		dec := NewDecoder(strings.NewReader(`33`))
 		defer dec.Release()
 		err := dec.DecodeInt(&v)
-		assert.Nil(t, err, "Err must be nil")
+		require.NoError(t, err)
 		assert.Equal(t, int(33), v, "v must be equal to 33")
 	})
 	t.Run("decoder-api2", func(t *testing.T) {
+		t.Parallel()
+
 		var v int
 		dec := NewDecoder(strings.NewReader(`33`))
 		defer dec.Release()
 		err := dec.Decode(&v)
-		assert.Nil(t, err, "Err must be nil")
-		assert.Equal(t, int(33), v, "v must be equal to 33")
+		require.NoError(t, err)
+		assert.Equal(t, 33, v, "v must be equal to 33")
 	})
 	t.Run("decoder-api-invalid-json", func(t *testing.T) {
+		t.Parallel()
+
 		var v int
 		dec := NewDecoder(strings.NewReader(``))
 		defer dec.Release()
 		err := dec.DecodeInt(&v)
-		assert.NotNil(t, err, "Err must not be nil")
+		require.Error(t, err)
 		assert.IsType(t, InvalidJSONError(""), err, "err should be of type InvalidJSONError")
 	})
 }
 
 func TestDecoderIntNull(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name           string
 		json           string
@@ -601,7 +619,7 @@ func TestDecoderIntNull(t *testing.T) {
 			name: "fuzz-crasher",
 			json: "0E-0",
 			expectedResult: func() int {
-				r, err := strconv.ParseFloat("0E-0", 10)
+				r, err := strconv.ParseFloat("0E-0", 64)
 				require.NoError(t, err)
 
 				return int(r)
@@ -612,7 +630,7 @@ func TestDecoderIntNull(t *testing.T) {
 			name: "exponent-negative-zero",
 			json: "10E-0",
 			expectedResult: func() int {
-				r, err := strconv.ParseFloat("10E-0", 10)
+				r, err := strconv.ParseFloat("10E-0", 64)
 				require.NoError(t, err)
 
 				return int(r)
@@ -622,45 +640,60 @@ func TestDecoderIntNull(t *testing.T) {
 	}
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			json := []byte(testCase.json)
 			v := (*int)(nil)
 			err := Unmarshal(json, &v)
 			if testCase.err {
-				assert.NotNil(t, err, "Err must not be nil")
+				require.Error(t, err)
 				if testCase.errType != nil && err != nil {
 					assert.IsType(
 						t,
 						testCase.errType,
 						err,
-						fmt.Sprintf("err should be of type %s", reflect.TypeOf(err).String()),
+						"err should be of type %s",
+						reflect.TypeOf(err).String(),
 					)
 				}
 				return
 			}
-			assert.Nil(t, err, "Err must be nil")
+			require.NoError(t, err)
 			if testCase.resultIsNil {
 				assert.Nil(t, v)
 			} else {
-				assert.Equal(t, testCase.expectedResult, *v, fmt.Sprintf("v must be equal to %d", testCase.expectedResult))
+				assert.Equal(
+					t,
+					testCase.expectedResult,
+					*v,
+					"v must be equal to %d",
+					testCase.expectedResult,
+				)
 			}
 		})
 	}
 	t.Run("decoder-api-invalid-json", func(t *testing.T) {
+		t.Parallel()
+
 		v := new(int)
 		err := Unmarshal([]byte(``), &v)
-		assert.NotNil(t, err, "Err must not be nil")
+		require.Error(t, err)
 		assert.IsType(t, InvalidJSONError(""), err, "err should be of type InvalidJSONError")
 	})
 	t.Run("decoder-api-invalid-json2", func(t *testing.T) {
+		t.Parallel()
+
 		v := new(int)
 		dec := NewDecoder(strings.NewReader(``))
 		err := dec.IntNull(&v)
-		assert.NotNil(t, err, "Err must not be nil")
+		require.Error(t, err)
 		assert.IsType(t, InvalidJSONError(""), err, "err should be of type InvalidJSONError")
 	})
 }
 
 func TestDecoderInt64(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name           string
 		json           string
@@ -947,7 +980,7 @@ func TestDecoderInt64(t *testing.T) {
 			name: "fuzz-crasher",
 			json: "0E-0",
 			expectedResult: func() int64 {
-				r, err := strconv.ParseFloat("0E-0", 10)
+				r, err := strconv.ParseFloat("0E-0", 64)
 				require.NoError(t, err)
 
 				return int64(r)
@@ -958,7 +991,7 @@ func TestDecoderInt64(t *testing.T) {
 			name: "exponent-negative-zero",
 			json: "10E-0",
 			expectedResult: func() int64 {
-				r, err := strconv.ParseFloat("10E-0", 10)
+				r, err := strconv.ParseFloat("10E-0", 64)
 				require.NoError(t, err)
 
 				return int64(r)
@@ -968,64 +1001,81 @@ func TestDecoderInt64(t *testing.T) {
 	}
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			json := []byte(testCase.json)
 			var v int64
 			err := Unmarshal(json, &v)
 			if testCase.err {
-				assert.NotNil(t, err, "Err must not be nil")
+				require.Error(t, err)
 				if testCase.errType != nil {
 					assert.IsType(
 						t,
 						testCase.errType,
 						err,
-						fmt.Sprintf("err should be of type %s", reflect.TypeOf(err).String()),
+						"err should be of type %s", reflect.TypeOf(err).String(),
 					)
 				}
 			} else {
-				assert.Nil(t, err, "Err must be nil")
+				require.NoError(t, err)
 			}
-			assert.Equal(t, testCase.expectedResult, v, fmt.Sprintf("v must be equal to %d", testCase.expectedResult))
+			assert.Equal(t, testCase.expectedResult, v, "v must be equal to %d", testCase.expectedResult)
 		})
 	}
 	t.Run("pool-error", func(t *testing.T) {
+		t.Parallel()
+
 		result := int64(1)
 		dec := NewDecoder(nil)
 		dec.Release()
 		defer func() {
 			err := recover()
-			assert.NotNil(t, err, "err shouldnt be nil")
-			assert.IsType(t, InvalidUsagePooledDecoderError(""), err, "err should be of type InvalidUsagePooledDecoderError")
+			require.Error(t, err.(error), "err shouldnt be nil")
+			assert.IsType(
+				t,
+				InvalidUsagePooledDecoderError(""),
+				err,
+				"err should be of type InvalidUsagePooledDecoderError",
+			)
 		}()
 		_ = dec.DecodeInt64(&result)
 		assert.True(t, false, "should not be called as decoder should have panicked")
 	})
 	t.Run("decoder-api", func(t *testing.T) {
+		t.Parallel()
+
 		var v int64
 		dec := NewDecoder(strings.NewReader(`33`))
 		defer dec.Release()
 		err := dec.DecodeInt64(&v)
-		assert.Nil(t, err, "Err must be nil")
+		require.NoError(t, err)
 		assert.Equal(t, int64(33), v, "v must be equal to 33")
 	})
 	t.Run("decoder-api2", func(t *testing.T) {
+		t.Parallel()
+
 		var v int64
 		dec := NewDecoder(strings.NewReader(`33`))
 		defer dec.Release()
 		err := dec.Decode(&v)
-		assert.Nil(t, err, "Err must be nil")
+		require.NoError(t, err)
 		assert.Equal(t, int64(33), v, "v must be equal to 33")
 	})
 	t.Run("decoder-api-invalid-json", func(t *testing.T) {
+		t.Parallel()
+
 		var v int64
 		dec := NewDecoder(strings.NewReader(``))
 		defer dec.Release()
 		err := dec.DecodeInt64(&v)
-		assert.NotNil(t, err, "Err must not be nil")
+		require.Error(t, err)
 		assert.IsType(t, InvalidJSONError(""), err, "err should be of type InvalidJSONError")
 	})
 }
 
 func TestDecoderInt64Null(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name           string
 		json           string
@@ -1303,7 +1353,7 @@ func TestDecoderInt64Null(t *testing.T) {
 			name: "fuzz-crasher",
 			json: "0E-0",
 			expectedResult: func() int64 {
-				r, err := strconv.ParseFloat("0E-0", 10)
+				r, err := strconv.ParseFloat("0E-0", 64)
 				require.NoError(t, err)
 
 				return int64(r)
@@ -1314,7 +1364,7 @@ func TestDecoderInt64Null(t *testing.T) {
 			name: "exponent-negative-zero",
 			json: "10E-0",
 			expectedResult: func() int64 {
-				r, err := strconv.ParseFloat("10E-0", 10)
+				r, err := strconv.ParseFloat("10E-0", 64)
 				require.NoError(t, err)
 
 				return int64(r)
@@ -1324,45 +1374,59 @@ func TestDecoderInt64Null(t *testing.T) {
 	}
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			json := []byte(testCase.json)
 			v := (*int64)(nil)
 			err := Unmarshal(json, &v)
 			if testCase.err {
-				assert.NotNil(t, err, "Err must not be nil")
+				require.Error(t, err)
 				if testCase.errType != nil {
 					assert.IsType(
 						t,
 						testCase.errType,
 						err,
-						fmt.Sprintf("err should be of type %s", reflect.TypeOf(err).String()),
+						"err should be of type %s", reflect.TypeOf(err).String(),
 					)
 				}
 				return
 			}
-			assert.Nil(t, err, "Err must be nil")
+			require.NoError(t, err)
 			if testCase.resultIsNil {
 				assert.Nil(t, v)
 			} else {
-				assert.Equal(t, testCase.expectedResult, *v, fmt.Sprintf("v must be equal to %d", testCase.expectedResult))
+				assert.Equal(
+					t,
+					testCase.expectedResult,
+					*v,
+					"v must be equal to %d",
+					testCase.expectedResult,
+				)
 			}
 		})
 	}
 	t.Run("decoder-api-invalid-json", func(t *testing.T) {
+		t.Parallel()
+
 		v := new(int64)
 		err := Unmarshal([]byte(``), &v)
-		assert.NotNil(t, err, "Err must not be nil")
+		require.Error(t, err)
 		assert.IsType(t, InvalidJSONError(""), err, "err should be of type InvalidJSONError")
 	})
 	t.Run("decoder-api-invalid-json2", func(t *testing.T) {
+		t.Parallel()
+
 		v := new(int64)
 		dec := NewDecoder(strings.NewReader(``))
 		err := dec.Int64Null(&v)
-		assert.NotNil(t, err, "Err must not be nil")
+		require.Error(t, err)
 		assert.IsType(t, InvalidJSONError(""), err, "err should be of type InvalidJSONError")
 	})
 }
 
 func TestDecoderInt32(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name           string
 		json           string
@@ -1673,7 +1737,7 @@ func TestDecoderInt32(t *testing.T) {
 			name: "fuzz-crasher",
 			json: "0E-0",
 			expectedResult: func() int32 {
-				r, err := strconv.ParseFloat("0E-0", 10)
+				r, err := strconv.ParseFloat("0E-0", 64)
 				require.NoError(t, err)
 
 				return int32(r)
@@ -1684,7 +1748,7 @@ func TestDecoderInt32(t *testing.T) {
 			name: "exponent-negative-zero",
 			json: "10E-0",
 			expectedResult: func() int32 {
-				r, err := strconv.ParseFloat("10E-0", 10)
+				r, err := strconv.ParseFloat("10E-0", 64)
 				require.NoError(t, err)
 
 				return int32(r)
@@ -1694,64 +1758,81 @@ func TestDecoderInt32(t *testing.T) {
 	}
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			json := []byte(testCase.json)
 			var v int32
 			err := Unmarshal(json, &v)
 			if testCase.err {
-				assert.NotNil(t, err, "Err must not be nil")
+				require.Error(t, err)
 				if testCase.errType != nil {
 					assert.IsType(
 						t,
 						testCase.errType,
 						err,
-						fmt.Sprintf("err should be of type %s", reflect.TypeOf(err).String()),
+						"err should be of type %s", reflect.TypeOf(err).String(),
 					)
 				}
 			} else {
-				assert.Nil(t, err, "Err must be nil")
+				require.NoError(t, err)
 			}
-			assert.Equal(t, testCase.expectedResult, v, fmt.Sprintf("v must be equal to %d", testCase.expectedResult))
+			assert.Equal(
+				t,
+				testCase.expectedResult,
+				v,
+				"v must be equal to %d", testCase.expectedResult,
+			)
 		})
 	}
 	t.Run("pool-error", func(t *testing.T) {
+		t.Parallel()
+
 		result := int32(1)
 		dec := NewDecoder(nil)
 		dec.Release()
 		defer func() {
 			err := recover()
-			assert.NotNil(t, err, "err shouldnt be nil")
+			require.Error(t, err.(error), "err shouldnt be nil")
 			assert.IsType(t, InvalidUsagePooledDecoderError(""), err, "err should be of type InvalidUsagePooledDecoderError")
 		}()
 		_ = dec.DecodeInt32(&result)
 		assert.True(t, false, "should not be called as decoder should have panicked")
 	})
 	t.Run("decoder-api", func(t *testing.T) {
+		t.Parallel()
+
 		var v int32
 		dec := NewDecoder(strings.NewReader(`33`))
 		defer dec.Release()
 		err := dec.DecodeInt32(&v)
-		assert.Nil(t, err, "Err must be nil")
+		require.NoError(t, err)
 		assert.Equal(t, int32(33), v, "v must be equal to 33")
 	})
 	t.Run("decoder-api2", func(t *testing.T) {
+		t.Parallel()
+
 		var v int32
 		dec := NewDecoder(strings.NewReader(`33`))
 		defer dec.Release()
 		err := dec.Decode(&v)
-		assert.Nil(t, err, "Err must be nil")
+		require.NoError(t, err)
 		assert.Equal(t, int32(33), v, "v must be equal to 33")
 	})
 	t.Run("decoder-api-invalid-json", func(t *testing.T) {
+		t.Parallel()
+
 		var v int32
 		dec := NewDecoder(strings.NewReader(``))
 		defer dec.Release()
 		err := dec.DecodeInt32(&v)
-		assert.NotNil(t, err, "Err must not be nil")
+		require.Error(t, err)
 		assert.IsType(t, InvalidJSONError(""), err, "err should be of type InvalidJSONError")
 	})
 }
 
 func TestDecoderInt32Null(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name           string
 		json           string
@@ -2053,7 +2134,7 @@ func TestDecoderInt32Null(t *testing.T) {
 			name: "fuzz-crasher",
 			json: "0E-0",
 			expectedResult: func() int32 {
-				r, err := strconv.ParseFloat("0E-0", 10)
+				r, err := strconv.ParseFloat("0E-0", 64)
 				require.NoError(t, err)
 
 				return int32(r)
@@ -2064,7 +2145,7 @@ func TestDecoderInt32Null(t *testing.T) {
 			name: "exponent-negative-zero",
 			json: "10E-0",
 			expectedResult: func() int32 {
-				r, err := strconv.ParseFloat("10E-0", 10)
+				r, err := strconv.ParseFloat("10E-0", 64)
 				require.NoError(t, err)
 
 				return int32(r)
@@ -2074,46 +2155,60 @@ func TestDecoderInt32Null(t *testing.T) {
 	}
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			json := []byte(testCase.json)
 			v := (*int32)(nil)
 			err := Unmarshal(json, &v)
 			if testCase.err {
-				assert.NotNil(t, err, "Err must not be nil")
+				require.Error(t, err)
 				if testCase.errType != nil {
 					assert.IsType(
 						t,
 						testCase.errType,
 						err,
-						fmt.Sprintf("err should be of type %s", reflect.TypeOf(err).String()),
+						"err should be of type %s", reflect.TypeOf(err).String(),
 					)
 				}
 				return
 			}
 
-			assert.Nil(t, err, "Err must be nil")
+			require.NoError(t, err)
 			if testCase.resultIsNil {
 				assert.Nil(t, v)
 			} else {
-				assert.Equal(t, testCase.expectedResult, *v, fmt.Sprintf("v must be equal to %d", testCase.expectedResult))
+				assert.Equal(
+					t,
+					testCase.expectedResult,
+					*v,
+					"v must be equal to %d",
+					testCase.expectedResult,
+				)
 			}
 		})
 	}
 	t.Run("decoder-api-invalid-json", func(t *testing.T) {
+		t.Parallel()
+
 		v := new(int32)
 		err := Unmarshal([]byte(``), &v)
-		assert.NotNil(t, err, "Err must not be nil")
+		require.Error(t, err)
 		assert.IsType(t, InvalidJSONError(""), err, "err should be of type InvalidJSONError")
 	})
 	t.Run("decoder-api-invalid-json2", func(t *testing.T) {
+		t.Parallel()
+
 		v := new(int32)
 		dec := NewDecoder(strings.NewReader(``))
 		err := dec.Int32Null(&v)
-		assert.NotNil(t, err, "Err must not be nil")
+		require.Error(t, err)
 		assert.IsType(t, InvalidJSONError(""), err, "err should be of type InvalidJSONError")
 	})
 }
 
 func TestDecoderInt16(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name           string
 		json           string
@@ -2412,64 +2507,81 @@ func TestDecoderInt16(t *testing.T) {
 	}
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			json := []byte(testCase.json)
 			var v int16
 			err := Unmarshal(json, &v)
 			if testCase.err {
-				assert.NotNil(t, err, "Err must not be nil")
+				require.Error(t, err)
 				if testCase.errType != nil {
 					assert.IsType(
 						t,
 						testCase.errType,
 						err,
-						fmt.Sprintf("err should be of type %s", reflect.TypeOf(err).String()),
+						"err should be of type %s", reflect.TypeOf(err).String(),
 					)
 				}
 			} else {
-				assert.Nil(t, err, "Err must be nil")
+				require.NoError(t, err)
 			}
-			assert.Equal(t, testCase.expectedResult, v, fmt.Sprintf("v must be equal to %d", testCase.expectedResult))
+			assert.Equal(
+				t,
+				testCase.expectedResult,
+				v,
+				"v must be equal to %d", testCase.expectedResult,
+			)
 		})
 	}
 	t.Run("pool-error", func(t *testing.T) {
+		t.Parallel()
+
 		result := int16(1)
 		dec := NewDecoder(nil)
 		dec.Release()
 		defer func() {
 			err := recover()
-			assert.NotNil(t, err, "err shouldnt be nil")
+			require.Error(t, err.(error), "err shouldnt be nil")
 			assert.IsType(t, InvalidUsagePooledDecoderError(""), err, "err should be of type InvalidUsagePooledDecoderError")
 		}()
 		_ = dec.DecodeInt16(&result)
 		assert.True(t, false, "should not be called as decoder should have panicked")
 	})
 	t.Run("decoder-api", func(t *testing.T) {
+		t.Parallel()
+
 		var v int16
 		dec := NewDecoder(strings.NewReader(`33`))
 		defer dec.Release()
 		err := dec.DecodeInt16(&v)
-		assert.Nil(t, err, "Err must be nil")
+		require.NoError(t, err)
 		assert.Equal(t, int16(33), v, "v must be equal to 33")
 	})
 	t.Run("decoder-api2", func(t *testing.T) {
+		t.Parallel()
+
 		var v int16
 		dec := NewDecoder(strings.NewReader(`33`))
 		defer dec.Release()
 		err := dec.Decode(&v)
-		assert.Nil(t, err, "Err must be nil")
+		require.NoError(t, err)
 		assert.Equal(t, int16(33), v, "v must be equal to 33")
 	})
 	t.Run("decoder-api-invalid-json", func(t *testing.T) {
+		t.Parallel()
+
 		var v int16
 		dec := NewDecoder(strings.NewReader(``))
 		defer dec.Release()
 		err := dec.DecodeInt16(&v)
-		assert.NotNil(t, err, "Err must not be nil")
+		require.Error(t, err)
 		assert.IsType(t, InvalidJSONError(""), err, "err should be of type InvalidJSONError")
 	})
 }
 
 func TestDecoderInt16Null(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name           string
 		json           string
@@ -2766,7 +2878,7 @@ func TestDecoderInt16Null(t *testing.T) {
 			name: "fuzz-crasher",
 			json: "0E-0",
 			expectedResult: func() int16 {
-				r, err := strconv.ParseFloat("0E-0", 10)
+				r, err := strconv.ParseFloat("0E-0", 64)
 				require.NoError(t, err)
 
 				return int16(r)
@@ -2777,7 +2889,7 @@ func TestDecoderInt16Null(t *testing.T) {
 			name: "exponent-negative-zero",
 			json: "10E-0",
 			expectedResult: func() int16 {
-				r, err := strconv.ParseFloat("10E-0", 10)
+				r, err := strconv.ParseFloat("10E-0", 64)
 				require.NoError(t, err)
 
 				return int16(r)
@@ -2787,45 +2899,59 @@ func TestDecoderInt16Null(t *testing.T) {
 	}
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			json := []byte(testCase.json)
 			v := (*int16)(nil)
 			err := Unmarshal(json, &v)
 			if testCase.err {
-				assert.NotNil(t, err, "Err must not be nil")
+				require.Error(t, err)
 				if testCase.errType != nil {
 					assert.IsType(
 						t,
 						testCase.errType,
 						err,
-						fmt.Sprintf("err should be of type %s", reflect.TypeOf(err).String()),
+						"err should be of type %s", reflect.TypeOf(err).String(),
 					)
 				}
 				return
 			}
-			assert.Nil(t, err, "Err must be nil")
+			require.NoError(t, err)
 			if testCase.resultIsNil {
 				assert.Nil(t, v)
 			} else {
-				assert.Equal(t, testCase.expectedResult, *v, fmt.Sprintf("v must be equal to %d", testCase.expectedResult))
+				assert.Equal(
+					t,
+					testCase.expectedResult,
+					*v,
+					"v must be equal to %d",
+					testCase.expectedResult,
+				)
 			}
 		})
 	}
 	t.Run("decoder-api-invalid-json", func(t *testing.T) {
+		t.Parallel()
+
 		v := new(int16)
 		err := Unmarshal([]byte(``), &v)
-		assert.NotNil(t, err, "Err must not be nil")
+		require.Error(t, err)
 		assert.IsType(t, InvalidJSONError(""), err, "err should be of type InvalidJSONError")
 	})
 	t.Run("decoder-api-invalid-json2", func(t *testing.T) {
+		t.Parallel()
+
 		v := new(int16)
 		dec := NewDecoder(strings.NewReader(``))
 		err := dec.Int16Null(&v)
-		assert.NotNil(t, err, "Err must not be nil")
+		require.Error(t, err)
 		assert.IsType(t, InvalidJSONError(""), err, "err should be of type InvalidJSONError")
 	})
 }
 
 func TestDecoderInt8(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name           string
 		json           string
@@ -3134,7 +3260,7 @@ func TestDecoderInt8(t *testing.T) {
 			name: "fuzz-crasher",
 			json: "0E-0",
 			expectedResult: func() int8 {
-				r, err := strconv.ParseFloat("0E-0", 10)
+				r, err := strconv.ParseFloat("0E-0", 64)
 				require.NoError(t, err)
 
 				return int8(r)
@@ -3145,7 +3271,7 @@ func TestDecoderInt8(t *testing.T) {
 			name: "exponent-negative-zero",
 			json: "10E-0",
 			expectedResult: func() int8 {
-				r, err := strconv.ParseFloat("10E-0", 10)
+				r, err := strconv.ParseFloat("10E-0", 64)
 				require.NoError(t, err)
 
 				return int8(r)
@@ -3155,64 +3281,81 @@ func TestDecoderInt8(t *testing.T) {
 	}
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			json := []byte(testCase.json)
 			var v int8
 			err := Unmarshal(json, &v)
 			if testCase.err {
-				assert.NotNil(t, err, "Err must not be nil")
+				require.Error(t, err)
 				if testCase.errType != nil {
 					assert.IsType(
 						t,
 						testCase.errType,
 						err,
-						fmt.Sprintf("err should be of type %s", reflect.TypeOf(err).String()),
+						"err should be of type %s", reflect.TypeOf(err).String(),
 					)
 				}
 			} else {
-				assert.Nil(t, err, "Err must be nil")
+				require.NoError(t, err)
 			}
-			assert.Equal(t, testCase.expectedResult, v, fmt.Sprintf("v must be equal to %d", testCase.expectedResult))
+			assert.Equal(
+				t,
+				testCase.expectedResult,
+				v,
+				"v must be equal to %d",
+				testCase.expectedResult,
+			)
 		})
 	}
 	t.Run("pool-error", func(t *testing.T) {
+		t.Parallel()
+
 		result := int8(1)
 		dec := NewDecoder(nil)
 		dec.Release()
 		defer func() {
 			err := recover()
-			assert.NotNil(t, err, "err shouldnt be nil")
+			require.Error(t, err.(error), "err shouldn't be nil")
 			assert.IsType(t, InvalidUsagePooledDecoderError(""), err, "err should be of type InvalidUsagePooledDecoderError")
 		}()
 		_ = dec.DecodeInt8(&result)
 		assert.True(t, false, "should not be called as decoder should have panicked")
 	})
 	t.Run("decoder-api", func(t *testing.T) {
+		t.Parallel()
 		var v int8
 		dec := NewDecoder(strings.NewReader(`33`))
 		defer dec.Release()
 		err := dec.DecodeInt8(&v)
-		assert.Nil(t, err, "Err must be nil")
+		require.NoError(t, err)
 		assert.Equal(t, int8(33), v, "v must be equal to 33")
 	})
 	t.Run("decoder-api2", func(t *testing.T) {
+		t.Parallel()
+
 		var v int8
 		dec := NewDecoder(strings.NewReader(`33`))
 		defer dec.Release()
 		err := dec.Decode(&v)
-		assert.Nil(t, err, "Err must be nil")
+		require.NoError(t, err)
 		assert.Equal(t, int8(33), v, "v must be equal to 33")
 	})
 	t.Run("decoder-api-invalid-json", func(t *testing.T) {
+		t.Parallel()
+
 		var v int8
 		dec := NewDecoder(strings.NewReader(``))
 		defer dec.Release()
 		err := dec.DecodeInt8(&v)
-		assert.NotNil(t, err, "Err must not be nil")
+		require.Error(t, err)
 		assert.IsType(t, InvalidJSONError(""), err, "err should be of type InvalidJSONError")
 	})
 }
 
 func TestDecoderInt8Null(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name           string
 		json           string
@@ -3516,7 +3659,7 @@ func TestDecoderInt8Null(t *testing.T) {
 			name: "fuzz-crasher",
 			json: "0E-0",
 			expectedResult: func() int8 {
-				r, err := strconv.ParseFloat("0E-0", 10)
+				r, err := strconv.ParseFloat("0E-0", 64)
 				require.NoError(t, err)
 
 				return int8(r)
@@ -3527,7 +3670,7 @@ func TestDecoderInt8Null(t *testing.T) {
 			name: "exponent-negative-zero",
 			json: "10E-0",
 			expectedResult: func() int8 {
-				r, err := strconv.ParseFloat("10E-0", 10)
+				r, err := strconv.ParseFloat("10E-0", 64)
 				require.NoError(t, err)
 
 				return int8(r)
@@ -3537,40 +3680,53 @@ func TestDecoderInt8Null(t *testing.T) {
 	}
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			json := []byte(testCase.json)
 			v := (*int8)(nil)
 			err := Unmarshal(json, &v)
 			if testCase.err {
-				assert.NotNil(t, err, "Err must not be nil")
+				require.Error(t, err)
 				if testCase.errType != nil {
 					assert.IsType(
 						t,
 						testCase.errType,
 						err,
-						fmt.Sprintf("err should be of type %s", reflect.TypeOf(err).String()),
+						"err should be of type %s",
+						reflect.TypeOf(err).String(),
 					)
 				}
 				return
 			}
-			assert.Nil(t, err, "Err must be nil")
+			require.NoError(t, err)
 			if testCase.resultIsNil {
 				assert.Nil(t, v)
 			} else {
-				assert.Equal(t, testCase.expectedResult, *v, fmt.Sprintf("v must be equal to %d", testCase.expectedResult))
+				assert.Equal(
+					t,
+					testCase.expectedResult,
+					*v,
+					"v must be equal to %d",
+					testCase.expectedResult,
+				)
 			}
 		})
 	}
 	t.Run("decoder-api-invalid-json", func(t *testing.T) {
+		t.Parallel()
+
 		v := new(int8)
 		err := Unmarshal([]byte(``), &v)
-		assert.NotNil(t, err, "Err must not be nil")
+		require.Error(t, err)
 		assert.IsType(t, InvalidJSONError(""), err, "err should be of type InvalidJSONError")
 	})
 	t.Run("decoder-api-invalid-json2", func(t *testing.T) {
+		t.Parallel()
+
 		v := new(int8)
 		dec := NewDecoder(strings.NewReader(``))
 		err := dec.Int8Null(&v)
-		assert.NotNil(t, err, "Err must not be nil")
+		require.Error(t, err)
 		assert.IsType(t, InvalidJSONError(""), err, "err should be of type InvalidJSONError")
 	})
 }

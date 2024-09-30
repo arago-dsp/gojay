@@ -4,6 +4,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
@@ -19,6 +20,8 @@ func (s *slicesTestObject) IsNil() bool {
 }
 
 func TestEncodeSlices(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name string
 		json string
@@ -78,11 +81,13 @@ func TestEncodeSlices(t *testing.T) {
 		t.Run(
 			testCase.name,
 			func(t *testing.T) {
+				t.Parallel()
+
 				b := strings.Builder{}
 				enc := BorrowEncoder(&b)
 				err := enc.Encode(&testCase.obj)
-				require.Nil(t, err, "err should be nil")
-				require.JSONEq(t, testCase.json, b.String())
+				require.NoError(t, err)
+				assert.JSONEq(t, testCase.json, b.String())
 			},
 		)
 	}
@@ -137,6 +142,8 @@ func (t testSliceSliceFloat64) IsNil() bool {
 }
 
 func TestEncodeSliceSlices(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name string
 		s    MarshalerJSONArray
@@ -176,11 +183,13 @@ func TestEncodeSliceSlices(t *testing.T) {
 		t.Run(
 			testCase.name,
 			func(t *testing.T) {
+				t.Parallel()
+
 				b := strings.Builder{}
 				enc := BorrowEncoder(&b)
 				err := enc.Encode(testCase.s)
-				require.Nil(t, err, "err should be nil")
-				require.JSONEq(t, testCase.json, b.String())
+				require.NoError(t, err)
+				assert.JSONEq(t, testCase.json, b.String())
 			},
 		)
 	}

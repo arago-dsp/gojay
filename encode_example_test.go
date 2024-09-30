@@ -45,7 +45,9 @@ func ExampleBorrowEncoder() {
 	str := "gojay"
 	err := enc.EncodeString(str)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Printf("%s", err)
+
+		return
 	}
 	// Output:
 	// "gojay"
@@ -58,7 +60,9 @@ func ExampleEncoder_EncodeString() {
 	str := "gojay"
 	err := enc.EncodeString(str)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Printf("%s", err)
+
+		return
 	}
 	// Output:
 	// "gojay"

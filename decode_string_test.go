@@ -1,15 +1,17 @@
 package gojay
 
 import (
-	"fmt"
 	"strings"
 	"sync"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestDecoderString(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name           string
 		json           string
@@ -304,23 +306,33 @@ func TestDecoderString(t *testing.T) {
 
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			str := ""
 			dec := NewDecoder(strings.NewReader(testCase.json))
 			err := dec.Decode(&str)
 			if testCase.err {
-				assert.NotNil(t, err, "err should not be nil")
+				require.Error(t, err)
 				if testCase.errType != nil {
 					assert.IsType(t, testCase.errType, err, "err should of the given type")
 				}
 			} else {
-				assert.Nil(t, err, "err should be nil")
+				require.NoError(t, err)
 			}
-			assert.Equal(t, testCase.expectedResult, str, fmt.Sprintf("'%s' should be equal to expectedResult", str))
+			assert.Equal(
+				t,
+				testCase.expectedResult,
+				str,
+				"'%s' should be equal to expectedResult",
+				str,
+			)
 		})
 	}
 }
 
 func TestDecoderStringNull(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name           string
 		json           string
@@ -618,33 +630,45 @@ func TestDecoderStringNull(t *testing.T) {
 
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			str := (*string)(nil)
 			err := Unmarshal([]byte(testCase.json), &str)
 			if testCase.err {
-				assert.NotNil(t, err, "err should not be nil")
+				require.Error(t, err)
 				if testCase.errType != nil {
 					assert.IsType(t, testCase.errType, err, "err should of the given type")
 				}
 				return
 			}
-			assert.Nil(t, err, "Err must be nil")
+			require.NoError(t, err)
 			if testCase.resultIsNil {
 				assert.Nil(t, str)
 			} else {
-				assert.Equal(t, testCase.expectedResult, *str, fmt.Sprintf("v must be equal to %s", testCase.expectedResult))
+				assert.Equal(
+					t,
+					testCase.expectedResult,
+					*str,
+					"v must be equal to %s",
+					testCase.expectedResult,
+				)
 			}
 		})
 	}
 	t.Run("decoder-api-invalid-json2", func(t *testing.T) {
+		t.Parallel()
+
 		v := new(string)
 		dec := NewDecoder(strings.NewReader(`a`))
 		err := dec.StringNull(&v)
-		assert.NotNil(t, err, "Err must not be nil")
+		require.Error(t, err)
 		assert.IsType(t, InvalidJSONError(""), err, "err should be of type InvalidJSONError")
 	})
 }
 
 func TestDecoderStringNoEscape(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name           string
 		json           string
@@ -937,40 +961,54 @@ func TestDecoderStringNoEscape(t *testing.T) {
 
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			str := ""
 			dec := NewDecoder(strings.NewReader(testCase.json))
 			err := dec.StringNoEscape(&str)
 			if testCase.err {
-				assert.NotNil(t, err, "err should not be nil")
+				require.Error(t, err)
 				if testCase.errType != nil {
 					assert.IsType(t, testCase.errType, err, "err should of the given type")
 				}
 			} else {
-				assert.Nil(t, err, "err should be nil")
+				require.NoError(t, err)
 			}
-			assert.Equal(t, testCase.expectedResult, str, fmt.Sprintf("'%s' should be equal to expectedResult", str))
+			assert.Equal(
+				t,
+				testCase.expectedResult,
+				str,
+				"'%s' should be equal to expectedResult",
+				str,
+			)
 		})
 	}
 }
 
 func TestDecoderStringInvalidType(t *testing.T) {
+	t.Parallel()
+
 	json := []byte(`1`)
 	var v string
 	err := Unmarshal(json, &v)
-	assert.NotNil(t, err, "Err must not be nil as JSON is invalid")
+	require.Error(t, err, "Err must not be nil as JSON is invalid")
 	assert.IsType(t, InvalidUnmarshalError(""), err, "err message must be 'Invalid JSON'")
 }
 
 func TestDecoderStringDecoderAPI(t *testing.T) {
+	t.Parallel()
+
 	var v string
 	dec := NewDecoder(strings.NewReader(`"hello world!"`))
 	defer dec.Release()
 	err := dec.DecodeString(&v)
-	assert.Nil(t, err, "Err must be nil")
+	require.NoError(t, err)
 	assert.Equal(t, "hello world!", v, "v must be equal to 'hello world!'")
 }
 
 func TestDecoderStringPoolError(t *testing.T) {
+	t.Parallel()
+
 	// reset the pool to make sure it's not full
 	decPool = sync.Pool{
 		New: func() interface{} {
@@ -982,7 +1020,7 @@ func TestDecoderStringPoolError(t *testing.T) {
 	dec.Release()
 	defer func() {
 		err := recover()
-		assert.NotNil(t, err, "err shouldnt be nil")
+		require.Error(t, err.(error), "err shouldn't be nil")
 		assert.IsType(t, InvalidUsagePooledDecoderError(""), err, "err should be of type InvalidUsagePooledDecoderError")
 	}()
 	_ = dec.DecodeString(&result)
@@ -990,46 +1028,58 @@ func TestDecoderStringPoolError(t *testing.T) {
 }
 
 func TestDecoderSkipEscapedStringError(t *testing.T) {
+	t.Parallel()
+
 	dec := NewDecoder(strings.NewReader(``))
 	defer dec.Release()
 	err := dec.skipEscapedString()
-	assert.NotNil(t, err, "Err must be nil")
+	require.Error(t, err, "Err must be nil")
 	assert.IsType(t, InvalidJSONError(""), err, "err must be of type InvalidJSONError")
 }
 
 func TestDecoderSkipEscapedStringError2(t *testing.T) {
+	t.Parallel()
+
 	dec := NewDecoder(strings.NewReader(`\"`))
 	defer dec.Release()
 	err := dec.skipEscapedString()
-	assert.NotNil(t, err, "Err must be nil")
+	require.Error(t, err, "Err must be nil")
 	assert.IsType(t, InvalidJSONError(""), err, "err must be of type InvalidJSONError")
 }
 
 func TestDecoderSkipEscapedStringError3(t *testing.T) {
+	t.Parallel()
+
 	dec := NewDecoder(strings.NewReader(`invalid`))
 	defer dec.Release()
 	err := dec.skipEscapedString()
-	assert.NotNil(t, err, "Err must be nil")
+	require.Error(t, err, "Err must be nil")
 	assert.IsType(t, InvalidJSONError(""), err, "err must be of type InvalidJSONError")
 }
 
 func TestDecoderSkipEscapedStringError4(t *testing.T) {
+	t.Parallel()
+
 	dec := NewDecoder(strings.NewReader(`\u12`))
 	defer dec.Release()
 	err := dec.skipEscapedString()
-	assert.NotNil(t, err, "Err must be nil")
+	require.Error(t, err, "Err must be nil")
 	assert.IsType(t, InvalidJSONError(""), err, "err must be of type InvalidJSONError")
 }
 
 func TestDecoderSkipStringError(t *testing.T) {
+	t.Parallel()
+
 	dec := NewDecoder(strings.NewReader(`invalid`))
 	defer dec.Release()
 	err := dec.skipString()
-	assert.NotNil(t, err, "Err must be nil")
+	require.Error(t, err, "Err must be nil")
 	assert.IsType(t, InvalidJSONError(""), err, "err must be of type InvalidJSONError")
 }
 
 func TestSkipString(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name           string
 		json           string
@@ -1069,12 +1119,17 @@ func TestSkipString(t *testing.T) {
 		dec := NewDecoder(strings.NewReader(testCase.json))
 		err := dec.skipString()
 		if testCase.err {
-			assert.NotNil(t, err, "err should not be nil")
+			require.Error(t, err)
 			if testCase.errType != nil {
-				assert.IsType(t, testCase.errType, err, "err should be of expected type")
+				assert.IsType(
+					t,
+					testCase.errType,
+					err,
+					"err should be of expected type",
+				)
 			}
 			return
 		}
-		assert.Nil(t, err, "err should be nil")
+		require.NoError(t, err)
 	}
 }

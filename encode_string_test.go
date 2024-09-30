@@ -5,14 +5,19 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestEncoderStringEncodeAPI(t *testing.T) {
+	t.Parallel()
+
 	t.Run("basic", func(t *testing.T) {
+		t.Parallel()
+
 		builder := &strings.Builder{}
 		enc := NewEncoder(builder)
 		err := enc.EncodeString("hello world")
-		assert.Nil(t, err, "Error should be nil")
+		require.NoError(t, err)
 		assert.Equal(
 			t,
 			`"hello world"`,
@@ -20,10 +25,12 @@ func TestEncoderStringEncodeAPI(t *testing.T) {
 			"Result of marshalling is different as the one expected")
 	})
 	t.Run("utf8", func(t *testing.T) {
+		t.Parallel()
+
 		builder := &strings.Builder{}
 		enc := NewEncoder(builder)
 		err := enc.EncodeString("漢字𩸽")
-		assert.Nil(t, err, "Error should be nil")
+		require.NoError(t, err)
 		assert.Equal(
 			t,
 			`"漢字𩸽"`,
@@ -31,11 +38,13 @@ func TestEncoderStringEncodeAPI(t *testing.T) {
 			"Result of marshalling is different as the one expected")
 	})
 	t.Run("utf8-multibyte", func(t *testing.T) {
+		t.Parallel()
+
 		str := "テュールスト マーティン ヤコブ 😁"
 		builder := &strings.Builder{}
 		enc := NewEncoder(builder)
 		err := enc.EncodeString(str)
-		assert.Nil(t, err, "Error should be nil")
+		require.NoError(t, err)
 		assert.Equal(
 			t,
 			`"テュールスト マーティン ヤコブ 😁"`,
@@ -43,12 +52,14 @@ func TestEncoderStringEncodeAPI(t *testing.T) {
 			"Result of marshalling is different as the one expected")
 	})
 	t.Run("escaped-sequence1", func(t *testing.T) {
+		t.Parallel()
+
 		str := `テュールスト マ\ーテ
 ィン ヤコブ 😁`
 		builder := &strings.Builder{}
 		enc := NewEncoder(builder)
 		err := enc.EncodeString(str)
-		assert.Nil(t, err, "Error should be nil")
+		require.NoError(t, err)
 		assert.Equal(
 			t,
 			`"テュールスト マ\\ーテ\nィン ヤコブ 😁"`,
@@ -56,12 +67,14 @@ func TestEncoderStringEncodeAPI(t *testing.T) {
 			"Result of marshalling is different as the one expected")
 	})
 	t.Run("escaped-sequence2", func(t *testing.T) {
+		t.Parallel()
+
 		str := `テュールスト マ\ーテ
 ィン ヤコブ 😁	`
 		builder := &strings.Builder{}
 		enc := NewEncoder(builder)
 		err := enc.EncodeString(str)
-		assert.Nil(t, err, "Error should be nil")
+		require.NoError(t, err)
 		assert.Equal(
 			t,
 			`"テュールスト マ\\ーテ\nィン ヤコブ 😁\t"`,
@@ -69,11 +82,13 @@ func TestEncoderStringEncodeAPI(t *testing.T) {
 			"Result of marshalling is different as the one expected")
 	})
 	t.Run("escaped-sequence3", func(t *testing.T) {
+		t.Parallel()
+
 		str := "hello \r world 𝄞"
 		builder := &strings.Builder{}
 		enc := NewEncoder(builder)
 		err := enc.EncodeString(str)
-		assert.Nil(t, err, "Error should be nil")
+		require.NoError(t, err)
 		assert.Equal(
 			t,
 			`"hello \r world 𝄞"`,
@@ -81,11 +96,13 @@ func TestEncoderStringEncodeAPI(t *testing.T) {
 			"Result of marshalling is different as the one expected")
 	})
 	t.Run("escaped-sequence3", func(t *testing.T) {
+		t.Parallel()
+
 		str := "hello \b world 𝄞"
 		builder := &strings.Builder{}
 		enc := NewEncoder(builder)
 		err := enc.EncodeString(str)
-		assert.Nil(t, err, "Error should be nil")
+		require.NoError(t, err)
 		assert.Equal(
 			t,
 			`"hello \b world 𝄞"`,
@@ -93,11 +110,13 @@ func TestEncoderStringEncodeAPI(t *testing.T) {
 			"Result of marshalling is different as the one expected")
 	})
 	t.Run("escaped-control-char", func(t *testing.T) {
+		t.Parallel()
+
 		str := "\u001b"
 		builder := &strings.Builder{}
 		enc := NewEncoder(builder)
 		err := enc.EncodeString(str)
-		assert.Nil(t, err, "Error should be nil")
+		require.NoError(t, err)
 		assert.Equal(
 			t,
 			`"\u001b"`,
@@ -105,11 +124,13 @@ func TestEncoderStringEncodeAPI(t *testing.T) {
 			"Result of marshalling is different as the one expected")
 	})
 	t.Run("escaped-sequence3", func(t *testing.T) {
+		t.Parallel()
+
 		str := "hello \f world 𝄞"
 		builder := &strings.Builder{}
 		enc := NewEncoder(builder)
 		err := enc.EncodeString(str)
-		assert.Nil(t, err, "Error should be nil")
+		require.NoError(t, err)
 		assert.Equal(
 			t,
 			"\"hello \\f world 𝄞\"",
@@ -119,13 +140,17 @@ func TestEncoderStringEncodeAPI(t *testing.T) {
 }
 
 func TestEncoderStringEncodeAPIErrors(t *testing.T) {
+	t.Parallel()
+
 	t.Run("pool-error", func(t *testing.T) {
+		t.Parallel()
+
 		v := ""
 		enc := BorrowEncoder(nil)
 		enc.isPooled = 1
 		defer func() {
 			err := recover()
-			assert.NotNil(t, err, "err should not be nil")
+			require.NotNil(t, err, "err should not be nil")
 			assert.IsType(t, InvalidUsagePooledEncoderError(""), err, "err should be of type InvalidUsagePooledEncoderError")
 			assert.Equal(t, "Invalid usage of pooled encoder", err.(InvalidUsagePooledEncoderError).Error(), "err should be of type InvalidUsagePooledDecoderError")
 		}()
@@ -133,19 +158,25 @@ func TestEncoderStringEncodeAPIErrors(t *testing.T) {
 		assert.True(t, false, "should not be called as it should have panicked")
 	})
 	t.Run("write-error", func(t *testing.T) {
+		t.Parallel()
+
 		v := "test"
 		w := TestWriterError("")
 		enc := BorrowEncoder(w)
 		defer enc.Release()
 		err := enc.EncodeString(v)
-		assert.NotNil(t, err, "err should not be nil")
+		require.Error(t, err)
 	})
 }
 
 func TestEncoderStringMarshalAPI(t *testing.T) {
+	t.Parallel()
+
 	t.Run("basic", func(t *testing.T) {
+		t.Parallel()
+
 		r, err := Marshal("string")
-		assert.Nil(t, err, "Error should be nil")
+		require.NoError(t, err)
 		assert.Equal(
 			t,
 			`"string"`,
@@ -153,8 +184,10 @@ func TestEncoderStringMarshalAPI(t *testing.T) {
 			"Result of marshalling is different as the one expected")
 	})
 	t.Run("utf8", func(t *testing.T) {
+		t.Parallel()
+
 		r, err := Marshal("漢字")
-		assert.Nil(t, err, "Error should be nil")
+		require.NoError(t, err)
 		assert.Equal(
 			t,
 			`"漢字"`,
@@ -164,6 +197,8 @@ func TestEncoderStringMarshalAPI(t *testing.T) {
 }
 
 func TestEncoderStringNullEmpty(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name         string
 		baseJSON     string
@@ -187,19 +222,23 @@ func TestEncoderStringNullEmpty(t *testing.T) {
 	}
 	for _, testCase := range testCases {
 		t.Run("true", func(t *testing.T) {
+			t.Parallel()
+
 			var b strings.Builder
 			enc := NewEncoder(&b)
 			enc.writeString(testCase.baseJSON)
 			enc.StringNullEmpty("")
 			enc.AddStringNullEmpty("true")
 			_, err := enc.Write()
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, testCase.expectedJSON, b.String())
 		})
 	}
 }
 
 func TestEncoderStringNullEmpty2(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name         string
 		baseJSON     string
@@ -213,18 +252,22 @@ func TestEncoderStringNullEmpty2(t *testing.T) {
 	}
 	for _, testCase := range testCases {
 		t.Run("true", func(t *testing.T) {
+			t.Parallel()
+
 			var b strings.Builder
 			enc := NewEncoder(&b)
 			enc.writeString(testCase.baseJSON)
 			enc.StringNullEmpty("test")
 			_, err := enc.Write()
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, testCase.expectedJSON, b.String())
 		})
 	}
 }
 
 func TestEncoderStringNullKeyEmpty(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name         string
 		baseJSON     string
@@ -243,13 +286,15 @@ func TestEncoderStringNullKeyEmpty(t *testing.T) {
 	}
 	for _, testCase := range testCases {
 		t.Run("true", func(t *testing.T) {
+			t.Parallel()
+
 			var b strings.Builder
 			enc := NewEncoder(&b)
 			enc.writeString(testCase.baseJSON)
 			enc.StringKeyNullEmpty("foo", "")
 			enc.AddStringKeyNullEmpty("bar", "true")
 			_, err := enc.Write()
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, testCase.expectedJSON, b.String())
 		})
 	}

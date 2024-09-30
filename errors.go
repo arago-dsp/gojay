@@ -85,4 +85,4 @@ func (err InvalidUsagePooledEncoderError) Error() string {
 
 // ErrUnmarshalPtrExpected is the error returned when unmarshal expects a pointer value,
 // When using `dec.ObjectNull` or `dec.ArrayNull` for example.
-var ErrUnmarshalPtrExpected = errors.New("Cannot unmarshal to given value, a pointer is expected")
+var ErrUnmarshalPtrExpected = errors.New("couldn't unmarshal to given value, a pointer is expected")

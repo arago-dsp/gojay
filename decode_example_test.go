@@ -125,7 +125,9 @@ func ExampleBorrowDecoder() {
 	var str string
 	err := dec.DecodeString(&str)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Printf("%s", err)
+
+		return
 	}
 
 	fmt.Println(str)

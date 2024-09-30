@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func (r *Request) MarshalJSONObject(enc *Encoder) {
@@ -47,38 +48,48 @@ func (ear EmbeddedJSONOmitEmptyArr) IsNil() bool {
 }
 
 func TestEncodingEmbeddedJSON(t *testing.T) {
+	t.Parallel()
+
 	t.Run("basic-embedded-json", func(t *testing.T) {
-		ej := EmbeddedJSON([]byte(`"test"`))
+		t.Parallel()
+
+		ej := EmbeddedJSON(`"test"`)
 		b := &strings.Builder{}
 		enc := BorrowEncoder(b)
 		err := enc.Encode(&ej)
-		assert.Nil(t, err, "err should be nil")
-		assert.Equal(t, b.String(), `"test"`, "b should be equal to content of EmbeddedJSON")
+		require.NoError(t, err)
+		assert.Equal(t, `"test"`, b.String(), "b should be equal to content of EmbeddedJSON")
 	})
 	t.Run("basic-embedded-json-marshal-api", func(t *testing.T) {
-		ej := EmbeddedJSON([]byte(`"test"`))
+		t.Parallel()
+
+		ej := EmbeddedJSON(`"test"`)
 		b, err := Marshal(&ej)
-		assert.Nil(t, err, "err should be nil")
-		assert.Equal(t, string(b), `"test"`, "b should be equal to content of EmbeddedJSON")
+		require.NoError(t, err)
+		assert.Equal(t, `"test"`, string(b), "b should be equal to content of EmbeddedJSON")
 	})
 	t.Run("object-embedded-json", func(t *testing.T) {
+		t.Parallel()
+
 		req := Request{
 			id:     "test",
 			method: "GET",
-			params: EmbeddedJSON([]byte(`"test"`)),
+			params: EmbeddedJSON(`"test"`),
 		}
 		b := &strings.Builder{}
 		enc := BorrowEncoder(b)
 		err := enc.EncodeObject(&req)
-		assert.Nil(t, err, "err should be nil")
+		require.NoError(t, err)
 		assert.Equal(
 			t,
-			b.String(),
 			`{"id":"test","method":"GET","params":"test","params3":"test","more":0}`,
+			b.String(),
 			"b should be equal to content of EmbeddedJSON",
 		)
 	})
 	t.Run("array-embedded-json", func(t *testing.T) {
+		t.Parallel()
+
 		ear := EmbeddedJSONArr{
 			[]byte(`"test"`),
 			[]byte(`{"test":"test"}`),
@@ -86,15 +97,17 @@ func TestEncodingEmbeddedJSON(t *testing.T) {
 		b := &strings.Builder{}
 		enc := BorrowEncoder(b)
 		err := enc.EncodeArray(ear)
-		assert.Nil(t, err, "err should be nil")
+		require.NoError(t, err)
 		assert.Equal(
 			t,
-			b.String(),
 			`["test",{"test":"test"}]`,
+			b.String(),
 			"b should be equal to content of EmbeddedJSON",
 		)
 	})
 	t.Run("array-embedded-json-omit-empty", func(t *testing.T) {
+		t.Parallel()
+
 		ear := EmbeddedJSONOmitEmptyArr{
 			[]byte(`"test"`),
 			[]byte(``),
@@ -105,29 +118,33 @@ func TestEncodingEmbeddedJSON(t *testing.T) {
 		b := &strings.Builder{}
 		enc := BorrowEncoder(b)
 		err := enc.EncodeArray(ear)
-		assert.Nil(t, err, "err should be nil")
+		require.NoError(t, err)
 		assert.Equal(
 			t,
-			b.String(),
 			`["test",{"test":"test"},{"test":"test"}]`,
+			b.String(),
 			"b should be equal to content of EmbeddedJSON",
 		)
 	})
 	t.Run("write-error", func(t *testing.T) {
+		t.Parallel()
+
 		w := TestWriterError("")
-		v := EmbeddedJSON([]byte(`"test"`))
+		v := EmbeddedJSON(`"test"`)
 		enc := NewEncoder(w)
 		err := enc.EncodeEmbeddedJSON(&v)
-		assert.NotNil(t, err, "Error should not be nil")
+		require.Error(t, err, "Error should not be nil")
 		assert.Equal(t, "Test Error", err.Error(), "err.Error() should be 'Test Error'")
 	})
 	t.Run("pool-error", func(t *testing.T) {
-		v := EmbeddedJSON([]byte(`"test"`))
+		t.Parallel()
+
+		v := EmbeddedJSON(`"test"`)
 		enc := BorrowEncoder(nil)
 		enc.isPooled = 1
 		defer func() {
 			err := recover()
-			assert.NotNil(t, err, "err shouldnt be nil")
+			require.Error(t, err.(error), "err shouldn't be nil")
 			assert.IsType(t, InvalidUsagePooledEncoderError(""), err, "err should be of type InvalidUsagePooledEncoderError")
 			assert.Equal(t, "Invalid usage of pooled encoder", err.(InvalidUsagePooledEncoderError).Error(), "err should be of type InvalidUsagePooledDecoderError")
 		}()

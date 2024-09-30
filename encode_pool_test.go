@@ -9,6 +9,8 @@ import (
 )
 
 func TestConcurrencyMarshal(t *testing.T) {
+	t.Parallel()
+
 	f := func(num int, t *testing.T) {
 		for {
 			b, err := Marshal(num)

@@ -5,9 +5,12 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestEncoderFloat64(t *testing.T) {
+	t.Parallel()
+
 	testCasesBasic := []struct {
 		name         string
 		v            float64
@@ -26,13 +29,15 @@ func TestEncoderFloat64(t *testing.T) {
 	}
 	for _, testCase := range testCasesBasic {
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			b := &strings.Builder{}
 			enc := NewEncoder(b)
 			err := enc.Encode(EncodeArrayFunc(func(enc *Encoder) {
 				enc.Float64(testCase.v)
 				enc.AddFloat64(testCase.v)
 			}))
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, testCase.expectedJSON, b.String())
 		})
 	}
@@ -54,13 +59,15 @@ func TestEncoderFloat64(t *testing.T) {
 	}
 	for _, testCase := range testCasesOmitEmpty {
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			b := &strings.Builder{}
 			enc := NewEncoder(b)
 			err := enc.Encode(EncodeArrayFunc(func(enc *Encoder) {
 				enc.Float64OmitEmpty(testCase.v)
 				enc.AddFloat64OmitEmpty(testCase.v)
 			}))
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, testCase.expectedJSON, b.String())
 		})
 	}
@@ -82,13 +89,15 @@ func TestEncoderFloat64(t *testing.T) {
 	}
 	for _, testCase := range testCasesKeyBasic {
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			b := &strings.Builder{}
 			enc := NewEncoder(b)
 			err := enc.Encode(EncodeObjectFunc(func(enc *Encoder) {
 				enc.Float64Key("foo", testCase.v)
 				enc.AddFloat64Key("bar", testCase.v)
 			}))
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, testCase.expectedJSON, b.String())
 		})
 	}
@@ -110,19 +119,23 @@ func TestEncoderFloat64(t *testing.T) {
 	}
 	for _, testCase := range testCasesKeyOmitEmpty {
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			b := &strings.Builder{}
 			enc := NewEncoder(b)
 			err := enc.Encode(EncodeObjectFunc(func(enc *Encoder) {
 				enc.Float64KeyOmitEmpty("foo", testCase.v)
 				enc.AddFloat64KeyOmitEmpty("bar", testCase.v)
 			}))
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, testCase.expectedJSON, b.String())
 		})
 	}
 }
 
 func TestEncoderFloat64NullEmpty(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name         string
 		baseJSON     string
@@ -141,19 +154,23 @@ func TestEncoderFloat64NullEmpty(t *testing.T) {
 	}
 	for _, testCase := range testCases {
 		t.Run("true", func(t *testing.T) {
+			t.Parallel()
+
 			var b strings.Builder
 			enc := NewEncoder(&b)
 			enc.writeString(testCase.baseJSON)
 			enc.FloatNullEmpty(0)
 			enc.AddFloatNullEmpty(1)
 			_, err := enc.Write()
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, testCase.expectedJSON, b.String())
 		})
 	}
 }
 
 func TestEncoderFloat64KeyNullEmpty(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name         string
 		baseJSON     string
@@ -172,19 +189,23 @@ func TestEncoderFloat64KeyNullEmpty(t *testing.T) {
 	}
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			var b strings.Builder
 			enc := NewEncoder(&b)
 			enc.writeString(testCase.baseJSON)
 			enc.FloatKeyNullEmpty("foo", 0)
 			enc.AddFloatKeyNullEmpty("bar", 1)
 			_, err := enc.Write()
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, testCase.expectedJSON, b.String())
 		})
 	}
 }
 
 func TestEncoderFloat32NullEmpty(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name         string
 		baseJSON     string
@@ -203,19 +224,23 @@ func TestEncoderFloat32NullEmpty(t *testing.T) {
 	}
 	for _, testCase := range testCases {
 		t.Run("true", func(t *testing.T) {
+			t.Parallel()
+
 			var b strings.Builder
 			enc := NewEncoder(&b)
 			enc.writeString(testCase.baseJSON)
 			enc.Float32NullEmpty(0)
 			enc.AddFloat32NullEmpty(1)
 			_, err := enc.Write()
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, testCase.expectedJSON, b.String())
 		})
 	}
 }
 
 func TestEncoderFloat32KeyNullEmpty(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name         string
 		baseJSON     string
@@ -234,13 +259,15 @@ func TestEncoderFloat32KeyNullEmpty(t *testing.T) {
 	}
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			var b strings.Builder
 			enc := NewEncoder(&b)
 			enc.writeString(testCase.baseJSON)
 			enc.Float32KeyNullEmpty("foo", 0)
 			enc.AddFloat32KeyNullEmpty("bar", 1)
 			_, err := enc.Write()
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, testCase.expectedJSON, b.String())
 		})
 	}

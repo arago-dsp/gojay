@@ -39,6 +39,8 @@ func (s *slicesTestObject) NKeys() int {
 }
 
 func TestDecodeSlices(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name           string
 		json           string
@@ -147,15 +149,17 @@ func TestDecodeSlices(t *testing.T) {
 		t.Run(
 			testCase.name,
 			func(t *testing.T) {
+				t.Parallel()
+
 				dec := BorrowDecoder(strings.NewReader(testCase.json))
 				var o slicesTestObject
 				err := dec.Decode(&o)
 
 				if testCase.err {
-					require.NotNil(t, err, "err should not be nil")
+					require.Error(t, err)
 					return
 				}
-				require.Nil(t, err, "err should be nil")
+				require.NoError(t, err)
 				require.Equal(t, testCase.expectedResult, o)
 			},
 		)

@@ -32,7 +32,7 @@ func MarshalJSONArray(v MarshalerJSONArray) ([]byte, error) {
 	enc := BorrowEncoder(nil)
 	enc.grow(512)
 	enc.writeByte('[')
-	v.(MarshalerJSONArray).MarshalJSONArray(enc)
+	v.MarshalJSONArray(enc)
 	enc.writeByte(']')
 
 	defer func() {

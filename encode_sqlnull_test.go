@@ -6,10 +6,13 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 // Null String.
 func TestEncodeSQLNullString(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name           string
 		sqlNullString  sql.NullString
@@ -34,13 +37,15 @@ func TestEncodeSQLNullString(t *testing.T) {
 
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			var b strings.Builder
 			enc := NewEncoder(&b)
 			err := enc.EncodeSQLNullString(&testCase.sqlNullString)
 			if testCase.err {
-				assert.NotNil(t, err)
+				require.Error(t, err)
 			} else {
-				assert.Nil(t, err)
+				require.NoError(t, err)
 				assert.Equal(t, testCase.expectedResult, b.String())
 			}
 		})
@@ -49,12 +54,14 @@ func TestEncodeSQLNullString(t *testing.T) {
 	t.Run(
 		"should panic as the encoder is pooled",
 		func(t *testing.T) {
+			t.Parallel()
+
 			builder := &strings.Builder{}
 			enc := NewEncoder(builder)
 			enc.isPooled = 1
 			defer func() {
 				err := recover()
-				assert.NotNil(t, err, "err should not be nil")
+				require.NotNil(t, err, "err should not be nil")
 				assert.IsType(t, InvalidUsagePooledEncoderError(""), err, "err should be of type InvalidUsagePooledEncoderError")
 			}()
 			_ = enc.EncodeSQLNullString(&sql.NullString{})
@@ -65,18 +72,24 @@ func TestEncodeSQLNullString(t *testing.T) {
 	t.Run(
 		"should return an error as the writer encounters an error",
 		func(t *testing.T) {
+			t.Parallel()
+
 			builder := TestWriterError("")
 			enc := NewEncoder(builder)
 			err := enc.EncodeSQLNullString(&sql.NullString{})
-			assert.NotNil(t, err)
+			require.Error(t, err)
 		},
 	)
 }
 
 func TestAddSQLNullStringKey(t *testing.T) {
+	t.Parallel()
+
 	t.Run(
 		"AddSQLNullStringKey",
 		func(t *testing.T) {
+			t.Parallel()
+
 			testCases := []struct {
 				name           string
 				sqlNullString  sql.NullString
@@ -112,12 +125,14 @@ func TestAddSQLNullStringKey(t *testing.T) {
 
 			for _, testCase := range testCases {
 				t.Run(testCase.name, func(t *testing.T) {
+					t.Parallel()
+
 					var b strings.Builder
 					enc := NewEncoder(&b)
 					enc.writeString(testCase.baseJSON)
 					enc.AddSQLNullStringKey("foo", &testCase.sqlNullString)
 					_, err := enc.Write()
-					assert.NoError(t, err)
+					require.NoError(t, err)
 					assert.Equal(t, testCase.expectedResult, b.String())
 
 					var b2 strings.Builder
@@ -125,7 +140,7 @@ func TestAddSQLNullStringKey(t *testing.T) {
 					enc.writeString(testCase.baseJSON)
 					enc.SQLNullStringKey("foo", &testCase.sqlNullString)
 					_, err = enc.Write()
-					assert.NoError(t, err)
+					require.NoError(t, err)
 					assert.Equal(t, testCase.expectedResult, b2.String())
 				})
 			}
@@ -134,6 +149,8 @@ func TestAddSQLNullStringKey(t *testing.T) {
 	t.Run(
 		"AddSQLNullStringKeyOmitEmpty, is should encode a sql.NullString",
 		func(t *testing.T) {
+			t.Parallel()
+
 			testCases := []struct {
 				name           string
 				sqlNullString  sql.NullString
@@ -163,12 +180,14 @@ func TestAddSQLNullStringKey(t *testing.T) {
 
 			for _, testCase := range testCases {
 				t.Run(testCase.name, func(t *testing.T) {
+					t.Parallel()
+
 					var b strings.Builder
 					enc := NewEncoder(&b)
 					enc.writeString(testCase.baseJSON)
 					enc.AddSQLNullStringKeyOmitEmpty("foo", &testCase.sqlNullString)
 					_, err := enc.Write()
-					assert.NoError(t, err)
+					require.NoError(t, err)
 					assert.Equal(t, testCase.expectedResult, b.String())
 
 					var b2 strings.Builder
@@ -176,7 +195,7 @@ func TestAddSQLNullStringKey(t *testing.T) {
 					enc.writeString(testCase.baseJSON)
 					enc.SQLNullStringKeyOmitEmpty("foo", &testCase.sqlNullString)
 					_, err = enc.Write()
-					assert.NoError(t, err)
+					require.NoError(t, err)
 					assert.Equal(t, testCase.expectedResult, b2.String())
 				})
 			}
@@ -185,9 +204,13 @@ func TestAddSQLNullStringKey(t *testing.T) {
 }
 
 func TestAddSQLNullString(t *testing.T) {
+	t.Parallel()
+
 	t.Run(
 		"AddSQLNullString",
 		func(t *testing.T) {
+			t.Parallel()
+
 			testCases := []struct {
 				name           string
 				sqlNullString  sql.NullString
@@ -223,12 +246,14 @@ func TestAddSQLNullString(t *testing.T) {
 
 			for _, testCase := range testCases {
 				t.Run(testCase.name, func(t *testing.T) {
+					t.Parallel()
+
 					var b strings.Builder
 					enc := NewEncoder(&b)
 					enc.writeString(testCase.baseJSON)
 					enc.AddSQLNullString(&testCase.sqlNullString)
 					_, err := enc.Write()
-					assert.NoError(t, err)
+					require.NoError(t, err)
 					assert.Equal(t, testCase.expectedResult, b.String())
 
 					var b2 strings.Builder
@@ -236,7 +261,7 @@ func TestAddSQLNullString(t *testing.T) {
 					enc.writeString(testCase.baseJSON)
 					enc.SQLNullString(&testCase.sqlNullString)
 					_, err = enc.Write()
-					assert.NoError(t, err)
+					require.NoError(t, err)
 					assert.Equal(t, testCase.expectedResult, b2.String())
 				})
 			}
@@ -245,6 +270,8 @@ func TestAddSQLNullString(t *testing.T) {
 	t.Run(
 		"AddSQLNullStringKeyOmitEmpty, is should encode a sql.NullString",
 		func(t *testing.T) {
+			t.Parallel()
+
 			testCases := []struct {
 				name           string
 				sqlNullString  sql.NullString
@@ -274,12 +301,14 @@ func TestAddSQLNullString(t *testing.T) {
 
 			for _, testCase := range testCases {
 				t.Run(testCase.name, func(t *testing.T) {
+					t.Parallel()
+
 					var b strings.Builder
 					enc := NewEncoder(&b)
 					enc.writeString(testCase.baseJSON)
 					enc.AddSQLNullStringOmitEmpty(&testCase.sqlNullString)
 					_, err := enc.Write()
-					assert.NoError(t, err)
+					require.NoError(t, err)
 					assert.Equal(t, testCase.expectedResult, b.String())
 
 					var b2 strings.Builder
@@ -287,7 +316,7 @@ func TestAddSQLNullString(t *testing.T) {
 					enc.writeString(testCase.baseJSON)
 					enc.SQLNullStringOmitEmpty(&testCase.sqlNullString)
 					_, err = enc.Write()
-					assert.NoError(t, err)
+					require.NoError(t, err)
 					assert.Equal(t, testCase.expectedResult, b2.String())
 				})
 			}
@@ -296,7 +325,9 @@ func TestAddSQLNullString(t *testing.T) {
 }
 
 // NullInt64.
-func TestEncoceSQLNullInt64(t *testing.T) {
+func TestEncodeSQLNullInt64(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name           string
 		sqlNullInt64   sql.NullInt64
@@ -321,13 +352,15 @@ func TestEncoceSQLNullInt64(t *testing.T) {
 
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			var b strings.Builder
 			enc := NewEncoder(&b)
 			err := enc.EncodeSQLNullInt64(&testCase.sqlNullInt64)
 			if testCase.err {
-				assert.NotNil(t, err)
+				require.Error(t, err)
 			} else {
-				assert.Nil(t, err)
+				require.NoError(t, err)
 				assert.Equal(t, testCase.expectedResult, b.String())
 			}
 		})
@@ -335,12 +368,14 @@ func TestEncoceSQLNullInt64(t *testing.T) {
 	t.Run(
 		"should panic as the encoder is pooled",
 		func(t *testing.T) {
+			t.Parallel()
+
 			builder := &strings.Builder{}
 			enc := NewEncoder(builder)
 			enc.isPooled = 1
 			defer func() {
 				err := recover()
-				assert.NotNil(t, err, "err should not be nil")
+				require.NotNil(t, err, "err should not be nil")
 				assert.IsType(t, InvalidUsagePooledEncoderError(""), err, "err should be of type InvalidUsagePooledEncoderError")
 			}()
 			_ = enc.EncodeSQLNullInt64(&sql.NullInt64{})
@@ -350,18 +385,24 @@ func TestEncoceSQLNullInt64(t *testing.T) {
 	t.Run(
 		"should return an error as the writer encounters an error",
 		func(t *testing.T) {
+			t.Parallel()
+
 			builder := TestWriterError("")
 			enc := NewEncoder(builder)
 			err := enc.EncodeSQLNullInt64(&sql.NullInt64{})
-			assert.NotNil(t, err)
+			require.Error(t, err)
 		},
 	)
 }
 
 func TestAddSQLNullInt64Key(t *testing.T) {
+	t.Parallel()
+
 	t.Run(
 		"AddSQLNullInt64Key",
 		func(t *testing.T) {
+			t.Parallel()
+
 			testCases := []struct {
 				name           string
 				sqlNullInt64   sql.NullInt64
@@ -397,12 +438,14 @@ func TestAddSQLNullInt64Key(t *testing.T) {
 
 			for _, testCase := range testCases {
 				t.Run(testCase.name, func(t *testing.T) {
+					t.Parallel()
+
 					var b strings.Builder
 					enc := NewEncoder(&b)
 					enc.writeString(testCase.baseJSON)
 					enc.AddSQLNullInt64Key("foo", &testCase.sqlNullInt64)
 					_, err := enc.Write()
-					assert.NoError(t, err)
+					require.NoError(t, err)
 					assert.Equal(t, testCase.expectedResult, b.String())
 
 					var b2 strings.Builder
@@ -410,7 +453,7 @@ func TestAddSQLNullInt64Key(t *testing.T) {
 					enc.writeString(testCase.baseJSON)
 					enc.SQLNullInt64Key("foo", &testCase.sqlNullInt64)
 					_, err = enc.Write()
-					assert.NoError(t, err)
+					require.NoError(t, err)
 					assert.Equal(t, testCase.expectedResult, b2.String())
 				})
 			}
@@ -419,6 +462,8 @@ func TestAddSQLNullInt64Key(t *testing.T) {
 	t.Run(
 		"AddSQLNullInt64KeyOmitEmpty, is should encode a sql.NullInt64",
 		func(t *testing.T) {
+			t.Parallel()
+
 			testCases := []struct {
 				name           string
 				sqlNullInt64   sql.NullInt64
@@ -448,12 +493,14 @@ func TestAddSQLNullInt64Key(t *testing.T) {
 
 			for _, testCase := range testCases {
 				t.Run(testCase.name, func(t *testing.T) {
+					t.Parallel()
+
 					var b strings.Builder
 					enc := NewEncoder(&b)
 					enc.writeString(testCase.baseJSON)
 					enc.AddSQLNullInt64KeyOmitEmpty("foo", &testCase.sqlNullInt64)
 					_, err := enc.Write()
-					assert.NoError(t, err)
+					require.NoError(t, err)
 					assert.Equal(t, testCase.expectedResult, b.String())
 
 					var b2 strings.Builder
@@ -461,7 +508,7 @@ func TestAddSQLNullInt64Key(t *testing.T) {
 					enc.writeString(testCase.baseJSON)
 					enc.SQLNullInt64KeyOmitEmpty("foo", &testCase.sqlNullInt64)
 					_, err = enc.Write()
-					assert.NoError(t, err)
+					require.NoError(t, err)
 					assert.Equal(t, testCase.expectedResult, b2.String())
 				})
 			}
@@ -470,9 +517,13 @@ func TestAddSQLNullInt64Key(t *testing.T) {
 }
 
 func TestAddSQLNullInt64(t *testing.T) {
+	t.Parallel()
+
 	t.Run(
 		"AddSQLNullInt64",
 		func(t *testing.T) {
+			t.Parallel()
+
 			testCases := []struct {
 				name           string
 				sqlNullInt64   sql.NullInt64
@@ -508,12 +559,14 @@ func TestAddSQLNullInt64(t *testing.T) {
 
 			for _, testCase := range testCases {
 				t.Run(testCase.name, func(t *testing.T) {
+					t.Parallel()
+
 					var b strings.Builder
 					enc := NewEncoder(&b)
 					enc.writeString(testCase.baseJSON)
 					enc.AddSQLNullInt64(&testCase.sqlNullInt64)
 					_, err := enc.Write()
-					assert.NoError(t, err)
+					require.NoError(t, err)
 					assert.Equal(t, testCase.expectedResult, b.String())
 
 					var b2 strings.Builder
@@ -521,7 +574,7 @@ func TestAddSQLNullInt64(t *testing.T) {
 					enc.writeString(testCase.baseJSON)
 					enc.SQLNullInt64(&testCase.sqlNullInt64)
 					_, err = enc.Write()
-					assert.NoError(t, err)
+					require.NoError(t, err)
 					assert.Equal(t, testCase.expectedResult, b2.String())
 				})
 			}
@@ -530,6 +583,8 @@ func TestAddSQLNullInt64(t *testing.T) {
 	t.Run(
 		"AddSQLNullInt64KeyOmitEmpty, is should encode a sql.NullInt64",
 		func(t *testing.T) {
+			t.Parallel()
+
 			testCases := []struct {
 				name           string
 				sqlNullInt64   sql.NullInt64
@@ -559,12 +614,14 @@ func TestAddSQLNullInt64(t *testing.T) {
 
 			for _, testCase := range testCases {
 				t.Run(testCase.name, func(t *testing.T) {
+					t.Parallel()
+
 					var b strings.Builder
 					enc := NewEncoder(&b)
 					enc.writeString(testCase.baseJSON)
 					enc.AddSQLNullInt64OmitEmpty(&testCase.sqlNullInt64)
 					_, err := enc.Write()
-					assert.NoError(t, err)
+					require.NoError(t, err)
 					assert.Equal(t, testCase.expectedResult, b.String())
 
 					var b2 strings.Builder
@@ -572,7 +629,7 @@ func TestAddSQLNullInt64(t *testing.T) {
 					enc.writeString(testCase.baseJSON)
 					enc.SQLNullInt64OmitEmpty(&testCase.sqlNullInt64)
 					_, err = enc.Write()
-					assert.NoError(t, err)
+					require.NoError(t, err)
 					assert.Equal(t, testCase.expectedResult, b2.String())
 				})
 			}
@@ -581,7 +638,9 @@ func TestAddSQLNullInt64(t *testing.T) {
 }
 
 // NullFloat64.
-func TestEncoceSQLNullFloat64(t *testing.T) {
+func TestEncodeSQLNullFloat64(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name           string
 		sqlNullFloat64 sql.NullFloat64
@@ -606,13 +665,15 @@ func TestEncoceSQLNullFloat64(t *testing.T) {
 
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			var b strings.Builder
 			enc := NewEncoder(&b)
 			err := enc.EncodeSQLNullFloat64(&testCase.sqlNullFloat64)
 			if testCase.err {
-				assert.NotNil(t, err)
+				require.Error(t, err)
 			} else {
-				assert.Nil(t, err)
+				require.NoError(t, err)
 				assert.Equal(t, testCase.expectedResult, b.String())
 			}
 		})
@@ -620,12 +681,14 @@ func TestEncoceSQLNullFloat64(t *testing.T) {
 	t.Run(
 		"should panic as the encoder is pooled",
 		func(t *testing.T) {
+			t.Parallel()
+
 			builder := &strings.Builder{}
 			enc := NewEncoder(builder)
 			enc.isPooled = 1
 			defer func() {
 				err := recover()
-				assert.NotNil(t, err, "err should not be nil")
+				require.NotNil(t, err, "err should not be nil")
 				assert.IsType(t, InvalidUsagePooledEncoderError(""), err, "err should be of type InvalidUsagePooledEncoderError")
 			}()
 			_ = enc.EncodeSQLNullFloat64(&sql.NullFloat64{})
@@ -636,18 +699,24 @@ func TestEncoceSQLNullFloat64(t *testing.T) {
 	t.Run(
 		"should return an error as the writer encounters an error",
 		func(t *testing.T) {
+			t.Parallel()
+
 			builder := TestWriterError("")
 			enc := NewEncoder(builder)
 			err := enc.EncodeSQLNullFloat64(&sql.NullFloat64{})
-			assert.NotNil(t, err)
+			require.Error(t, err)
 		},
 	)
 }
 
 func TestAddSQLNullFloat64Key(t *testing.T) {
+	t.Parallel()
+
 	t.Run(
 		"AddSQLNullFloat64Key",
 		func(t *testing.T) {
+			t.Parallel()
+
 			testCases := []struct {
 				name           string
 				sqlNullFloat64 sql.NullFloat64
@@ -683,12 +752,14 @@ func TestAddSQLNullFloat64Key(t *testing.T) {
 
 			for _, testCase := range testCases {
 				t.Run(testCase.name, func(t *testing.T) {
+					t.Parallel()
+
 					var b strings.Builder
 					enc := NewEncoder(&b)
 					enc.writeString(testCase.baseJSON)
 					enc.AddSQLNullFloat64Key("foo", &testCase.sqlNullFloat64)
 					_, err := enc.Write()
-					assert.NoError(t, err)
+					require.NoError(t, err)
 					assert.Equal(t, testCase.expectedResult, b.String())
 
 					var b2 strings.Builder
@@ -696,7 +767,7 @@ func TestAddSQLNullFloat64Key(t *testing.T) {
 					enc.writeString(testCase.baseJSON)
 					enc.SQLNullFloat64Key("foo", &testCase.sqlNullFloat64)
 					_, err = enc.Write()
-					assert.NoError(t, err)
+					require.NoError(t, err)
 					assert.Equal(t, testCase.expectedResult, b2.String())
 				})
 			}
@@ -705,6 +776,8 @@ func TestAddSQLNullFloat64Key(t *testing.T) {
 	t.Run(
 		"AddSQLNullFloat64KeyOmitEmpty, is should encode a sql.NullFloat64",
 		func(t *testing.T) {
+			t.Parallel()
+
 			testCases := []struct {
 				name           string
 				sqlNullFloat64 sql.NullFloat64
@@ -734,12 +807,14 @@ func TestAddSQLNullFloat64Key(t *testing.T) {
 
 			for _, testCase := range testCases {
 				t.Run(testCase.name, func(t *testing.T) {
+					t.Parallel()
+
 					var b strings.Builder
 					enc := NewEncoder(&b)
 					enc.writeString(testCase.baseJSON)
 					enc.AddSQLNullFloat64KeyOmitEmpty("foo", &testCase.sqlNullFloat64)
 					_, err := enc.Write()
-					assert.NoError(t, err)
+					require.NoError(t, err)
 					assert.Equal(t, testCase.expectedResult, b.String())
 
 					var b2 strings.Builder
@@ -747,7 +822,7 @@ func TestAddSQLNullFloat64Key(t *testing.T) {
 					enc.writeString(testCase.baseJSON)
 					enc.SQLNullFloat64KeyOmitEmpty("foo", &testCase.sqlNullFloat64)
 					_, err = enc.Write()
-					assert.NoError(t, err)
+					require.NoError(t, err)
 					assert.Equal(t, testCase.expectedResult, b2.String())
 				})
 			}
@@ -756,9 +831,13 @@ func TestAddSQLNullFloat64Key(t *testing.T) {
 }
 
 func TestAddSQLNullFloat64(t *testing.T) {
+	t.Parallel()
+
 	t.Run(
 		"AddSQLNullFloat64",
 		func(t *testing.T) {
+			t.Parallel()
+
 			testCases := []struct {
 				name           string
 				sqlNullFloat64 sql.NullFloat64
@@ -794,12 +873,14 @@ func TestAddSQLNullFloat64(t *testing.T) {
 
 			for _, testCase := range testCases {
 				t.Run(testCase.name, func(t *testing.T) {
+					t.Parallel()
+
 					var b strings.Builder
 					enc := NewEncoder(&b)
 					enc.writeString(testCase.baseJSON)
 					enc.AddSQLNullFloat64(&testCase.sqlNullFloat64)
 					_, err := enc.Write()
-					assert.NoError(t, err)
+					require.NoError(t, err)
 					assert.Equal(t, testCase.expectedResult, b.String())
 
 					var b2 strings.Builder
@@ -807,7 +888,7 @@ func TestAddSQLNullFloat64(t *testing.T) {
 					enc.writeString(testCase.baseJSON)
 					enc.SQLNullFloat64(&testCase.sqlNullFloat64)
 					_, err = enc.Write()
-					assert.NoError(t, err)
+					require.NoError(t, err)
 					assert.Equal(t, testCase.expectedResult, b2.String())
 				})
 			}
@@ -816,6 +897,8 @@ func TestAddSQLNullFloat64(t *testing.T) {
 	t.Run(
 		"AddSQLNullFloat64KeyOmitEmpty, is should encode a sql.NullFloat64",
 		func(t *testing.T) {
+			t.Parallel()
+
 			testCases := []struct {
 				name           string
 				sqlNullFloat64 sql.NullFloat64
@@ -845,12 +928,14 @@ func TestAddSQLNullFloat64(t *testing.T) {
 
 			for _, testCase := range testCases {
 				t.Run(testCase.name, func(t *testing.T) {
+					t.Parallel()
+
 					var b strings.Builder
 					enc := NewEncoder(&b)
 					enc.writeString(testCase.baseJSON)
 					enc.AddSQLNullFloat64OmitEmpty(&testCase.sqlNullFloat64)
 					_, err := enc.Write()
-					assert.NoError(t, err)
+					require.NoError(t, err)
 					assert.Equal(t, testCase.expectedResult, b.String())
 
 					var b2 strings.Builder
@@ -858,7 +943,7 @@ func TestAddSQLNullFloat64(t *testing.T) {
 					enc.writeString(testCase.baseJSON)
 					enc.SQLNullFloat64OmitEmpty(&testCase.sqlNullFloat64)
 					_, err = enc.Write()
-					assert.NoError(t, err)
+					require.NoError(t, err)
 					assert.Equal(t, testCase.expectedResult, b2.String())
 				})
 			}
@@ -867,7 +952,9 @@ func TestAddSQLNullFloat64(t *testing.T) {
 }
 
 // NullBool.
-func TestEncoceSQLNullBool(t *testing.T) {
+func TestEncodeSQLNullBool(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name           string
 		sqlNullBool    sql.NullBool
@@ -892,13 +979,15 @@ func TestEncoceSQLNullBool(t *testing.T) {
 
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			var b strings.Builder
 			enc := NewEncoder(&b)
 			err := enc.EncodeSQLNullBool(&testCase.sqlNullBool)
 			if testCase.err {
-				assert.NotNil(t, err)
+				require.Error(t, err)
 			} else {
-				assert.Nil(t, err)
+				require.NoError(t, err)
 				assert.Equal(t, testCase.expectedResult, b.String())
 			}
 		})
@@ -906,12 +995,14 @@ func TestEncoceSQLNullBool(t *testing.T) {
 	t.Run(
 		"should panic as the encoder is pooled",
 		func(t *testing.T) {
+			t.Parallel()
+
 			builder := &strings.Builder{}
 			enc := NewEncoder(builder)
 			enc.isPooled = 1
 			defer func() {
 				err := recover()
-				assert.NotNil(t, err, "err should not be nil")
+				require.NotNil(t, err, "err should not be nil")
 				assert.IsType(t, InvalidUsagePooledEncoderError(""), err, "err should be of type InvalidUsagePooledEncoderError")
 			}()
 			_ = enc.EncodeSQLNullBool(&sql.NullBool{})
@@ -922,18 +1013,24 @@ func TestEncoceSQLNullBool(t *testing.T) {
 	t.Run(
 		"should return an error as the writer encounters an error",
 		func(t *testing.T) {
+			t.Parallel()
+
 			builder := TestWriterError("")
 			enc := NewEncoder(builder)
 			err := enc.EncodeSQLNullBool(&sql.NullBool{})
-			assert.NotNil(t, err)
+			require.Error(t, err)
 		},
 	)
 }
 
 func TestAddSQLNullBoolKey(t *testing.T) {
+	t.Parallel()
+
 	t.Run(
 		"AddSQLNullBoolKey",
 		func(t *testing.T) {
+			t.Parallel()
+
 			testCases := []struct {
 				name           string
 				sqlNullBool    sql.NullBool
@@ -969,12 +1066,14 @@ func TestAddSQLNullBoolKey(t *testing.T) {
 
 			for _, testCase := range testCases {
 				t.Run(testCase.name, func(t *testing.T) {
+					t.Parallel()
+
 					var b strings.Builder
 					enc := NewEncoder(&b)
 					enc.writeString(testCase.baseJSON)
 					enc.AddSQLNullBoolKey("foo", &testCase.sqlNullBool)
 					_, err := enc.Write()
-					assert.NoError(t, err)
+					require.NoError(t, err)
 					assert.Equal(t, testCase.expectedResult, b.String())
 
 					var b2 strings.Builder
@@ -982,7 +1081,7 @@ func TestAddSQLNullBoolKey(t *testing.T) {
 					enc.writeString(testCase.baseJSON)
 					enc.SQLNullBoolKey("foo", &testCase.sqlNullBool)
 					_, err = enc.Write()
-					assert.NoError(t, err)
+					require.NoError(t, err)
 					assert.Equal(t, testCase.expectedResult, b2.String())
 				})
 			}
@@ -991,6 +1090,8 @@ func TestAddSQLNullBoolKey(t *testing.T) {
 	t.Run(
 		"AddSQLNullBoolKeyOmitEmpty, is should encode a sql.NullBool",
 		func(t *testing.T) {
+			t.Parallel()
+
 			testCases := []struct {
 				name           string
 				sqlNullBool    sql.NullBool
@@ -1020,12 +1121,14 @@ func TestAddSQLNullBoolKey(t *testing.T) {
 
 			for _, testCase := range testCases {
 				t.Run(testCase.name, func(t *testing.T) {
+					t.Parallel()
+
 					var b strings.Builder
 					enc := NewEncoder(&b)
 					enc.writeString(testCase.baseJSON)
 					enc.AddSQLNullBoolKeyOmitEmpty("foo", &testCase.sqlNullBool)
 					_, err := enc.Write()
-					assert.NoError(t, err)
+					require.NoError(t, err)
 					assert.Equal(t, testCase.expectedResult, b.String())
 
 					var b2 strings.Builder
@@ -1033,7 +1136,7 @@ func TestAddSQLNullBoolKey(t *testing.T) {
 					enc.writeString(testCase.baseJSON)
 					enc.SQLNullBoolKeyOmitEmpty("foo", &testCase.sqlNullBool)
 					_, err = enc.Write()
-					assert.NoError(t, err)
+					require.NoError(t, err)
 					assert.Equal(t, testCase.expectedResult, b2.String())
 				})
 			}
@@ -1042,9 +1145,13 @@ func TestAddSQLNullBoolKey(t *testing.T) {
 }
 
 func TestAddSQLNullBool(t *testing.T) {
+	t.Parallel()
+
 	t.Run(
 		"AddSQLNullBool",
 		func(t *testing.T) {
+			t.Parallel()
+
 			testCases := []struct {
 				name           string
 				sqlNullBool    sql.NullBool
@@ -1080,12 +1187,14 @@ func TestAddSQLNullBool(t *testing.T) {
 
 			for _, testCase := range testCases {
 				t.Run(testCase.name, func(t *testing.T) {
+					t.Parallel()
+
 					var b strings.Builder
 					enc := NewEncoder(&b)
 					enc.writeString(testCase.baseJSON)
 					enc.AddSQLNullBool(&testCase.sqlNullBool)
 					_, err := enc.Write()
-					assert.NoError(t, err)
+					require.NoError(t, err)
 					assert.Equal(t, testCase.expectedResult, b.String())
 
 					var b2 strings.Builder
@@ -1093,7 +1202,7 @@ func TestAddSQLNullBool(t *testing.T) {
 					enc.writeString(testCase.baseJSON)
 					enc.SQLNullBool(&testCase.sqlNullBool)
 					_, err = enc.Write()
-					assert.NoError(t, err)
+					require.NoError(t, err)
 					assert.Equal(t, testCase.expectedResult, b2.String())
 				})
 			}
@@ -1102,6 +1211,8 @@ func TestAddSQLNullBool(t *testing.T) {
 	t.Run(
 		"AddSQLNullBoolKeyOmitEmpty, is should encode a sql.NullBool",
 		func(t *testing.T) {
+			t.Parallel()
+
 			testCases := []struct {
 				name           string
 				sqlNullBool    sql.NullBool
@@ -1131,12 +1242,14 @@ func TestAddSQLNullBool(t *testing.T) {
 
 			for _, testCase := range testCases {
 				t.Run(testCase.name, func(t *testing.T) {
+					t.Parallel()
+
 					var b strings.Builder
 					enc := NewEncoder(&b)
 					enc.writeString(testCase.baseJSON)
 					enc.AddSQLNullBoolOmitEmpty(&testCase.sqlNullBool)
 					_, err := enc.Write()
-					assert.NoError(t, err)
+					require.NoError(t, err)
 					assert.Equal(t, testCase.expectedResult, b.String())
 
 					var b2 strings.Builder
@@ -1144,7 +1257,7 @@ func TestAddSQLNullBool(t *testing.T) {
 					enc.writeString(testCase.baseJSON)
 					enc.SQLNullBoolOmitEmpty(&testCase.sqlNullBool)
 					_, err = enc.Write()
-					assert.NoError(t, err)
+					require.NoError(t, err)
 					assert.Equal(t, testCase.expectedResult, b2.String())
 				})
 			}
@@ -1153,6 +1266,8 @@ func TestAddSQLNullBool(t *testing.T) {
 }
 
 func TestEncoderSQLNullStringEmpty(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name         string
 		baseJSON     string
@@ -1171,19 +1286,23 @@ func TestEncoderSQLNullStringEmpty(t *testing.T) {
 	}
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			var b strings.Builder
 			enc := NewEncoder(&b)
 			enc.writeString(testCase.baseJSON)
 			enc.AddSQLNullStringNullEmpty(&sql.NullString{Valid: true})
 			enc.SQLNullStringNullEmpty(&sql.NullString{String: "bar", Valid: true})
 			_, err := enc.Write()
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, testCase.expectedJSON, b.String())
 		})
 	}
 }
 
 func TestEncoderSQLNullStringKeyNullEmpty(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name         string
 		baseJSON     string
@@ -1202,19 +1321,23 @@ func TestEncoderSQLNullStringKeyNullEmpty(t *testing.T) {
 	}
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			var b strings.Builder
 			enc := NewEncoder(&b)
 			enc.writeString(testCase.baseJSON)
 			enc.SQLNullStringKeyNullEmpty("foo", &sql.NullString{Valid: true})
 			enc.SQLNullStringKeyNullEmpty("bar", &sql.NullString{String: "bar", Valid: true})
 			_, err := enc.Write()
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, testCase.expectedJSON, b.String())
 		})
 	}
 }
 
 func TestEncoderSQLNullBoolEmpty(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name         string
 		baseJSON     string
@@ -1233,19 +1356,23 @@ func TestEncoderSQLNullBoolEmpty(t *testing.T) {
 	}
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			var b strings.Builder
 			enc := NewEncoder(&b)
 			enc.writeString(testCase.baseJSON)
 			enc.SQLNullBoolNullEmpty(&sql.NullBool{Valid: true})
 			enc.SQLNullBoolNullEmpty(&sql.NullBool{Bool: true, Valid: true})
 			_, err := enc.Write()
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, testCase.expectedJSON, b.String())
 		})
 	}
 }
 
 func TestEncoderSQLNullBoolKeyNullEmpty(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name         string
 		baseJSON     string
@@ -1264,19 +1391,23 @@ func TestEncoderSQLNullBoolKeyNullEmpty(t *testing.T) {
 	}
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			var b strings.Builder
 			enc := NewEncoder(&b)
 			enc.writeString(testCase.baseJSON)
 			enc.AddSQLNullBoolKeyNullEmpty("foo", &sql.NullBool{Valid: true})
 			enc.SQLNullBoolKeyNullEmpty("bar", &sql.NullBool{Bool: true, Valid: true})
 			_, err := enc.Write()
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, testCase.expectedJSON, b.String())
 		})
 	}
 }
 
 func TestEncoderSQLNullInt64Empty(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name         string
 		baseJSON     string
@@ -1295,19 +1426,23 @@ func TestEncoderSQLNullInt64Empty(t *testing.T) {
 	}
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			var b strings.Builder
 			enc := NewEncoder(&b)
 			enc.writeString(testCase.baseJSON)
 			enc.AddSQLNullInt64NullEmpty(&sql.NullInt64{Valid: true})
 			enc.SQLNullInt64NullEmpty(&sql.NullInt64{Int64: 1, Valid: true})
 			_, err := enc.Write()
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, testCase.expectedJSON, b.String())
 		})
 	}
 }
 
 func TestEncoderSQLNullInt64KeyNullEmpty(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name         string
 		baseJSON     string
@@ -1326,19 +1461,23 @@ func TestEncoderSQLNullInt64KeyNullEmpty(t *testing.T) {
 	}
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			var b strings.Builder
 			enc := NewEncoder(&b)
 			enc.writeString(testCase.baseJSON)
 			enc.AddSQLNullInt64KeyNullEmpty("foo", &sql.NullInt64{Int64: 0, Valid: true})
 			enc.SQLNullInt64KeyNullEmpty("bar", &sql.NullInt64{Int64: 1, Valid: true})
 			_, err := enc.Write()
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, testCase.expectedJSON, b.String())
 		})
 	}
 }
 
 func TestEncoderSQLNullFloat64Empty(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name         string
 		baseJSON     string
@@ -1357,19 +1496,23 @@ func TestEncoderSQLNullFloat64Empty(t *testing.T) {
 	}
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			var b strings.Builder
 			enc := NewEncoder(&b)
 			enc.writeString(testCase.baseJSON)
 			enc.AddSQLNullFloat64NullEmpty(&sql.NullFloat64{Float64: 0, Valid: true})
 			enc.SQLNullFloat64NullEmpty(&sql.NullFloat64{Float64: 1, Valid: true})
 			_, err := enc.Write()
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, testCase.expectedJSON, b.String())
 		})
 	}
 }
 
 func TestEncoderSQLNullFloat64KeyNullEmpty(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name         string
 		baseJSON     string
@@ -1388,13 +1531,15 @@ func TestEncoderSQLNullFloat64KeyNullEmpty(t *testing.T) {
 	}
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			var b strings.Builder
 			enc := NewEncoder(&b)
 			enc.writeString(testCase.baseJSON)
 			enc.AddSQLNullFloat64KeyNullEmpty("foo", &sql.NullFloat64{Float64: 0, Valid: true})
 			enc.SQLNullFloat64KeyNullEmpty("bar", &sql.NullFloat64{Float64: 1, Valid: true})
 			_, err := enc.Write()
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, testCase.expectedJSON, b.String())
 		})
 	}

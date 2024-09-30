@@ -14,30 +14,38 @@ func (t TestWriterError) Write(b []byte) (int, error) {
 }
 
 func TestAppendBytes(t *testing.T) {
+	t.Parallel()
+
 	b := []byte(``)
 	enc := NewEncoder(nil)
 	enc.buf = b
 	enc.AppendBytes([]byte(`true`))
-	assert.Equal(t, string(enc.buf), `true`, "string(enc.buf) should equal to true")
+	assert.Equal(t, `true`, string(enc.buf), "string(enc.buf) should equal to true")
 }
 
 func TestAppendByte(t *testing.T) {
+	t.Parallel()
+
 	b := []byte(``)
 	enc := NewEncoder(nil)
 	enc.buf = b
 	enc.AppendByte(1)
-	assert.Equal(t, enc.buf[0], uint8(0x1), "b[0] should equal to 1")
+	assert.Equal(t, uint8(0x1), enc.buf[0], "b[0] should equal to 1")
 }
 
 func TestAppendString(t *testing.T) {
+	t.Parallel()
+
 	b := []byte(``)
 	enc := NewEncoder(nil)
 	enc.buf = b
 	enc.AppendString("true")
-	assert.Equal(t, string(enc.buf), `"true"`, "string(enc.buf) should equal to true")
+	assert.Equal(t, `"true"`, string(enc.buf), "string(enc.buf) should equal to true")
 }
 
 func TestBuf(t *testing.T) {
+	t.Parallel()
+
 	b := []byte(`test`)
 	enc := NewEncoder(nil)
 	enc.buf = b
