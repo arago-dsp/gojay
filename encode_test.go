@@ -9,7 +9,7 @@ import (
 
 type TestWriterError string
 
-func (t TestWriterError) Write(b []byte) (int, error) {
+func (t TestWriterError) Write(_ []byte) (int, error) {
 	return 0, errors.New("Test Error")
 }
 

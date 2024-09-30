@@ -149,17 +149,17 @@ func (dec *Decoder) getString() (int, int, error) {
 		switch dec.data[dec.cursor] {
 		// string found
 		case '"':
-			dec.cursor = dec.cursor + 1
+			dec.cursor++
 			return keyStart, dec.cursor, nil
 		// slash found
 		case '\\':
-			dec.cursor = dec.cursor + 1
+			dec.cursor++
 			err := dec.parseEscapedString()
 			if err != nil {
 				return 0, 0, err
 			}
 		default:
-			dec.cursor = dec.cursor + 1
+			dec.cursor++
 			continue
 		}
 	}
@@ -171,7 +171,7 @@ func (dec *Decoder) skipEscapedString() error {
 	for ; dec.cursor < dec.length || dec.read(); dec.cursor++ {
 		if dec.data[dec.cursor] != '\\' {
 			d := dec.data[dec.cursor]
-			dec.cursor = dec.cursor + 1
+			dec.cursor++
 			nSlash := dec.cursor - start
 			switch d {
 			case '"':
@@ -206,17 +206,17 @@ func (dec *Decoder) skipString() error {
 		// found the closing quote
 		// let's return
 		case '"':
-			dec.cursor = dec.cursor + 1
+			dec.cursor++
 			return nil
 		// solidus found start parsing an escaped string
 		case '\\':
-			dec.cursor = dec.cursor + 1
+			dec.cursor++
 			err := dec.skipEscapedString()
 			if err != nil {
 				return err
 			}
 		default:
-			dec.cursor = dec.cursor + 1
+			dec.cursor++
 			continue
 		}
 	}
@@ -323,7 +323,7 @@ func (dec *Decoder) getStringNoEscape() (int, int, error) {
 			}
 		}
 		dec.data = append(dec.data, nextRead[0:n]...)
-		dec.length = dec.length + n
+		dec.length += n
 		next = bytes.IndexByte(dec.data[keyStart:], '"')
 	}
 

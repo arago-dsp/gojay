@@ -32,7 +32,7 @@ func (t TestEncodingArr) IsNil() bool {
 	return t == nil
 }
 
-type testEncodingArrInterfaces []interface{}
+type testEncodingArrInterfaces []any
 
 func (t testEncodingArrInterfaces) MarshalJSONArray(enc *Encoder) {
 	for _, e := range t {
@@ -268,7 +268,7 @@ type TestObjEmpty struct {
 	empty bool
 }
 
-func (t *TestObjEmpty) MarshalJSONObject(enc *Encoder) {
+func (t *TestObjEmpty) MarshalJSONObject(_ *Encoder) {
 }
 
 func (t *TestObjEmpty) IsNil() bool {

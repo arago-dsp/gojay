@@ -16,6 +16,8 @@ func (enc *Encoder) EncodeUint64(n uint64) error {
 }
 
 // encodeUint64 encodes an int to JSON.
+//
+//nolint:unparam
 func (enc *Encoder) encodeUint64(n uint64) ([]byte, error) {
 	enc.buf = strconv.AppendUint(enc.buf, n, 10)
 	return enc.buf, nil

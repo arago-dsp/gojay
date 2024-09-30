@@ -29,7 +29,7 @@ type testObject struct {
 	testBoolNull    *bool
 	testSubObject   *testObject
 	testSubArray    testSliceInts
-	testInterface   interface{}
+	testInterface   any
 }
 
 // make sure it implements interfaces.
@@ -58,6 +58,7 @@ func (t *testObject) MarshalJSONObject(enc *Encoder) {
 	enc.AddBoolKey("testBool", t.testBool)
 }
 
+//nolint:cyclop
 func (t *testObject) UnmarshalJSONObject(dec *Decoder, k string) error {
 	switch k {
 	case "testStr":
@@ -139,7 +140,7 @@ type testObject0Keys struct {
 	testBool      bool
 	testSubObject *testObject0Keys
 	testSubArray  testSliceInts
-	testInterface interface{}
+	testInterface any
 }
 
 // make sure it implements interfaces.

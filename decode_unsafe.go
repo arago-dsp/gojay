@@ -30,7 +30,8 @@ func (u decUnsafe) UnmarshalJSONObject(data []byte, v UnmarshalerJSONObject) err
 	return err
 }
 
-func (u decUnsafe) Unmarshal(data []byte, v interface{}) error {
+//nolint:funlen,cyclop
+func (u decUnsafe) Unmarshal(data []byte, v any) error {
 	var err error
 	var dec *Decoder
 	switch vt := v.(type) {

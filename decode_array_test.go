@@ -27,7 +27,7 @@ func TestSliceInts(t *testing.T) {
 		json           string
 		expectedResult testSliceInts
 		err            bool
-		errType        interface{}
+		errType        any
 	}{
 		{
 			name:           "basic-test",
@@ -108,7 +108,7 @@ func TestSliceStrings(t *testing.T) {
 		json           string
 		expectedResult testSliceStrings
 		err            bool
-		errType        interface{}
+		errType        any
 	}{
 		{
 			name:           "basic-test",
@@ -183,15 +183,17 @@ func TestSliceBools(t *testing.T) {
 		json           string
 		expectedResult testSliceBools
 		err            bool
-		errType        interface{}
+		errType        any
 	}{
 		{
-			name:           "basic-test",
+			name: "basic-test",
+			//nolint:dupword
 			json:           `[true, false, false, true, true, false]`,
 			expectedResult: testSliceBools{true, false, false, true, true, false},
 		},
 		{
-			name:           "basic-test2",
+			name: "basic-test2",
+			//nolint:dupword
 			json:           `[true, false, false, true, null,null,true,false]`,
 			expectedResult: testSliceBools{true, false, false, true, false, false, true, false},
 		},
@@ -253,7 +255,7 @@ func TestSliceSlices(t *testing.T) {
 		json           string
 		expectedResult testSliceSlicesSlices
 		err            bool
-		errType        interface{}
+		errType        any
 	}{
 		{
 			name:           "basic-test",
@@ -320,7 +322,7 @@ func TestSliceObjects(t *testing.T) {
 		json           string
 		expectedResult testSliceObjects
 		err            bool
-		errType        interface{}
+		errType        any
 	}{
 		{
 			name: "basic-test",
@@ -406,8 +408,7 @@ type ObjectArrayNull struct {
 }
 
 func (o *ObjectArrayNull) UnmarshalJSONObject(dec *Decoder, k string) error {
-	switch k {
-	case "subarray":
+	if k == "subarray" {
 		return dec.ArrayNull(&o.SubArray)
 	}
 	return nil
@@ -572,13 +573,13 @@ func TestUnmarshalJSONArrays(t *testing.T) {
 		name         string
 		v            UnmarshalerJSONArray
 		d            []byte
-		expectations func(err error, v interface{}, t *testing.T)
+		expectations func(err error, v any, t *testing.T)
 	}{
 		{
 			v:    new(testDecodeSlice),
 			d:    []byte(`[{"test":"test"}]`),
 			name: "test decode slice",
-			expectations: func(err error, v interface{}, t *testing.T) {
+			expectations: func(err error, v any, t *testing.T) {
 				vtPtr := v.(*testDecodeSlice)
 				vt := *vtPtr
 				require.NoError(t, err)
@@ -590,7 +591,7 @@ func TestUnmarshalJSONArrays(t *testing.T) {
 			v:    new(testDecodeSlice),
 			d:    []byte(`[{"test":"test"},{"test":"test2"}]`),
 			name: "test decode slice",
-			expectations: func(err error, v interface{}, t *testing.T) {
+			expectations: func(err error, v any, t *testing.T) {
 				vtPtr := v.(*testDecodeSlice)
 				vt := *vtPtr
 				require.NoError(t, err)
@@ -603,7 +604,7 @@ func TestUnmarshalJSONArrays(t *testing.T) {
 			v:    new(testDecodeSlice),
 			d:    []byte(`invalid json`),
 			name: "test decode object null",
-			expectations: func(err error, v interface{}, t *testing.T) {
+			expectations: func(err error, _ any, t *testing.T) {
 				require.Error(t, err)
 				assert.IsType(t, InvalidJSONError(""), err, "err must be of type InvalidJSONError")
 			},

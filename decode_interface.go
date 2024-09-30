@@ -6,7 +6,7 @@ import "encoding/json"
 // DecodeInterface reads the next JSON-encoded value from the decoder's input (io.Reader) and stores it in the value pointed to by i.
 //
 // i must be an interface pointer.
-func (dec *Decoder) DecodeInterface(i *interface{}) error {
+func (dec *Decoder) DecodeInterface(i *any) error {
 	if dec.isPooled == 1 {
 		panic(InvalidUsagePooledDecoderError("Invalid usage of pooled decoder"))
 	}
@@ -14,7 +14,7 @@ func (dec *Decoder) DecodeInterface(i *interface{}) error {
 	return err
 }
 
-func (dec *Decoder) decodeInterface(i *interface{}) error {
+func (dec *Decoder) decodeInterface(i *any) error {
 	start, end, err := dec.getObject()
 	if err != nil {
 		dec.cursor = start
@@ -35,7 +35,7 @@ func (dec *Decoder) decodeInterface(i *interface{}) error {
 	return nil
 }
 
-// @afiune Maybe return the type as well?
+//nolint:funlen,nonamedreturns
 func (dec *Decoder) getObject() (start int, end int, err error) {
 	// start cursor
 	for ; dec.cursor < dec.length || dec.read(); dec.cursor++ {
@@ -112,13 +112,13 @@ func (dec *Decoder) getObject() (start int, end int, err error) {
 
 // Add Values functions
 
-// AddInterface decodes the JSON value within an object or an array to a interface{}.
-func (dec *Decoder) AddInterface(v *interface{}) error {
+// AddInterface decodes the JSON value within an object or an array to a any.
+func (dec *Decoder) AddInterface(v *any) error {
 	return dec.Interface(v)
 }
 
-// Interface decodes the JSON value within an object or an array to an interface{}.
-func (dec *Decoder) Interface(value *interface{}) error {
+// Interface decodes the JSON value within an object or an array to an any.
+func (dec *Decoder) Interface(value *any) error {
 	err := dec.decodeInterface(value)
 	if err != nil {
 		return err

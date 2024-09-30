@@ -61,9 +61,13 @@ linters:
     - wsl
     - lll
     - nlreturn
+    - nakedret
     - testpackage
     - thelper
     - testableexamples
+    #- gosec
+    - gochecknoinits
+    - dupl
     - exhaustruct
     - depguard
     - wrapcheck

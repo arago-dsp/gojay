@@ -54,7 +54,7 @@ func TestDecodeSQLNullString(t *testing.T) {
 			dec.Release()
 			defer func() {
 				err := recover()
-				require.Error(t, err.(error), "err shouldnt be nil")
+				require.Error(t, err.(error), "err shouldn't be nil")
 				assert.IsType(t, InvalidUsagePooledDecoderError(""), err, "err should be of type InvalidUsagePooledDecoderError")
 			}()
 			_ = dec.DecodeSQLNullString(&sql.NullString{})

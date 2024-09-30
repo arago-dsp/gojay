@@ -83,7 +83,7 @@ func MarshalJSONObject(v MarshalerJSONObject) ([]byte, error) {
 //	string, int, int8, int16, int32, int64, uint8, uint16, uint32, uint64, float64, float32, bool
 //
 // Marshal returns an InvalidMarshalError.
-func Marshal(v interface{}) ([]byte, error) {
+func Marshal(v any) ([]byte, error) {
 	return marshal(v, false)
 }
 
@@ -94,11 +94,12 @@ func Marshal(v interface{}) ([]byte, error) {
 //	string, int, int8, int16, int32, int64, uint8, uint16, uint32, uint64, float64, float32, bool
 //
 // MarshalAny falls back to "json/encoding" package to marshal the value.
-func MarshalAny(v interface{}) ([]byte, error) {
+func MarshalAny(v any) ([]byte, error) {
 	return marshal(v, true)
 }
 
-func marshal(v interface{}, any bool) ([]byte, error) {
+//nolint:cyclop
+func marshal(v any, b bool) ([]byte, error) {
 	var (
 		enc = BorrowEncoder(nil)
 
@@ -146,7 +147,7 @@ func marshal(v interface{}, any bool) ([]byte, error) {
 		case *EmbeddedJSON:
 			return enc.encodeEmbeddedJSON(vt)
 		default:
-			if any {
+			if b {
 				return json.Marshal(vt)
 			}
 

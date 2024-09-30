@@ -19,7 +19,7 @@ func TestDecoderFloat64(t *testing.T) {
 		expectedResult float64
 		skipResult     bool
 		err            bool
-		errType        interface{}
+		errType        any
 	}{
 		{
 			name:           "basic-float",
@@ -362,7 +362,7 @@ func TestDecoderFloat64Null(t *testing.T) {
 		expectedResult float64
 		resultIsNil    bool
 		err            bool
-		errType        interface{}
+		errType        any
 	}{
 		{
 			name:           "basic-float",
@@ -698,7 +698,7 @@ func TestDecoderFloat32(t *testing.T) {
 		expectedResult float32
 		skipResult     bool
 		err            bool
-		errType        interface{}
+		errType        any
 	}{
 		{
 			name:           "basic-float",
@@ -985,7 +985,7 @@ func TestDecoderFloat32(t *testing.T) {
 		dec.Release()
 		defer func() {
 			err := recover()
-			require.Error(t, err.(error), "err shouldnt be nil")
+			require.Error(t, err.(error), "err shouldn't be nil")
 			assert.IsType(t, InvalidUsagePooledDecoderError(""), err, "err should be of type InvalidUsagePooledDecoderError")
 		}()
 		_ = dec.DecodeFloat32(&result)
@@ -1032,7 +1032,7 @@ func TestDecoderFloat32Null(t *testing.T) {
 		expectedResult float32
 		resultIsNil    bool
 		err            bool
-		errType        interface{}
+		errType        any
 	}{
 		{
 			name:           "basic-float",

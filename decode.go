@@ -61,7 +61,9 @@ func UnmarshalJSONObject(data []byte, v UnmarshalerJSONObject) error {
 // overflows the target type, Unmarshal skips that field and completes the unmarshalling as best it can.
 // If no more serious errors are encountered, Unmarshal returns an UnmarshalTypeError describing the earliest such error.
 // In any case, it's not guaranteed that all the remaining fields following the problematic one will be unmarshalled into the target object.
-func Unmarshal(data []byte, v interface{}) error {
+//
+//nolint:funlen,cyclop,gocyclo
+func Unmarshal(data []byte, v any) error {
 	var err error
 	var dec *Decoder
 	switch vt := v.(type) {
@@ -208,7 +210,7 @@ func Unmarshal(data []byte, v interface{}) error {
 		dec.data = make([]byte, len(data))
 		copy(dec.data, data)
 		_, err = dec.decodeArray(vt)
-	case *interface{}:
+	case *any:
 		dec = borrowDecoder(nil, 0)
 		dec.length = len(data)
 		dec.data = make([]byte, len(data))
@@ -226,13 +228,13 @@ func Unmarshal(data []byte, v interface{}) error {
 
 // UnmarshalerJSONObject is the interface to implement to decode a JSON Object.
 type UnmarshalerJSONObject interface {
-	UnmarshalJSONObject(*Decoder, string) error
+	UnmarshalJSONObject(dec *Decoder, s string) error
 	NKeys() int
 }
 
 // UnmarshalerJSONArray is the interface to implement to decode a JSON Array.
 type UnmarshalerJSONArray interface {
-	UnmarshalJSONArray(*Decoder) error
+	UnmarshalJSONArray(dec *Decoder) error
 }
 
 // A Decoder reads and decodes JSON values from an input stream.
@@ -249,13 +251,17 @@ type Decoder struct {
 	arrayIndex int
 }
 
-// Decode reads the next JSON-encoded value from the decoder's input (io.Reader) and stores it in the value pointed to by v.
+// Decode reads the next JSON-encoded value from the decoder's input (io.Reader)
+// and stores it in the value pointed to by v.
 //
 // See the documentation for Unmarshal for details about the conversion of JSON into a Go value.
 // The differences between Decode and Unmarshal are:
 //   - Decode reads from an io.Reader in the Decoder, whereas Unmarshal reads from a []byte
-//   - Decode leaves to the user the option of borrowing and releasing a Decoder, whereas Unmarshal internally always borrows a Decoder and releases it when the unmarshalling is completed
-func (dec *Decoder) Decode(v interface{}) error {
+//   - Decode leaves to the user the option of borrowing and releasing a Decoder, whereas Unmarshal internally
+//     always borrows a Decoder and releases it when the unmarshalling is completed
+//
+//nolint:funlen,gocyclo,cyclop
+func (dec *Decoder) Decode(v any) error {
 	if dec.isPooled == 1 {
 		panic(InvalidUsagePooledDecoderError("Invalid usage of pooled decoder"))
 	}
@@ -319,7 +325,7 @@ func (dec *Decoder) Decode(v interface{}) error {
 		_, err = dec.decodeArray(vt)
 	case *EmbeddedJSON:
 		err = dec.decodeEmbeddedJSON(vt)
-	case *interface{}:
+	case *any:
 		err = dec.decodeInterface(vt)
 	default:
 		return InvalidUnmarshalError(fmt.Sprintf(invalidUnmarshalErrorMsg, vt))
@@ -342,6 +348,7 @@ func isDigit(b byte) bool {
 }
 
 func (dec *Decoder) read() bool {
+	//nolint:nestif
 	if dec.r != nil {
 		// if we reach the end, double the buffer to ensure there's always more space
 		if len(dec.data) == dec.length {
@@ -365,11 +372,11 @@ func (dec *Decoder) read() bool {
 				if n == 0 {
 					return false
 				}
-				dec.length = dec.length + n
+				dec.length += n
 				return true
 			}
 		}
-		dec.length = dec.length + n
+		dec.length += n
 		return true
 	}
 	return false

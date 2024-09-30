@@ -18,6 +18,8 @@ func (enc *Encoder) EncodeTime(t *time.Time, format string) error {
 }
 
 // encodeInt encodes an int to JSON.
+//
+//nolint:unparam
 func (enc *Encoder) encodeTime(t *time.Time, format string) ([]byte, error) {
 	enc.writeByte('"')
 	enc.buf = t.AppendFormat(enc.buf, format)

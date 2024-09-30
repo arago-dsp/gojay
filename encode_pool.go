@@ -6,13 +6,13 @@ import (
 )
 
 var encPool = sync.Pool{
-	New: func() interface{} {
+	New: func() any {
 		return NewEncoder(nil)
 	},
 }
 
 func init() {
-	for i := 0; i < 32; i++ {
+	for range 32 {
 		encPool.Put(NewEncoder(nil))
 	}
 }
@@ -24,6 +24,7 @@ func NewEncoder(w io.Writer) *Encoder {
 
 // BorrowEncoder borrows an Encoder from the pool.
 func BorrowEncoder(w io.Writer) *Encoder {
+	//nolint:forcetypeassert
 	enc := encPool.Get().(*Encoder)
 	enc.w = w
 	enc.buf = enc.buf[:0]

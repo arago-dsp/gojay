@@ -23,7 +23,7 @@ func (dec *Decoder) decodeFloat64(v *float64) error {
 			*v = val
 			return nil
 		case '-':
-			dec.cursor = dec.cursor + 1
+			dec.cursor++
 			val, err := dec.getFloatNegative()
 			if err != nil {
 				return err
@@ -65,7 +65,7 @@ func (dec *Decoder) decodeFloat64Null(v **float64) error {
 			**v = val
 			return nil
 		case '-':
-			dec.cursor = dec.cursor + 1
+			dec.cursor++
 			val, err := dec.getFloatNegative()
 			if err != nil {
 				return err
@@ -107,6 +107,7 @@ func (dec *Decoder) getFloatNegative() (float64, error) {
 	return 0, dec.raiseInvalidJSONErr(dec.cursor)
 }
 
+//nolint:funlen,gocognit,cyclop
 func (dec *Decoder) getFloat() (float64, error) {
 	end := dec.cursor
 	start := dec.cursor
@@ -124,6 +125,7 @@ func (dec *Decoder) getFloat() (float64, error) {
 			// get number after the decimal point
 			for i := j + 1; i < dec.length || dec.read(); i++ {
 				c := dec.data[i]
+				//nolint:nestif
 				if isDigit(c) {
 					end = i
 					// multiply the before decimal point portion by 10 using bitwise
@@ -233,7 +235,7 @@ func (dec *Decoder) decodeFloat32(v *float32) error {
 			*v = val
 			return nil
 		case '-':
-			dec.cursor = dec.cursor + 1
+			dec.cursor++
 			val, err := dec.getFloat32Negative()
 			if err != nil {
 				return err
@@ -275,7 +277,7 @@ func (dec *Decoder) decodeFloat32Null(v **float32) error {
 			**v = val
 			return nil
 		case '-':
-			dec.cursor = dec.cursor + 1
+			dec.cursor++
 			val, err := dec.getFloat32Negative()
 			if err != nil {
 				return err
@@ -317,6 +319,7 @@ func (dec *Decoder) getFloat32Negative() (float32, error) {
 	return 0, dec.raiseInvalidJSONErr(dec.cursor)
 }
 
+//nolint:funlen,gocognit,cyclop
 func (dec *Decoder) getFloat32() (float32, error) {
 	end := dec.cursor
 	start := dec.cursor
@@ -332,13 +335,14 @@ func (dec *Decoder) getFloat32() (float32, error) {
 			// then we get part after decimal as integer
 			start = j + 1
 			// get number after the decimal point
-			// multiple the before decimal point portion by 10 using bitwise
+			// multiply the before decimal point portion by 10 using bitwise
 			for i := j + 1; i < dec.length || dec.read(); i++ {
 				c := dec.data[i]
+				//nolint:nestif
 				if isDigit(c) {
 					end = i
 					// multiply the before decimal point portion by 10 using bitwise
-					// make sure it desn't overflow
+					// make sure it doesn't overflow
 					if end-start < 9 {
 						beforeDecimal = (beforeDecimal << 3) + (beforeDecimal << 1)
 					}

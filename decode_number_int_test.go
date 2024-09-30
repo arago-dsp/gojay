@@ -18,7 +18,7 @@ func TestDecoderInt(t *testing.T) {
 		json           string
 		expectedResult int
 		err            bool
-		errType        interface{}
+		errType        any
 	}{
 		{
 			name:           "basic-positive",
@@ -317,7 +317,7 @@ func TestDecoderInt(t *testing.T) {
 		dec.Release()
 		defer func() {
 			err := recover()
-			require.Error(t, err.(error), "err shouldnt be nil")
+			require.Error(t, err.(error), "err shouldn't be nil")
 			assert.IsType(
 				t,
 				InvalidUsagePooledDecoderError(""),
@@ -368,7 +368,7 @@ func TestDecoderIntNull(t *testing.T) {
 		json           string
 		expectedResult int
 		err            bool
-		errType        interface{}
+		errType        any
 		resultIsNil    bool
 	}{
 		{
@@ -699,7 +699,7 @@ func TestDecoderInt64(t *testing.T) {
 		json           string
 		expectedResult int64
 		err            bool
-		errType        interface{}
+		errType        any
 	}{
 		{
 			name:           "basic-positive",
@@ -1030,7 +1030,7 @@ func TestDecoderInt64(t *testing.T) {
 		dec.Release()
 		defer func() {
 			err := recover()
-			require.Error(t, err.(error), "err shouldnt be nil")
+			require.Error(t, err.(error), "err shouldn't be nil")
 			assert.IsType(
 				t,
 				InvalidUsagePooledDecoderError(""),
@@ -1081,7 +1081,7 @@ func TestDecoderInt64Null(t *testing.T) {
 		json           string
 		expectedResult int64
 		err            bool
-		errType        interface{}
+		errType        any
 		resultIsNil    bool
 	}{
 		{
@@ -1432,7 +1432,7 @@ func TestDecoderInt32(t *testing.T) {
 		json           string
 		expectedResult int32
 		err            bool
-		errType        interface{}
+		errType        any
 	}{
 		{
 			name:           "basic-positive",
@@ -1792,7 +1792,7 @@ func TestDecoderInt32(t *testing.T) {
 		dec.Release()
 		defer func() {
 			err := recover()
-			require.Error(t, err.(error), "err shouldnt be nil")
+			require.Error(t, err.(error), "err shouldn't be nil")
 			assert.IsType(t, InvalidUsagePooledDecoderError(""), err, "err should be of type InvalidUsagePooledDecoderError")
 		}()
 		_ = dec.DecodeInt32(&result)
@@ -1838,7 +1838,7 @@ func TestDecoderInt32Null(t *testing.T) {
 		json           string
 		expectedResult int32
 		err            bool
-		errType        interface{}
+		errType        any
 		resultIsNil    bool
 	}{
 		{
@@ -2214,7 +2214,7 @@ func TestDecoderInt16(t *testing.T) {
 		json           string
 		expectedResult int16
 		err            bool
-		errType        interface{}
+		errType        any
 	}{
 		{
 			name:           "basic-positive",
@@ -2541,7 +2541,7 @@ func TestDecoderInt16(t *testing.T) {
 		dec.Release()
 		defer func() {
 			err := recover()
-			require.Error(t, err.(error), "err shouldnt be nil")
+			require.Error(t, err.(error), "err shouldn't be nil")
 			assert.IsType(t, InvalidUsagePooledDecoderError(""), err, "err should be of type InvalidUsagePooledDecoderError")
 		}()
 		_ = dec.DecodeInt16(&result)
@@ -2587,7 +2587,7 @@ func TestDecoderInt16Null(t *testing.T) {
 		json           string
 		expectedResult int16
 		err            bool
-		errType        interface{}
+		errType        any
 		resultIsNil    bool
 	}{
 		{
@@ -2957,7 +2957,7 @@ func TestDecoderInt8(t *testing.T) {
 		json           string
 		expectedResult int8
 		err            bool
-		errType        interface{}
+		errType        any
 	}{
 		{
 			name:           "basic-positive",
@@ -3361,7 +3361,7 @@ func TestDecoderInt8Null(t *testing.T) {
 		json           string
 		expectedResult int8
 		err            bool
-		errType        interface{}
+		errType        any
 		resultIsNil    bool
 	}{
 		{

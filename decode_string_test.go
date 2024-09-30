@@ -17,7 +17,7 @@ func TestDecoderString(t *testing.T) {
 		json           string
 		expectedResult string
 		err            bool
-		errType        interface{}
+		errType        any
 	}{
 		{
 			name:           "basic-string",
@@ -338,7 +338,7 @@ func TestDecoderStringNull(t *testing.T) {
 		json           string
 		expectedResult string
 		err            bool
-		errType        interface{}
+		errType        any
 		resultIsNil    bool
 	}{
 		{
@@ -674,7 +674,7 @@ func TestDecoderStringNoEscape(t *testing.T) {
 		json           string
 		expectedResult string
 		err            bool
-		errType        interface{}
+		errType        any
 	}{
 		{
 			name:           "basic-string",
@@ -1011,7 +1011,7 @@ func TestDecoderStringPoolError(t *testing.T) {
 
 	// reset the pool to make sure it's not full
 	decPool = sync.Pool{
-		New: func() interface{} {
+		New: func() any {
 			return NewDecoder(nil)
 		},
 	}
@@ -1085,7 +1085,7 @@ func TestSkipString(t *testing.T) {
 		json           string
 		expectedResult string
 		err            bool
-		errType        interface{}
+		errType        any
 	}{
 		{
 			name:           "escape quote err",

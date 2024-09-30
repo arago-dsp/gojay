@@ -10,7 +10,7 @@ import (
 )
 
 var encoderTestCases = []struct {
-	v            interface{}
+	v            any
 	expectations func(t *testing.T, b string, err error)
 }{
 	{
@@ -117,16 +117,16 @@ var encoderTestCases = []struct {
 			1, nil, 1, nil, 1, nil, 1, nil, 1.1, nil, 1.1, nil, true, nil,
 			&testObject{},
 			testSliceInts{},
-			[]interface{}{"h", "o", "l", "a"},
+			[]any{"h", "o", "l", "a"},
 		},
 		expectations: func(t *testing.T, b string, err error) {
 			require.NoError(t, err)
-			assert.Equal(t, `{"testStr":"漢字","testInt":1,"testInt64":1,"testInt32":1,"testInt16":1,"testInt8":1,"testUint64":1,"testUint32":1,"testUint16":1,"testUint8":1,"testFloat64":1.1,"testFloat32":1.1,"testBool":true}`, string(b), `string(b) should equal {"testStr":"漢字","testInt":1,"testInt64":1,"testInt32":1,"testInt16":1,"testInt8":1,"testUint64":1,"testUint32":1,"testUint16":1,"testUint8":1,"testFloat64":1.1,"testFloat32":1.1,"testBool":true}`)
+			assert.Equal(t, `{"testStr":"漢字","testInt":1,"testInt64":1,"testInt32":1,"testInt16":1,"testInt8":1,"testUint64":1,"testUint32":1,"testUint16":1,"testUint8":1,"testFloat64":1.1,"testFloat32":1.1,"testBool":true}`, b, `string(b) should equal {"testStr":"漢字","testInt":1,"testInt64":1,"testInt32":1,"testInt16":1,"testInt8":1,"testUint64":1,"testUint32":1,"testUint16":1,"testUint8":1,"testFloat64":1.1,"testFloat32":1.1,"testBool":true}`)
 		},
 	},
 	{
 		v: &struct{}{},
-		expectations: func(t *testing.T, b string, err error) {
+		expectations: func(t *testing.T, _ string, err error) {
 			require.Error(t, err)
 			assert.IsType(t, InvalidMarshalError(""), err, "err should be of type InvalidMarshalError")
 			s := struct{}{}

@@ -54,6 +54,7 @@ func (dec *Decoder) parseUnicode() ([]byte, error) {
 	str := make([]byte, 16)
 	i := 0
 	// check if code can be a surrogate utf16
+	//nolint:nestif
 	if utf16.IsSurrogate(r) {
 		if dec.cursor >= dec.length && !dec.read() {
 			return nil, dec.raiseInvalidJSONErr(dec.cursor)

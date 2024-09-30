@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func makePointer(v interface{}) interface{} {
+func makePointer(v any) any {
 	ptr := reflect.New(reflect.TypeOf(v))
 	ptr.Elem().Set(reflect.ValueOf(v))
 	return ptr.Interface()
@@ -24,7 +24,7 @@ func TestDecodeObjectBasic(t *testing.T) {
 		json            string
 		expectedResult  testObject
 		err             bool
-		errType         interface{}
+		errType         any
 		skipCheckResult bool
 	}{
 		{
@@ -566,7 +566,7 @@ func TestDecodeObjectBasic0Keys(t *testing.T) {
 		json            string
 		expectedResult  testObject0Keys
 		err             bool
-		errType         interface{}
+		errType         any
 		skipCheckResult bool
 	}{
 		{
@@ -997,14 +997,17 @@ func TestDecodeObjectNull(t *testing.T) {
 		assert.Nil(t, o.SubArray)
 	})
 	t.Run(
-		"sub obj should not be be nil",
+		"sub obj should not be nil",
 		func(t *testing.T) {
 			t.Parallel()
 
 			o := &ObjectNull{}
-			err := UnmarshalJSONObject([]byte(`{"subobject":{"subobject":{}}}`), DecodeObjectFunc(func(dec *Decoder, k string) error {
-				return dec.ObjectNull(&o.SubObject)
-			}))
+			err := UnmarshalJSONObject(
+				[]byte(`{"subobject":{"subobject":{}}}`),
+				DecodeObjectFunc(func(dec *Decoder, _ string) error {
+					return dec.ObjectNull(&o.SubObject)
+				}),
+			)
 			require.NoError(t, err)
 			assert.NotNil(t, o.SubObject)
 		},
@@ -1015,9 +1018,12 @@ func TestDecodeObjectNull(t *testing.T) {
 			t.Parallel()
 
 			o := &ObjectNull{}
-			err := UnmarshalJSONObject([]byte(`{"subobject":null}`), DecodeObjectFunc(func(dec *Decoder, k string) error {
-				return dec.ObjectNull(&o.SubObject)
-			}))
+			err := UnmarshalJSONObject(
+				[]byte(`{"subobject":null}`),
+				DecodeObjectFunc(func(dec *Decoder, _ string) error {
+					return dec.ObjectNull(&o.SubObject)
+				}),
+			)
 			require.NoError(t, err)
 			assert.Nil(t, o.SubObject)
 		},
@@ -1035,7 +1041,7 @@ func TestDecodeObjectNull(t *testing.T) {
 					"subarray": [],
 					"skipped": ""
 				}
-			}`), DecodeObjectFunc(func(dec *Decoder, k string) error {
+			}`), DecodeObjectFunc(func(dec *Decoder, _ string) error {
 				return dec.ObjectNull(&o.SubObject)
 			}))
 			require.NoError(t, err)
@@ -1076,7 +1082,7 @@ func TestDecodeObjectNull(t *testing.T) {
 		func(t *testing.T) {
 			t.Parallel()
 
-			err := UnmarshalJSONObject([]byte(`{"key":{}}`), DecodeObjectFunc(func(dec *Decoder, k string) error {
+			err := UnmarshalJSONObject([]byte(`{"key":{}}`), DecodeObjectFunc(func(dec *Decoder, _ string) error {
 				return dec.ObjectNull("")
 			}))
 			require.Error(t, err)
@@ -1088,7 +1094,7 @@ func TestDecodeObjectNull(t *testing.T) {
 		func(t *testing.T) {
 			t.Parallel()
 
-			err := UnmarshalJSONObject([]byte(`{"key":[]}`), DecodeObjectFunc(func(dec *Decoder, k string) error {
+			err := UnmarshalJSONObject([]byte(`{"key":[]}`), DecodeObjectFunc(func(dec *Decoder, _ string) error {
 				return dec.ArrayNull("")
 			}))
 			require.Error(t, err)
@@ -1100,10 +1106,13 @@ func TestDecodeObjectNull(t *testing.T) {
 		func(t *testing.T) {
 			t.Parallel()
 
-			err := UnmarshalJSONObject([]byte(`{"key":{}}`), DecodeObjectFunc(func(dec *Decoder, k string) error {
-				strPtr := new(string)
-				return dec.ObjectNull(&strPtr)
-			}))
+			err := UnmarshalJSONObject(
+				[]byte(`{"key":{}}`),
+				DecodeObjectFunc(func(dec *Decoder, _ string) error {
+					strPtr := new(string)
+					return dec.ObjectNull(&strPtr)
+				}),
+			)
 			require.Error(t, err)
 			assert.IsType(t, InvalidUnmarshalError(""), err)
 		},
@@ -1113,10 +1122,13 @@ func TestDecodeObjectNull(t *testing.T) {
 		func(t *testing.T) {
 			t.Parallel()
 
-			err := UnmarshalJSONObject([]byte(`{"key":[]}`), DecodeObjectFunc(func(dec *Decoder, k string) error {
-				strPtr := new(string)
-				return dec.ArrayNull(&strPtr)
-			}))
+			err := UnmarshalJSONObject(
+				[]byte(`{"key":[]}`),
+				DecodeObjectFunc(func(dec *Decoder, _ string) error {
+					strPtr := new(string)
+					return dec.ArrayNull(&strPtr)
+				}),
+			)
 			require.Error(t, err)
 			assert.IsType(t, InvalidUnmarshalError(""), err)
 		},
@@ -1126,10 +1138,13 @@ func TestDecodeObjectNull(t *testing.T) {
 		func(t *testing.T) {
 			t.Parallel()
 
-			err := UnmarshalJSONObject([]byte(`{"key":{}}`), DecodeObjectFunc(func(dec *Decoder, k string) error {
-				strPtr := new(string)
-				return dec.ArrayNull(&strPtr)
-			}))
+			err := UnmarshalJSONObject(
+				[]byte(`{"key":{}}`),
+				DecodeObjectFunc(func(dec *Decoder, _ string) error {
+					strPtr := new(string)
+					return dec.ArrayNull(&strPtr)
+				}),
+			)
 			require.Error(t, err)
 			assert.IsType(t, InvalidUnmarshalError(""), err)
 		},
@@ -1139,10 +1154,13 @@ func TestDecodeObjectNull(t *testing.T) {
 		func(t *testing.T) {
 			t.Parallel()
 
-			err := UnmarshalJSONObject([]byte(`{"key":"`), DecodeObjectFunc(func(dec *Decoder, k string) error {
-				strPtr := new(string)
-				return dec.ArrayNull(&strPtr)
-			}))
+			err := UnmarshalJSONObject(
+				[]byte(`{"key":"`),
+				DecodeObjectFunc(func(dec *Decoder, _ string) error {
+					strPtr := new(string)
+					return dec.ArrayNull(&strPtr)
+				}),
+			)
 			require.Error(t, err)
 			assert.IsType(t, InvalidJSONError(""), err)
 		},
@@ -1152,10 +1170,13 @@ func TestDecodeObjectNull(t *testing.T) {
 		func(t *testing.T) {
 			t.Parallel()
 
-			err := UnmarshalJSONObject([]byte(`{"key": ""}`), DecodeObjectFunc(func(dec *Decoder, k string) error {
-				strPtr := new(string)
-				return dec.ObjectNull(&strPtr)
-			}))
+			err := UnmarshalJSONObject(
+				[]byte(`{"key": ""}`),
+				DecodeObjectFunc(func(dec *Decoder, _ string) error {
+					strPtr := new(string)
+					return dec.ObjectNull(&strPtr)
+				}),
+			)
 			require.Error(t, err)
 			assert.IsType(t, InvalidUnmarshalError(""), err)
 		},
@@ -1166,7 +1187,7 @@ func TestDecodeObjectNull(t *testing.T) {
 			t.Parallel()
 
 			o := &ObjectNull{}
-			err := UnmarshalJSONObject([]byte(`{"subobject":{"subobject":{"a":a}`), DecodeObjectFunc(func(dec *Decoder, k string) error {
+			err := UnmarshalJSONObject([]byte(`{"subobject":{"subobject":{"a":a}`), DecodeObjectFunc(func(dec *Decoder, _ string) error {
 				return dec.ObjectNull(&o.SubObject)
 			}))
 			require.Error(t, err)
@@ -1179,7 +1200,7 @@ func TestDecodeObjectNull(t *testing.T) {
 			t.Parallel()
 
 			o := &ObjectNull{}
-			err := UnmarshalJSONObject([]byte(`{"subobject":{"subobject":a}`), DecodeObjectFunc(func(dec *Decoder, k string) error {
+			err := UnmarshalJSONObject([]byte(`{"subobject":{"subobject":a}`), DecodeObjectFunc(func(dec *Decoder, _ string) error {
 				return dec.ObjectNull(&o.SubObject)
 			}))
 			require.Error(t, err)
@@ -1192,7 +1213,7 @@ func TestDecodeObjectNull(t *testing.T) {
 			t.Parallel()
 
 			o := &ObjectNull{}
-			err := UnmarshalJSONObject([]byte(`{"subobject":{"subobject":{"sub}}`), DecodeObjectFunc(func(dec *Decoder, k string) error {
+			err := UnmarshalJSONObject([]byte(`{"subobject":{"subobject":{"sub}}`), DecodeObjectFunc(func(dec *Decoder, _ string) error {
 				return dec.ObjectNull(&o.SubObject)
 			}))
 			require.Error(t, err)
@@ -1205,7 +1226,7 @@ func TestDecodeObjectNull(t *testing.T) {
 			t.Parallel()
 
 			o := &testSliceBools{}
-			err := UnmarshalJSONObject([]byte(`{"subobject":a`), DecodeObjectFunc(func(dec *Decoder, k string) error {
+			err := UnmarshalJSONObject([]byte(`{"subobject":a`), DecodeObjectFunc(func(dec *Decoder, _ string) error {
 				return dec.ArrayNull(&o)
 			}))
 			require.Error(t, err)
@@ -1217,7 +1238,7 @@ func TestDecodeObjectNull(t *testing.T) {
 		func(t *testing.T) {
 			t.Parallel()
 
-			err := UnmarshalJSONObject([]byte(`{"key":a`), DecodeObjectFunc(func(dec *Decoder, k string) error {
+			err := UnmarshalJSONObject([]byte(`{"key":a`), DecodeObjectFunc(func(dec *Decoder, _ string) error {
 				strPtr := new(string)
 				return dec.ObjectNull(&strPtr)
 			}))
@@ -1230,7 +1251,7 @@ func TestDecodeObjectNull(t *testing.T) {
 		func(t *testing.T) {
 			t.Parallel()
 
-			err := UnmarshalJSONObject([]byte(`{"subobject": {},"}`), DecodeObjectFunc(func(dec *Decoder, k string) error {
+			err := UnmarshalJSONObject([]byte(`{"subobject": {},"}`), DecodeObjectFunc(func(dec *Decoder, _ string) error {
 				o := &ObjectNull{}
 				return dec.ObjectNull(&o)
 			}))
@@ -1273,7 +1294,7 @@ func TestDecodeObjectNull(t *testing.T) {
 					},
 					"subarray": []
 				}
-			}`), DecodeObjectFunc(func(dec *Decoder, k string) error {
+			}`), DecodeObjectFunc(func(dec *Decoder, _ string) error {
 				return dec.ObjectNull(&o.SubObject)
 			}))
 			require.NoError(t, err)
@@ -1293,7 +1314,7 @@ func TestDecodeObjectNull(t *testing.T) {
 					"subarray": [],
 					"skipped": 1
 				}
-			}`), DecodeObjectFunc(func(dec *Decoder, k string) error {
+			}`), DecodeObjectFunc(func(dec *Decoder, _ string) error {
 				return dec.ObjectNull(&o.SubObject)
 			}))
 			require.NoError(t, err)
@@ -1313,7 +1334,7 @@ func TestDecodeObjectNull(t *testing.T) {
 					"subarray": [],
 					"skippedInvalid": "q
 				}
-			}`), DecodeObjectFunc(func(dec *Decoder, k string) error {
+			}`), DecodeObjectFunc(func(dec *Decoder, _ string) error {
 				return dec.ObjectNull(&o.SubObject)
 			}))
 			require.Error(t, err)
@@ -1330,7 +1351,7 @@ func TestDecodeObjectNull(t *testing.T) {
 				"subobject": {
 					"subobj
 				}
-			}`), DecodeObjectFunc(func(dec *Decoder, k string) error {
+			}`), DecodeObjectFunc(func(dec *Decoder, _ string) error {
 				return dec.ObjectNull(&o.SubObject)
 			}))
 			require.Error(t, err)
@@ -1349,7 +1370,7 @@ func TestDecodeObjectNull(t *testing.T) {
 						"subobj
 					}	
 				}
-			}`), DecodeObjectFunc(func(dec *Decoder, k string) error {
+			}`), DecodeObjectFunc(func(dec *Decoder, _ string) error {
 				return dec.ObjectNull(&o.SubObject)
 			}))
 			require.Error(t, err)
@@ -1366,7 +1387,7 @@ func TestDecodeObjectComplex(t *testing.T) {
 		json            string
 		expectedResult  testObjectComplex
 		err             bool
-		errType         interface{}
+		errType         any
 		skipCheckResult bool
 	}{
 		{

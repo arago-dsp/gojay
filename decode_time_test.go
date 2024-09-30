@@ -136,7 +136,7 @@ func TestDecoderTimePoolError(t *testing.T) {
 
 	// reset the pool to make sure it's not full
 	decPool = sync.Pool{
-		New: func() interface{} {
+		New: func() any {
 			return NewDecoder(nil)
 		},
 	}

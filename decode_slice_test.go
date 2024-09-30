@@ -12,6 +12,7 @@ type slicesTestObject struct {
 	sliceStringNoEscape []string
 	sliceInt            []int
 	sliceInt8           []int8
+	sliceUint8          []uint8
 	sliceFloat64        []float64
 	sliceBool           []bool
 }
@@ -26,6 +27,8 @@ func (s *slicesTestObject) UnmarshalJSONObject(dec *Decoder, k string) error {
 		return dec.AddSliceInt(&s.sliceInt)
 	case "sliceInt8":
 		return dec.AddSliceInt8(&s.sliceInt8)
+	case "sliceUint8":
+		return dec.AddSliceUint8(&s.sliceUint8)
 	case "sliceFloat64":
 		return dec.AddSliceFloat64(&s.sliceFloat64)
 	case "sliceBool":
@@ -93,6 +96,15 @@ func TestDecodeSlices(t *testing.T) {
 			},
 		},
 		{
+			name: "basic slice uint8",
+			json: `{
+				"sliceUint8": [1,2,3]
+			}`,
+			expectedResult: slicesTestObject{
+				sliceUint8: []uint8{1, 2, 3},
+			},
+		},
+		{
 			name: "basic slice float64",
 			json: `{
 				"sliceFloat64": [1.3,2.4,3.1]
@@ -133,6 +145,13 @@ func TestDecodeSlices(t *testing.T) {
 			name: "err slice int8",
 			json: `{
 				"sliceInt8": [1t,2,3]
+			}`,
+			err: true,
+		},
+		{
+			name: "err slice uint8",
+			json: `{
+				"sliceUint8": [1t,2,3]
 			}`,
 			err: true,
 		},

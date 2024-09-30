@@ -29,7 +29,7 @@ func (dec *Decoder) decodeInt(v *int) error {
 			*v = int(val)
 			return nil
 		case '-':
-			dec.cursor = dec.cursor + 1
+			dec.cursor++
 			val, err := dec.getInt64Negative()
 			if err != nil {
 				return err
@@ -78,7 +78,7 @@ func (dec *Decoder) decodeIntNull(v **int) error {
 			**v = int(val)
 			return nil
 		case '-':
-			dec.cursor = dec.cursor + 1
+			dec.cursor++
 			val, err := dec.getInt64Negative()
 			if err != nil {
 				return err
@@ -137,7 +137,7 @@ func (dec *Decoder) decodeInt16(v *int16) error {
 			*v = val
 			return nil
 		case '-':
-			dec.cursor = dec.cursor + 1
+			dec.cursor++
 			val, err := dec.getInt16Negative()
 			if err != nil {
 				return err
@@ -180,7 +180,7 @@ func (dec *Decoder) decodeInt16Null(v **int16) error {
 			**v = val
 			return nil
 		case '-':
-			dec.cursor = dec.cursor + 1
+			dec.cursor++
 			val, err := dec.getInt16Negative()
 			if err != nil {
 				return err
@@ -222,6 +222,7 @@ func (dec *Decoder) getInt16Negative() (int16, error) {
 	return 0, dec.raiseInvalidJSONErr(dec.cursor)
 }
 
+//nolint:funlen,gocognit,cyclop
 func (dec *Decoder) getInt16() (int16, error) {
 	end := dec.cursor
 	start := dec.cursor
@@ -301,6 +302,7 @@ func (dec *Decoder) getInt16() (int16, error) {
 	return dec.atoi16(start, end), nil
 }
 
+//nolint:cyclop
 func (dec *Decoder) getInt16WithExp(init int16) (int16, error) {
 	var exp uint16
 	sign := int16(1)
@@ -369,7 +371,7 @@ func (dec *Decoder) decodeInt8(v *int8) error {
 			*v = val
 			return nil
 		case '-':
-			dec.cursor = dec.cursor + 1
+			dec.cursor++
 			val, err := dec.getInt8Negative()
 			if err != nil {
 				return err
@@ -412,7 +414,7 @@ func (dec *Decoder) decodeInt8Null(v **int8) error {
 			**v = val
 			return nil
 		case '-':
-			dec.cursor = dec.cursor + 1
+			dec.cursor++
 			val, err := dec.getInt8Negative()
 			if err != nil {
 				return err
@@ -454,6 +456,7 @@ func (dec *Decoder) getInt8Negative() (int8, error) {
 	return 0, dec.raiseInvalidJSONErr(dec.cursor)
 }
 
+//nolint:funlen,gocognit,cyclop
 func (dec *Decoder) getInt8() (int8, error) {
 	end := dec.cursor
 	start := dec.cursor
@@ -533,6 +536,7 @@ func (dec *Decoder) getInt8() (int8, error) {
 	return dec.atoi8(start, end), nil
 }
 
+//nolint:cyclop
 func (dec *Decoder) getInt8WithExp(init int8) (int8, error) {
 	var exp uint8
 	sign := int8(1)
@@ -601,7 +605,7 @@ func (dec *Decoder) decodeInt32(v *int32) error {
 			*v = val
 			return nil
 		case '-':
-			dec.cursor = dec.cursor + 1
+			dec.cursor++
 			val, err := dec.getInt32Negative()
 			if err != nil {
 				return err
@@ -643,7 +647,7 @@ func (dec *Decoder) decodeInt32Null(v **int32) error {
 			**v = val
 			return nil
 		case '-':
-			dec.cursor = dec.cursor + 1
+			dec.cursor++
 			val, err := dec.getInt32Negative()
 			if err != nil {
 				return err
@@ -685,6 +689,7 @@ func (dec *Decoder) getInt32Negative() (int32, error) {
 	return 0, dec.raiseInvalidJSONErr(dec.cursor)
 }
 
+//nolint:funlen,gocognit,cyclop
 func (dec *Decoder) getInt32() (int32, error) {
 	end := dec.cursor
 	start := dec.cursor
@@ -765,6 +770,7 @@ func (dec *Decoder) getInt32() (int32, error) {
 	return dec.atoi32(start, end), nil
 }
 
+//nolint:cyclop
 func (dec *Decoder) getInt32WithExp(init int32) (int32, error) {
 	var exp uint32
 	sign := int32(1)
@@ -833,7 +839,7 @@ func (dec *Decoder) decodeInt64(v *int64) error {
 			*v = val
 			return nil
 		case '-':
-			dec.cursor = dec.cursor + 1
+			dec.cursor++
 			val, err := dec.getInt64Negative()
 			if err != nil {
 				return err
@@ -875,7 +881,7 @@ func (dec *Decoder) decodeInt64Null(v **int64) error {
 			**v = val
 			return nil
 		case '-':
-			dec.cursor = dec.cursor + 1
+			dec.cursor++
 			val, err := dec.getInt64Negative()
 			if err != nil {
 				return err
@@ -917,6 +923,7 @@ func (dec *Decoder) getInt64Negative() (int64, error) {
 	return 0, dec.raiseInvalidJSONErr(dec.cursor)
 }
 
+//nolint:funlen,gocognit,cyclop
 func (dec *Decoder) getInt64() (int64, error) {
 	end := dec.cursor
 	start := dec.cursor
@@ -997,6 +1004,7 @@ func (dec *Decoder) getInt64() (int64, error) {
 	return dec.atoi64(start, end), nil
 }
 
+//nolint:cyclop
 func (dec *Decoder) getInt64WithExp(init int64) (int64, error) {
 	var exp uint64
 	sign := int64(1)
@@ -1044,7 +1052,7 @@ func (dec *Decoder) getInt64WithExp(init int64) (int64, error) {
 func (dec *Decoder) atoi64(start, end int) int64 {
 	ll := end + 1 - start
 	val := int64(digits[dec.data[start]])
-	end = end + 1
+	end++
 	if ll < maxInt64Length {
 		for i := start + 1; i < end; i++ {
 			intv := int64(digits[dec.data[i]])
@@ -1075,7 +1083,7 @@ func (dec *Decoder) atoi64(start, end int) int64 {
 func (dec *Decoder) atoi32(start, end int) int32 {
 	ll := end + 1 - start
 	val := int32(digits[dec.data[start]])
-	end = end + 1
+	end++
 
 	// overflowing
 	if ll < maxInt32Length {
@@ -1107,7 +1115,7 @@ func (dec *Decoder) atoi32(start, end int) int32 {
 func (dec *Decoder) atoi16(start, end int) int16 {
 	ll := end + 1 - start
 	val := int16(digits[dec.data[start]])
-	end = end + 1
+	end++
 	// overflowing
 	if ll < maxInt16Length {
 		for i := start + 1; i < end; i++ {
@@ -1137,17 +1145,17 @@ func (dec *Decoder) atoi16(start, end int) int16 {
 
 func (dec *Decoder) atoi8(start, end int) int8 {
 	ll := end + 1 - start
-	val := int8(digits[dec.data[start]])
-	end = end + 1
+	val := digits[dec.data[start]]
+	end++
 	// overflowing
 	if ll < maxInt8Length {
 		for i := start + 1; i < end; i++ {
-			intv := int8(digits[dec.data[i]])
+			intv := digits[dec.data[i]]
 			val = (val << 3) + (val << 1) + intv
 		}
 	} else if ll == maxInt8Length {
 		for i := start + 1; i < end; i++ {
-			intv := int8(digits[dec.data[i]])
+			intv := digits[dec.data[i]]
 			if val > maxInt8toMultiply {
 				dec.err = dec.makeInvalidUnmarshalErr(val)
 				return 0

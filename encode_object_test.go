@@ -28,7 +28,7 @@ type TestEncoding struct {
 	testBool      bool
 	testF32       float32
 	testF64       float64
-	testInterface interface{}
+	testInterface any
 	testArr       TestEncodingArr
 	sub           *SubObject
 }
@@ -70,7 +70,7 @@ func (t *SubObject) MarshalJSONObject(enc *Encoder) {
 }
 
 type testEncodingObjInterfaces struct {
-	interfaceVal interface{}
+	interfaceVal any
 }
 
 func (t *testEncodingObjInterfaces) IsNil() bool {
@@ -94,7 +94,7 @@ func TestEncoderObjectEncodeAPI(t *testing.T) {
 			1, nil, 1, nil, 1.1, nil, 1.1, nil, true, nil,
 			&testObject{},
 			testSliceInts{},
-			interface{}("test"),
+			any("test"),
 		})
 		require.NoError(t, err)
 		assert.Equal(
@@ -117,7 +117,7 @@ func TestEncoderObjectMarshalAPI(t *testing.T) {
 			nil, 1, nil, 1, nil, 1.1, nil, 1.1, nil, true, nil,
 			&testObject{},
 			testSliceInts{},
-			[]interface{}{"h", "o", "l", "a"},
+			[]any{"h", "o", "l", "a"},
 		})
 		require.NoError(t, err)
 		assert.Equal(
@@ -636,8 +636,8 @@ func (o *ObjectWithKeys) IsNil() bool {
 
 type NilObject struct{}
 
-func (n *NilObject) MarshalJSONObject(enc *Encoder) {}
-func (n *NilObject) IsNil() bool                    { return true }
+func (n *NilObject) MarshalJSONObject(_ *Encoder) {}
+func (n *NilObject) IsNil() bool                  { return true }
 
 func TestEncodeObjectWithKeys(t *testing.T) {
 	t.Parallel()

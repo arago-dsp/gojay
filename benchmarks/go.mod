@@ -1,13 +1,13 @@
 module github.com/arago-dsp/gojay/benchmarks
 
-go 1.20
+go 1.22
 
 require (
 	github.com/arago-dsp/gojay v1.2.13
 	github.com/buger/jsonparser v1.1.1
 	github.com/json-iterator/go v1.1.12
 	github.com/mailru/easyjson v0.7.7
-	github.com/stretchr/testify v1.8.4
+	github.com/stretchr/testify v1.9.0
 )
 
 require (
