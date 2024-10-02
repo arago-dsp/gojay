@@ -5,17 +5,18 @@ import (
 )
 
 var strPool = sync.Pool{
-	New: func() interface{} { return new(string) },
+	New: func() any { return new(string) },
 }
 
 func init() {
-	for i := 0; i < 32; i++ {
+	for range 32 {
 		strPool.Put(new(string))
 	}
 }
 
 // AcquireString gets a string pointer from the pool.
 func AcquireString() *string {
+	//nolint:forcetypeassert
 	return strPool.Get().(*string)
 }
 

@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 type TestEncodingArrStrings []string
@@ -31,7 +32,7 @@ func (t TestEncodingArr) IsNil() bool {
 	return t == nil
 }
 
-type testEncodingArrInterfaces []interface{}
+type testEncodingArrInterfaces []any
 
 func (t testEncodingArrInterfaces) MarshalJSONArray(enc *Encoder) {
 	for _, e := range t {
@@ -44,7 +45,11 @@ func (t testEncodingArrInterfaces) IsNil() bool {
 }
 
 func TestEncoderArrayMarshalAPI(t *testing.T) {
+	t.Parallel()
+
 	t.Run("array-objects", func(t *testing.T) {
+		t.Parallel()
+
 		v := &TestEncodingArr{
 			&TestEncoding{
 				test:          "hello world",
@@ -84,7 +89,7 @@ func TestEncoderArrayMarshalAPI(t *testing.T) {
 			nil,
 		}
 		r, err := Marshal(v)
-		assert.Nil(t, err, "Error should be nil")
+		require.NoError(t, err)
 		assert.Equal(
 			t,
 			`[{"test":"hello world","test2":"漢字","testInt":1,"testBool":true,`+
@@ -97,6 +102,8 @@ func TestEncoderArrayMarshalAPI(t *testing.T) {
 			"Result of marshalling is different as the one expected")
 	})
 	t.Run("array-interfaces", func(t *testing.T) {
+		t.Parallel()
+
 		v := &testEncodingArrInterfaces{
 			1,
 			int64(1),
@@ -122,7 +129,7 @@ func TestEncoderArrayMarshalAPI(t *testing.T) {
 			},
 		}
 		r, err := MarshalJSONArray(v)
-		assert.Nil(t, err, "Error should be nil")
+		require.NoError(t, err)
 		assert.Equal(
 			t,
 			`[1,1,1,1,1,1,1,1,1.31,1.31,[],[],true,false,"test",{"test":"hello world","test2":"foobar","testInt":1,"testBool":true,"testArr":[],"testF64":0,"testF32":0,"sub":{}}]`,
@@ -132,7 +139,11 @@ func TestEncoderArrayMarshalAPI(t *testing.T) {
 }
 
 func TestEncoderArrayEncodeAPI(t *testing.T) {
+	t.Parallel()
+
 	t.Run("array-interfaces", func(t *testing.T) {
+		t.Parallel()
+
 		v := &testEncodingArrInterfaces{
 			1,
 			int64(1),
@@ -159,7 +170,7 @@ func TestEncoderArrayEncodeAPI(t *testing.T) {
 		enc := BorrowEncoder(builder)
 		defer enc.Release()
 		err := enc.EncodeArray(v)
-		assert.Nil(t, err, "Error should be nil")
+		require.NoError(t, err)
 		assert.Equal(
 			t,
 			`[1,1,1,1,1,1,1,1,1.31,[],true,"test",{"test":"hello world","test2":"foobar","testInt":1,"testBool":true,"testArr":[],"testF64":0,"testF32":0,"sub":{}}]`,
@@ -168,12 +179,14 @@ func TestEncoderArrayEncodeAPI(t *testing.T) {
 	})
 
 	t.Run("array-interfaces-write-error", func(t *testing.T) {
+		t.Parallel()
+
 		v := &testEncodingArrInterfaces{}
 		w := TestWriterError("")
 		enc := BorrowEncoder(w)
 		defer enc.Release()
 		err := enc.EncodeArray(v)
-		assert.NotNil(t, err, "err should not be nil")
+		require.Error(t, err)
 	})
 }
 
@@ -255,7 +268,7 @@ type TestObjEmpty struct {
 	empty bool
 }
 
-func (t *TestObjEmpty) MarshalJSONObject(enc *Encoder) {
+func (t *TestObjEmpty) MarshalJSONObject(_ *Encoder) {
 }
 
 func (t *TestObjEmpty) IsNil() bool {
@@ -275,65 +288,87 @@ func (t TestEncodingObjOmitEmpty) IsNil() bool {
 }
 
 func TestEncoderArrayOmitEmpty(t *testing.T) {
+	t.Parallel()
+
 	t.Run("omit-int", func(t *testing.T) {
+		t.Parallel()
+
 		intArr := TestEncodingIntOmitEmpty{0, 1, 0, 1}
 		b, err := Marshal(intArr)
-		assert.Nil(t, err, "err must be nil")
+		require.NoError(t, err)
 		assert.Equal(t, `[1,1]`, string(b), "string(b) must be equal to `[1,1]`")
 	})
 	t.Run("omit-float", func(t *testing.T) {
+		t.Parallel()
+
 		floatArr := TestEncodingFloatOmitEmpty{0, 1, 0, 1}
 		b, err := Marshal(floatArr)
-		assert.Nil(t, err, "err must be nil")
+		require.NoError(t, err)
 		assert.Equal(t, `[1,1]`, string(b), "string(b) must be equal to `[1,1]`")
 	})
 	t.Run("omit-float32", func(t *testing.T) {
+		t.Parallel()
+
 		float32Arr := TestEncodingFloat32OmitEmpty{0, 1, 0, 1}
 		b, err := Marshal(float32Arr)
-		assert.Nil(t, err, "err must be nil")
+		require.NoError(t, err)
 		assert.Equal(t, `[1,1]`, string(b), "string(b) must be equal to `[1,1]`")
 	})
 	t.Run("omit-string", func(t *testing.T) {
+		t.Parallel()
+
 		stringArr := TestEncodingStringOmitEmpty{"", "hello", "", "world"}
 		b, err := Marshal(stringArr)
-		assert.Nil(t, err, "err must be nil")
+		require.NoError(t, err)
 		assert.Equal(t, `["hello","world"]`, string(b), "string(b) must be equal to `[\"hello\",\"world\"]`")
 	})
 	t.Run("omit-bool", func(t *testing.T) {
+		t.Parallel()
+
 		boolArr := TestEncodingBoolOmitEmpty{false, true, false, true}
 		b, err := Marshal(boolArr)
-		assert.Nil(t, err, "err must be nil")
+		require.NoError(t, err)
 		assert.Equal(t, `[true,true]`, string(b), "string(b) must be equal to `[true,true]`")
 	})
 	t.Run("omit-arr", func(t *testing.T) {
+		t.Parallel()
+
 		arrArr := TestEncodingArrOmitEmpty{TestEncodingBoolOmitEmpty{true}, nil, TestEncodingBoolOmitEmpty{true}, nil}
 		b, err := Marshal(arrArr)
-		assert.Nil(t, err, "err must be nil")
+		require.NoError(t, err)
 		assert.Equal(t, `[[true],[true]]`, string(b), "string(b) must be equal to `[[true],[true]]`")
 	})
 	t.Run("omit-obj", func(t *testing.T) {
+		t.Parallel()
+
 		objArr := TestEncodingObjOmitEmpty{&TestObjEmpty{true}, &TestObjEmpty{false}, &TestObjEmpty{true}, &TestObjEmpty{false}}
 		b, err := Marshal(objArr)
-		assert.Nil(t, err, "err must be nil")
+		require.NoError(t, err)
 		assert.Equal(t, `[{},{}]`, string(b), "string(b) must be equal to `[{},{}]`")
 	})
 }
 
 func TestEncoderArrErrors(t *testing.T) {
+	t.Parallel()
+
 	t.Run("add-interface-error", func(t *testing.T) {
+		t.Parallel()
+
 		builder := &strings.Builder{}
 		enc := NewEncoder(builder)
 		enc.AddInterface(nil)
-		assert.Nil(t, enc.err, "enc.Err() should not be nil")
+		require.NoError(t, enc.err)
 		assert.Equal(t, "", builder.String(), "builder.String() should not be ''")
 	})
 	t.Run("array-pooled-error", func(t *testing.T) {
+		t.Parallel()
+
 		v := &testEncodingArrInterfaces{}
 		enc := BorrowEncoder(nil)
 		enc.Release()
 		defer func() {
 			err := recover()
-			assert.NotNil(t, err, "err shouldnt be nil")
+			require.Error(t, err.(error), "err shouldn't be nil")
 			assert.IsType(t, InvalidUsagePooledEncoderError(""), err, "err should be of type InvalidUsagePooledEncoderError")
 			assert.Equal(t, "Invalid usage of pooled encoder", err.(InvalidUsagePooledEncoderError).Error(), "err should be of type InvalidUsagePooledDecoderError")
 		}()
@@ -343,11 +378,15 @@ func TestEncoderArrErrors(t *testing.T) {
 }
 
 func TestEncoderArrayFunc(t *testing.T) {
+	t.Parallel()
+
 	var f EncodeArrayFunc
 	assert.True(t, f.IsNil())
 }
 
 func TestEncodeArrayNullEmpty(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name, baseJSON, expectedJSON string
 	}{
@@ -365,6 +404,8 @@ func TestEncodeArrayNullEmpty(t *testing.T) {
 
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			var b strings.Builder
 			enc := NewEncoder(&b)
 			enc.writeString(testCase.baseJSON)
@@ -375,6 +416,8 @@ func TestEncodeArrayNullEmpty(t *testing.T) {
 }
 
 func TestEncodeArrayKeyNullEmpty(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name, baseJSON, expectedJSON string
 	}{
@@ -392,6 +435,8 @@ func TestEncodeArrayKeyNullEmpty(t *testing.T) {
 
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			var b strings.Builder
 			enc := NewEncoder(&b)
 			enc.writeString(testCase.baseJSON)

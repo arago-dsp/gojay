@@ -6,57 +6,60 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestDecodeInterfaceBasic(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name            string
 		json            string
-		expectedResult  interface{}
+		expectedResult  any
 		err             bool
-		errType         interface{}
+		errType         any
 		skipCheckResult bool
 	}{
 		{
 			name:           "array",
 			json:           `[1,2,3]`,
-			expectedResult: []interface{}([]interface{}{float64(1), float64(2), float64(3)}),
+			expectedResult: []any{float64(1), float64(2), float64(3)},
 			err:            false,
 		},
 		{
 			name:           "object",
 			json:           `{"testStr": "hello world!"}`,
-			expectedResult: map[string]interface{}(map[string]interface{}{"testStr": "hello world!"}),
+			expectedResult: map[string]any{"testStr": "hello world!"},
 			err:            false,
 		},
 		{
 			name:           "string",
 			json:           `"hola amigos!"`,
-			expectedResult: interface{}("hola amigos!"),
+			expectedResult: any("hola amigos!"),
 			err:            false,
 		},
 		{
 			name:           "bool-true",
 			json:           `true`,
-			expectedResult: interface{}(true),
+			expectedResult: any(true),
 			err:            false,
 		},
 		{
 			name:           "bool-false",
 			json:           `false`,
-			expectedResult: interface{}(false),
+			expectedResult: any(false),
 			err:            false,
 		},
 		{
 			name:           "null",
 			json:           `null`,
-			expectedResult: interface{}(nil),
+			expectedResult: any(nil),
 			err:            false,
 		},
 		{
 			name:           "number",
 			json:           `1234`,
-			expectedResult: interface{}(float64(1234)),
+			expectedResult: any(float64(1234)),
 			err:            false,
 		},
 		{
@@ -90,7 +93,7 @@ func TestDecodeInterfaceBasic(t *testing.T) {
 		{
 			name:            "bool-false-error",
 			json:            `fase`,
-			expectedResult:  interface{}(false),
+			expectedResult:  any(false),
 			err:             true,
 			errType:         InvalidJSONError(""),
 			skipCheckResult: true,
@@ -127,19 +130,19 @@ func TestDecodeInterfaceBasic(t *testing.T) {
 
 	for _, testCase := range testCases {
 		t.Run("DecodeInterface()"+testCase.name, func(t *testing.T) {
-			var i interface{}
+			var i any
 			dec := BorrowDecoder(strings.NewReader(testCase.json))
 			defer dec.Release()
 			err := dec.DecodeInterface(&i)
 			if testCase.err {
 				t.Log(err)
-				assert.NotNil(t, err, "err should not be nil")
+				require.Error(t, err)
 				if testCase.errType != nil {
 					assert.IsType(t, testCase.errType, err, "err should be of the given type")
 				}
 				return
 			}
-			assert.Nil(t, err, "err should be nil")
+			require.NoError(t, err)
 			if !testCase.skipCheckResult {
 				assert.Equal(t, testCase.expectedResult, i, "value at given index should be the same as expected results")
 			}
@@ -148,19 +151,21 @@ func TestDecodeInterfaceBasic(t *testing.T) {
 
 	for _, testCase := range testCases {
 		t.Run("Decode()"+testCase.name, func(t *testing.T) {
-			var i interface{}
+			t.Parallel()
+
+			var i any
 			dec := BorrowDecoder(strings.NewReader(testCase.json))
 			defer dec.Release()
 			err := dec.Decode(&i)
 			if testCase.err {
 				t.Log(err)
-				assert.NotNil(t, err, "err should not be nil")
+				require.Error(t, err)
 				if testCase.errType != nil {
 					assert.IsType(t, testCase.errType, err, "err should be of the given type")
 				}
 				return
 			}
-			assert.Nil(t, err, "err should be nil")
+			require.NoError(t, err)
 			if !testCase.skipCheckResult {
 				assert.Equal(t, testCase.expectedResult, i, "value at given index should be the same as expected results")
 			}
@@ -169,12 +174,14 @@ func TestDecodeInterfaceBasic(t *testing.T) {
 }
 
 func TestDecodeInterfaceAsInterface(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name            string
 		json            string
-		expectedResult  interface{}
+		expectedResult  any
 		err             bool
-		errType         interface{}
+		errType         any
 		skipCheckResult bool
 	}{
 		{
@@ -183,11 +190,10 @@ func TestDecodeInterfaceAsInterface(t *testing.T) {
         "testStr": "hola",
         "testInterface": ["h","o","l","a"]
       }`,
-			expectedResult: map[string]interface{}(
-				map[string]interface{}{
-					"testStr":       "hola",
-					"testInterface": []interface{}{"h", "o", "l", "a"},
-				}),
+			expectedResult: map[string]any{
+				"testStr":       "hola",
+				"testInterface": []any{"h", "o", "l", "a"},
+			},
 			err: false,
 		},
 		{
@@ -195,10 +201,9 @@ func TestDecodeInterfaceAsInterface(t *testing.T) {
 			json: `{
         "testInterface": "漢字"
       }`,
-			expectedResult: map[string]interface{}(
-				map[string]interface{}{
-					"testInterface": "漢字",
-				}),
+			expectedResult: map[string]any{
+				"testInterface": "漢字",
+			},
 			err: false,
 		},
 		{
@@ -217,10 +222,9 @@ func TestDecodeInterfaceAsInterface(t *testing.T) {
           "string": "prost"
         }
       }`,
-			expectedResult: map[string]interface{}(
-				map[string]interface{}{
-					"testInterface": map[string]interface{}{"string": "prost"},
-				}),
+			expectedResult: map[string]any{
+				"testInterface": map[string]any{"string": "prost"},
+			},
 			err: false,
 		},
 		{
@@ -240,41 +244,40 @@ func TestDecodeInterfaceAsInterface(t *testing.T) {
           ]
         }
       }`,
-			expectedResult: map[string]interface{}(
-				map[string]interface{}{
-					"testInterface": map[string]interface{}{
-						"array-of-objects": []interface{}{
-							map[string]interface{}{"k": "v"},
-							map[string]interface{}{"a": "b"},
-						},
-						"number": float64(1988),
-						"string": "prost",
-						"array":  []interface{}{"h", "o", "l", "a"},
-						"object": map[string]interface{}{
-							"k": "v",
-							"a": []interface{}{float64(1), float64(2), float64(3)},
-						},
+			expectedResult: map[string]any{
+				"testInterface": map[string]any{
+					"array-of-objects": []any{
+						map[string]any{"k": "v"},
+						map[string]any{"a": "b"},
 					},
-				}),
+					"number": float64(1988),
+					"string": "prost",
+					"array":  []any{"h", "o", "l", "a"},
+					"object": map[string]any{
+						"k": "v",
+						"a": []any{float64(1), float64(2), float64(3)},
+					},
+				},
+			},
 			err: false,
 		},
 	}
 
 	for _, testCase := range testCases {
 		t.Run("Decode()"+testCase.name, func(t *testing.T) {
-			var s interface{}
+			var s any
 			dec := BorrowDecoder(strings.NewReader(testCase.json))
 			defer dec.Release()
 			err := dec.Decode(&s)
 			if testCase.err {
 				t.Log(err)
-				assert.NotNil(t, err, "err should not be nil")
+				require.Error(t, err)
 				if testCase.errType != nil {
 					assert.IsType(t, testCase.errType, err, "err should be of the given type")
 				}
 				return
 			}
-			assert.Nil(t, err, "err should be nil")
+			require.NoError(t, err)
 			if !testCase.skipCheckResult {
 				assert.Equal(t, testCase.expectedResult, s, "value at given index should be the same as expected results")
 			}
@@ -283,19 +286,21 @@ func TestDecodeInterfaceAsInterface(t *testing.T) {
 
 	for _, testCase := range testCases {
 		t.Run("DecodeInterface()"+testCase.name, func(t *testing.T) {
-			var s interface{}
+			t.Parallel()
+
+			var s any
 			dec := BorrowDecoder(strings.NewReader(testCase.json))
 			defer dec.Release()
 			err := dec.DecodeInterface(&s)
 			if testCase.err {
 				t.Log(err)
-				assert.NotNil(t, err, "err should not be nil")
+				require.Error(t, err)
 				if testCase.errType != nil {
 					assert.IsType(t, testCase.errType, err, "err should be of the given type")
 				}
 				return
 			}
-			assert.Nil(t, err, "err should be nil")
+			require.NoError(t, err)
 			if !testCase.skipCheckResult {
 				assert.Equal(t, testCase.expectedResult, s, "value at given index should be the same as expected results")
 			}
@@ -304,12 +309,14 @@ func TestDecodeInterfaceAsInterface(t *testing.T) {
 }
 
 func TestDecodeAsTestObject(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name            string
 		json            string
 		expectedResult  testObject
 		err             bool
-		errType         interface{}
+		errType         any
 		skipCheckResult bool
 	}{
 		{
@@ -320,7 +327,7 @@ func TestDecodeAsTestObject(t *testing.T) {
       }`,
 			expectedResult: testObject{
 				testStr:       "hola",
-				testInterface: []interface{}([]interface{}{"h", "o", "l", "a"}),
+				testInterface: []any{"h", "o", "l", "a"},
 			},
 			err: false,
 		},
@@ -330,7 +337,7 @@ func TestDecodeAsTestObject(t *testing.T) {
         "testInterface": "漢字"
       }`,
 			expectedResult: testObject{
-				testInterface: interface{}("漢字"),
+				testInterface: any("漢字"),
 			},
 			err: false,
 		},
@@ -350,7 +357,7 @@ func TestDecodeAsTestObject(t *testing.T) {
         "testStr": "adios"
       }`,
 			expectedResult: testObject{
-				testInterface: interface{}(nil),
+				testInterface: any(nil),
 				testStr:       "adios",
 			},
 			err: false,
@@ -363,7 +370,7 @@ func TestDecodeAsTestObject(t *testing.T) {
         },
       }`,
 			expectedResult: testObject{
-				testInterface: map[string]interface{}{"string": "prost"},
+				testInterface: map[string]any{"string": "prost"},
 			},
 			err: false,
 		},
@@ -385,17 +392,17 @@ func TestDecodeAsTestObject(t *testing.T) {
         },
       }`,
 			expectedResult: testObject{
-				testInterface: map[string]interface{}{
-					"array-of-objects": []interface{}{
-						map[string]interface{}{"k": "v"},
-						map[string]interface{}{"a": "b"},
+				testInterface: map[string]any{
+					"array-of-objects": []any{
+						map[string]any{"k": "v"},
+						map[string]any{"a": "b"},
 					},
 					"number": float64(1988),
 					"string": "prost",
-					"array":  []interface{}{"h", "o", "l", "a"},
-					"object": map[string]interface{}{
+					"array":  []any{"h", "o", "l", "a"},
+					"object": map[string]any{
 						"k": "v",
-						"a": []interface{}{float64(1), float64(2), float64(3)},
+						"a": []any{float64(1), float64(2), float64(3)},
 					},
 				},
 			},
@@ -404,19 +411,21 @@ func TestDecodeAsTestObject(t *testing.T) {
 	}
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			s := testObject{}
 			dec := BorrowDecoder(strings.NewReader(testCase.json))
 			defer dec.Release()
 			err := dec.Decode(&s)
 			if testCase.err {
 				t.Log(err)
-				assert.NotNil(t, err, "err should not be nil")
+				require.Error(t, err)
 				if testCase.errType != nil {
 					assert.IsType(t, testCase.errType, err, "err should be of the given type")
 				}
 				return
 			}
-			assert.Nil(t, err, "err should be nil")
+			require.NoError(t, err)
 			if !testCase.skipCheckResult {
 				assert.Equal(t, testCase.expectedResult, s, "value at given index should be the same as expected results")
 			}
@@ -425,7 +434,9 @@ func TestDecodeAsTestObject(t *testing.T) {
 }
 
 func TestUnmarshalInterface(t *testing.T) {
-	json := []byte(`{
+	t.Parallel()
+
+	bytes := []byte(`{
     "testInterface": {
       "number": 1988,
       "null": null,
@@ -442,26 +453,28 @@ func TestUnmarshalInterface(t *testing.T) {
     }
 	}`)
 	v := &testObject{}
-	err := Unmarshal(json, v)
-	assert.Nil(t, err, "Err must be nil")
-	expectedInterface := map[string]interface{}{
-		"array-of-objects": []interface{}{
-			map[string]interface{}{"k": "v"},
-			map[string]interface{}{"a": "b"},
+	err := Unmarshal(bytes, v)
+	require.NoError(t, err)
+	expectedInterface := map[string]any{
+		"array-of-objects": []any{
+			map[string]any{"k": "v"},
+			map[string]any{"a": "b"},
 		},
 		"number": float64(1988),
 		"string": "prost",
-		"null":   interface{}(nil),
-		"array":  []interface{}{"h", "o", "l", "a"},
-		"object": map[string]interface{}{
+		"null":   any(nil),
+		"array":  []any{"h", "o", "l", "a"},
+		"object": map[string]any{
 			"k": "v",
-			"a": []interface{}{float64(1), float64(2), float64(3)},
+			"a": []any{float64(1), float64(2), float64(3)},
 		},
 	}
 	assert.Equal(t, expectedInterface, v.testInterface, "v.testInterface must be equal to the expected one")
 }
 
 func TestUnmarshalInterfaceError(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name string
 		json []byte
@@ -499,9 +512,11 @@ func TestUnmarshalInterfaceError(t *testing.T) {
 	}
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			v := &testObject{}
 			err := Unmarshal(testCase.json, v)
-			assert.NotNil(t, err, "Err must be not nil")
+			require.Error(t, err)
 			t.Log(err)
 			assert.IsType(t, &json.SyntaxError{}, err, "err should be a json.SyntaxError{}")
 		})
@@ -509,12 +524,14 @@ func TestUnmarshalInterfaceError(t *testing.T) {
 }
 
 func TestDecodeInterfacePoolError(t *testing.T) {
-	result := interface{}(1)
+	t.Parallel()
+
+	result := any(1)
 	dec := NewDecoder(nil)
 	dec.Release()
 	defer func() {
 		err := recover()
-		assert.NotNil(t, err, "err shouldnt be nil")
+		require.Error(t, err.(error), "err shouldn't be nil")
 		assert.IsType(t, InvalidUsagePooledDecoderError(""), err, "err should be of type InvalidUsagePooledDecoderError")
 	}()
 	_ = dec.DecodeInterface(&result)
@@ -522,10 +539,12 @@ func TestDecodeInterfacePoolError(t *testing.T) {
 }
 
 func TestDecodeNull(t *testing.T) {
-	var i interface{}
+	t.Parallel()
+
+	var i any
 	dec := BorrowDecoder(strings.NewReader("null"))
 	defer dec.Release()
 	err := dec.DecodeInterface(&i)
-	assert.Nil(t, err, "err should be nil")
-	assert.Equal(t, interface{}(nil), i, "value at given index should be the same as expected results")
+	require.NoError(t, err)
+	assert.Equal(t, any(nil), i, "value at given index should be the same as expected results")
 }

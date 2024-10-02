@@ -457,7 +457,7 @@ func (dec *Decoder) getUint64() (uint64, error) {
 func (dec *Decoder) atoui64(start, end int) uint64 {
 	ll := end + 1 - start
 	val := uint64(digits[dec.data[start]])
-	end = end + 1
+	end++
 	if ll < maxUint64Length {
 		for i := start + 1; i < end; i++ {
 			uintv := uint64(digits[dec.data[i]])
@@ -488,7 +488,7 @@ func (dec *Decoder) atoui32(start, end int) uint32 {
 	ll := end + 1 - start
 	var val uint32
 	val = uint32(digits[dec.data[start]])
-	end = end + 1
+	end++
 	if ll < maxUint32Length {
 		for i := start + 1; i < end; i++ {
 			uintv := uint32(digits[dec.data[i]])
@@ -519,7 +519,7 @@ func (dec *Decoder) atoui16(start, end int) uint16 {
 	ll := end + 1 - start
 	var val uint16
 	val = uint16(digits[dec.data[start]])
-	end = end + 1
+	end++
 	if ll < maxUint16Length {
 		for i := start + 1; i < end; i++ {
 			uintv := uint16(digits[dec.data[i]])
@@ -550,7 +550,7 @@ func (dec *Decoder) atoui8(start, end int) uint8 {
 	ll := end + 1 - start
 	var val uint8
 	val = uint8(digits[dec.data[start]])
-	end = end + 1
+	end++
 	if ll < maxUint8Length {
 		for i := start + 1; i < end; i++ {
 			uintv := uint8(digits[dec.data[i]])

@@ -28,12 +28,12 @@ func (dec *Decoder) decodeArray(arr UnmarshalerJSONArray) (int, error) {
 		case ' ', '\n', '\t', '\r', ',':
 			continue
 		case '[':
-			dec.cursor = dec.cursor + 1
+			dec.cursor++
 			// array is open, char is not space start readings
 			for dec.nextChar() != 0 {
 				// closing array
 				if dec.data[dec.cursor] == ']' {
-					dec.cursor = dec.cursor + 1
+					dec.cursor++
 					return dec.cursor, nil
 				}
 				// calling unmarshall function for each element of the slice
@@ -68,7 +68,8 @@ func (dec *Decoder) decodeArray(arr UnmarshalerJSONArray) (int, error) {
 	return 0, dec.raiseInvalidJSONErr(dec.cursor)
 }
 
-func (dec *Decoder) decodeArrayNull(v interface{}) (int, error) {
+//nolint:funlen,cyclop
+func (dec *Decoder) decodeArrayNull(v any) (int, error) {
 	// remember last array index in case of nested arrays
 	lastArrayIndex := dec.arrayIndex
 	dec.arrayIndex = 0
@@ -81,14 +82,14 @@ func (dec *Decoder) decodeArrayNull(v interface{}) (int, error) {
 		dec.err = ErrUnmarshalPtrExpected
 		return 0, dec.err
 	}
-	// not an array not an error, but do not know what to do
-	// do not check syntax
+	// not an array not an error, but do not know what to do.
+	// do not check syntax.
 	for ; dec.cursor < dec.length || dec.read(); dec.cursor++ {
 		switch dec.data[dec.cursor] {
 		case ' ', '\n', '\t', '\r', ',':
 			continue
 		case '[':
-			dec.cursor = dec.cursor + 1
+			dec.cursor++
 			// create our new type
 			elt := vv.Elem()
 			n := reflect.New(elt.Type().Elem())
@@ -103,7 +104,7 @@ func (dec *Decoder) decodeArrayNull(v interface{}) (int, error) {
 				// closing array
 				if dec.data[dec.cursor] == ']' {
 					elt.Set(n)
-					dec.cursor = dec.cursor + 1
+					dec.cursor++
 					return dec.cursor, nil
 				}
 				// calling unmarshall function for each element of the slice
@@ -138,6 +139,7 @@ func (dec *Decoder) decodeArrayNull(v interface{}) (int, error) {
 	return 0, dec.raiseInvalidJSONErr(dec.cursor)
 }
 
+//nolint:gocognit,cyclop
 func (dec *Decoder) skipArray() (int, error) {
 	arraysOpen := 1
 	arraysClosed := 0
@@ -163,9 +165,9 @@ func (dec *Decoder) skipArray() (int, error) {
 				}
 				if dec.data[j-1] != '\\' || (!isInEscapeSeq && !isFirstQuote) {
 					break
-				} else {
-					isInEscapeSeq = false
 				}
+
+				isInEscapeSeq = false
 				if isFirstQuote {
 					isFirstQuote = false
 				}
@@ -214,7 +216,7 @@ func (dec *Decoder) AddArray(v UnmarshalerJSONArray) error {
 }
 
 // AddArrayNull decodes the JSON value within an object or an array to a UnmarshalerJSONArray.
-func (dec *Decoder) AddArrayNull(v interface{}) error {
+func (dec *Decoder) AddArrayNull(v any) error {
 	return dec.ArrayNull(v)
 }
 
@@ -233,7 +235,7 @@ func (dec *Decoder) Array(v UnmarshalerJSONArray) error {
 // v should be a pointer to an UnmarshalerJSONArray,
 // if `null` value is encountered in JSON, it will leave the value v untouched,
 // else it will create a new instance of the UnmarshalerJSONArray behind v.
-func (dec *Decoder) ArrayNull(v interface{}) error {
+func (dec *Decoder) ArrayNull(v any) error {
 	newCursor, err := dec.decodeArrayNull(v)
 	if err != nil {
 		return err

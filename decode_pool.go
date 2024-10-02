@@ -10,7 +10,7 @@ var decPool = sync.Pool{
 }
 
 func init() {
-	for i := 0; i < 32; i++ {
+	for range 32 {
 		decPool.Put(NewDecoder(nil))
 	}
 }
@@ -30,7 +30,7 @@ func NewDecoder(r io.Reader) *Decoder {
 	}
 }
 
-func newDecoderPool() interface{} {
+func newDecoderPool() any {
 	return NewDecoder(nil)
 }
 
@@ -43,6 +43,7 @@ func BorrowDecoder(r io.Reader) *Decoder {
 }
 
 func borrowDecoder(r io.Reader, bufSize int) *Decoder {
+	//nolint:forcetypeassert
 	dec := decPool.Get().(*Decoder)
 	dec.isPooled = 0
 	dec.r = r

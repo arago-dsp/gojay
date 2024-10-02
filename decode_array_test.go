@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 type testSliceInts []int
@@ -19,12 +20,14 @@ func (t *testSliceInts) UnmarshalJSONArray(dec *Decoder) error {
 }
 
 func TestSliceInts(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name           string
 		json           string
 		expectedResult testSliceInts
 		err            bool
-		errType        interface{}
+		errType        any
 	}{
 		{
 			name:           "basic-test",
@@ -74,7 +77,7 @@ func TestSliceInts(t *testing.T) {
 		defer dec.Release()
 		err := dec.Decode(&s)
 		if testCase.err {
-			assert.NotNil(t, err, "err should not be nil")
+			require.Error(t, err)
 			if testCase.errType != nil {
 				assert.IsType(t, testCase.errType, err, "err should be of the given type")
 			}
@@ -98,12 +101,14 @@ func (t *testSliceStrings) UnmarshalJSONArray(dec *Decoder) error {
 }
 
 func TestSliceStrings(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name           string
 		json           string
 		expectedResult testSliceStrings
 		err            bool
-		errType        interface{}
+		errType        any
 	}{
 		{
 			name:           "basic-test",
@@ -138,18 +143,20 @@ func TestSliceStrings(t *testing.T) {
 
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			s := make(testSliceStrings, 0)
 			dec := BorrowDecoder(strings.NewReader(testCase.json))
 			defer dec.Release()
 			err := dec.Decode(&s)
 			if testCase.err {
-				assert.NotNil(t, err, "err should not be nil")
+				require.Error(t, err)
 				if testCase.errType != nil {
 					assert.IsType(t, testCase.errType, err, "err should be of the given type")
 				}
 				return
 			}
-			assert.Nil(t, err, "err should be nil")
+			require.NoError(t, err)
 			for k, v := range testCase.expectedResult {
 				assert.Equal(t, v, s[k], "value at given index should be the same as expected results")
 			}
@@ -169,20 +176,24 @@ func (t *testSliceBools) UnmarshalJSONArray(dec *Decoder) error {
 }
 
 func TestSliceBools(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name           string
 		json           string
 		expectedResult testSliceBools
 		err            bool
-		errType        interface{}
+		errType        any
 	}{
 		{
-			name:           "basic-test",
+			name: "basic-test",
+			//nolint:dupword
 			json:           `[true, false, false, true, true, false]`,
 			expectedResult: testSliceBools{true, false, false, true, true, false},
 		},
 		{
-			name:           "basic-test2",
+			name: "basic-test2",
+			//nolint:dupword
 			json:           `[true, false, false, true, null,null,true,false]`,
 			expectedResult: testSliceBools{true, false, false, true, false, false, true, false},
 		},
@@ -204,18 +215,20 @@ func TestSliceBools(t *testing.T) {
 
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			s := make(testSliceBools, 0)
 			dec := BorrowDecoder(strings.NewReader(testCase.json))
 			defer dec.Release()
 			err := dec.Decode(&s)
 			if testCase.err {
-				assert.NotNil(t, err, "err should not be nil")
+				require.Error(t, err)
 				if testCase.errType != nil {
 					assert.IsType(t, testCase.errType, err, "err should be of the given type")
 				}
 				return
 			}
-			assert.Nil(t, err, "err should be nil")
+			require.NoError(t, err)
 			for k, v := range testCase.expectedResult {
 				assert.Equal(t, v, s[k], "value at given index should be the same as expected results")
 			}
@@ -235,12 +248,14 @@ func (t *testSliceSlicesSlices) UnmarshalJSONArray(dec *Decoder) error {
 }
 
 func TestSliceSlices(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name           string
 		json           string
 		expectedResult testSliceSlicesSlices
 		err            bool
-		errType        interface{}
+		errType        any
 	}{
 		{
 			name:           "basic-test",
@@ -270,18 +285,20 @@ func TestSliceSlices(t *testing.T) {
 
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			s := make(testSliceSlicesSlices, 0)
 			dec := BorrowDecoder(strings.NewReader(testCase.json))
 			defer dec.Release()
 			err := dec.Decode(&s)
 			if testCase.err {
-				assert.NotNil(t, err, "err should not be nil")
+				require.Error(t, err)
 				if testCase.errType != nil {
 					assert.IsType(t, testCase.errType, err, "err should be of the given type")
 				}
 				return
 			}
-			assert.Nil(t, err, "err should be nil")
+			require.NoError(t, err)
 			for k, v := range testCase.expectedResult {
 				assert.Equal(t, v, s[k], "value at given index should be the same as expected results")
 			}
@@ -298,12 +315,14 @@ func (t *testSliceObjects) UnmarshalJSONArray(dec *Decoder) error {
 }
 
 func TestSliceObjects(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name           string
 		json           string
 		expectedResult testSliceObjects
 		err            bool
-		errType        interface{}
+		errType        any
 	}{
 		{
 			name: "basic-test",
@@ -352,18 +371,20 @@ func TestSliceObjects(t *testing.T) {
 
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			s := make(testSliceObjects, 0)
 			dec := BorrowDecoder(strings.NewReader(testCase.json))
 			defer dec.Release()
 			err := dec.Decode(&s)
 			if testCase.err {
-				assert.NotNil(t, err, "err should not be nil")
+				require.Error(t, err)
 				if testCase.errType != nil {
 					assert.IsType(t, testCase.errType, err, "err should be of the given type")
 				}
 				return
 			}
-			assert.Nil(t, err, "err should be nil")
+			require.NoError(t, err)
 			for k, v := range testCase.expectedResult {
 				assert.Equal(t, *v, *s[k], "value at given index should be the same as expected results")
 			}
@@ -387,8 +408,7 @@ type ObjectArrayNull struct {
 }
 
 func (o *ObjectArrayNull) UnmarshalJSONObject(dec *Decoder, k string) error {
-	switch k {
-	case "subarray":
+	if k == "subarray" {
 		return dec.ArrayNull(&o.SubArray)
 	}
 	return nil
@@ -399,38 +419,52 @@ func (o *ObjectArrayNull) NKeys() int {
 }
 
 func TestDecodeArrayNullPtr(t *testing.T) {
+	t.Parallel()
+
 	t.Run("sub obj should not be nil", func(t *testing.T) {
+		t.Parallel()
+
 		o := &ObjectArrayNull{}
 		err := UnmarshalJSONObject([]byte(`{"subarray": ["test"]}`), o)
-		assert.Nil(t, err)
+		require.NoError(t, err)
 		assert.NotNil(t, o.SubArray)
 		assert.Len(t, *o.SubArray, 1)
 	})
 	t.Run("sub array should be nil", func(t *testing.T) {
+		t.Parallel()
+
 		o := &ObjectArrayNull{}
 		err := UnmarshalJSONObject([]byte(`{"subarray": null}`), o)
-		assert.Nil(t, err)
+		require.NoError(t, err)
 		assert.Nil(t, o.SubArray)
 	})
 	t.Run("sub array err, not closing arr", func(t *testing.T) {
+		t.Parallel()
+
 		o := &ObjectArrayNull{}
 		err := UnmarshalJSONObject([]byte(`{"subarray": [    `), o)
-		assert.NotNil(t, err)
+		require.Error(t, err)
 	})
 	t.Run("sub array err, invalid string", func(t *testing.T) {
+		t.Parallel()
+
 		o := &ObjectArrayNull{}
 		err := UnmarshalJSONObject([]byte(`{"subarray":[",]}`), o)
-		assert.NotNil(t, err)
+		require.Error(t, err)
 	})
 	t.Run("sub array err, invalid null", func(t *testing.T) {
+		t.Parallel()
+
 		o := &ObjectArrayNull{}
 		err := UnmarshalJSONObject([]byte(`{"subarray":nll}`), o)
-		assert.NotNil(t, err)
+		require.Error(t, err)
 	})
 	t.Run("sub array err, empty", func(t *testing.T) {
+		t.Parallel()
+
 		o := &ObjectArrayNull{}
 		err := UnmarshalJSONObject([]byte(`{"subarray":`), o)
-		assert.NotNil(t, err)
+		require.Error(t, err)
 	})
 }
 
@@ -446,22 +480,28 @@ func (c *testChannelArray) UnmarshalJSONArray(dec *Decoder) error {
 }
 
 func TestDecoderSliceNull(t *testing.T) {
+	t.Parallel()
+
 	json := []byte(`null`)
 	v := &testSliceStrings{}
 	err := Unmarshal(json, v)
-	assert.Nil(t, err, "Err must be nil")
-	assert.Equal(t, len(*v), 0, "v must be of len 0")
+	require.NoError(t, err)
+	assert.Empty(t, *v, "v must be of len 0")
 }
 
 func TestDecodeSliceInvalidType(t *testing.T) {
+	t.Parallel()
+
 	result := testSliceObjects{}
 	err := UnmarshalJSONArray([]byte(`{}`), &result)
-	assert.NotNil(t, err, "err should not be nil")
+	require.Error(t, err)
 	assert.IsType(t, InvalidUnmarshalError(""), err, "err should be of type InvalidUnmarshalError")
 	assert.Equal(t, "Cannot unmarshal JSON to type '*gojay.testSliceObjects'", err.Error(), "err should not be nil")
 }
 
 func TestDecoderChannelOfObjectsBasic(t *testing.T) {
+	t.Parallel()
+
 	json := []byte(`[
 		{
 			"test": 245,
@@ -481,7 +521,7 @@ func TestDecoderChannelOfObjectsBasic(t *testing.T) {
 	]`)
 	testChan := testChannelArray(make(chan *TestObj, 3))
 	err := UnmarshalJSONArray(json, &testChan)
-	assert.Nil(t, err, "Err must be nil")
+	require.NoError(t, err)
 	ct := 0
 	l := len(testChan)
 	for range testChan {
@@ -490,51 +530,59 @@ func TestDecoderChannelOfObjectsBasic(t *testing.T) {
 			break
 		}
 	}
-	assert.Equal(t, ct, 3)
+	assert.Equal(t, 3, ct)
 }
 
 func TestDecoderSliceInvalidJSON(t *testing.T) {
+	t.Parallel()
+
 	json := []byte(`hello`)
 	testArr := testSliceInts{}
 	err := UnmarshalJSONArray(json, &testArr)
-	assert.NotNil(t, err, "Err must not be nil as JSON is invalid")
+	require.Error(t, err, "Err must not be nil as JSON is invalid")
 	assert.IsType(t, InvalidJSONError(""), err, "err message must be 'Invalid JSON'")
 }
 
 func TestDecoderSliceDecoderAPI(t *testing.T) {
+	t.Parallel()
+
 	json := `["string","string1"]`
 	testArr := testSliceStrings{}
 	dec := NewDecoder(strings.NewReader(json))
 	err := dec.DecodeArray(&testArr)
-	assert.Nil(t, err, "Err must be nil")
+	require.NoError(t, err)
 	assert.Len(t, testArr, 2, "testArr should be of len 2")
 	assert.Equal(t, "string", testArr[0], "testArr[0] should be 'string'")
 	assert.Equal(t, "string1", testArr[1], "testArr[1] should be 'string1'")
 }
 
 func TestDecoderSliceDecoderAPIError(t *testing.T) {
+	t.Parallel()
+
 	testArr := testSliceInts{}
 	dec := NewDecoder(strings.NewReader(`hello`))
 	err := dec.DecodeArray(&testArr)
-	assert.NotNil(t, err, "Err must not be nil as JSON is invalid")
+	require.Error(t, err, "Err must not be nil as JSON is invalid")
 	assert.IsType(t, InvalidJSONError(""), err, "err message must be 'Invalid JSON'")
 }
 
 func TestUnmarshalJSONArrays(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name         string
 		v            UnmarshalerJSONArray
 		d            []byte
-		expectations func(err error, v interface{}, t *testing.T)
+		expectations func(err error, v any, t *testing.T)
 	}{
 		{
 			v:    new(testDecodeSlice),
 			d:    []byte(`[{"test":"test"}]`),
 			name: "test decode slice",
-			expectations: func(err error, v interface{}, t *testing.T) {
+			expectations: func(err error, v any, t *testing.T) {
 				vtPtr := v.(*testDecodeSlice)
 				vt := *vtPtr
-				assert.Nil(t, err, "err must be nil")
+				require.NoError(t, err)
 				assert.Len(t, vt, 1, "len of vt must be 1")
 				assert.Equal(t, "test", vt[0].test, "vt[0].test must be equal to 'test'")
 			},
@@ -543,10 +591,10 @@ func TestUnmarshalJSONArrays(t *testing.T) {
 			v:    new(testDecodeSlice),
 			d:    []byte(`[{"test":"test"},{"test":"test2"}]`),
 			name: "test decode slice",
-			expectations: func(err error, v interface{}, t *testing.T) {
+			expectations: func(err error, v any, t *testing.T) {
 				vtPtr := v.(*testDecodeSlice)
 				vt := *vtPtr
-				assert.Nil(t, err, "err must be nil")
+				require.NoError(t, err)
 				assert.Len(t, vt, 2, "len of vt must be 2")
 				assert.Equal(t, "test", vt[0].test, "vt[0].test must be equal to 'test'")
 				assert.Equal(t, "test2", vt[1].test, "vt[1].test must be equal to 'test2'")
@@ -556,15 +604,16 @@ func TestUnmarshalJSONArrays(t *testing.T) {
 			v:    new(testDecodeSlice),
 			d:    []byte(`invalid json`),
 			name: "test decode object null",
-			expectations: func(err error, v interface{}, t *testing.T) {
-				assert.NotNil(t, err, "err must not be nil")
+			expectations: func(err error, _ any, t *testing.T) {
+				require.Error(t, err)
 				assert.IsType(t, InvalidJSONError(""), err, "err must be of type InvalidJSONError")
 			},
 		},
 	}
 	for _, testCase := range testCases {
-		testCase := testCase
-		t.Run(testCase.name, func(*testing.T) {
+		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			err := UnmarshalJSONArray(testCase.d, testCase.v)
 			testCase.expectations(err, testCase.v, t)
 		})
@@ -572,6 +621,8 @@ func TestUnmarshalJSONArrays(t *testing.T) {
 }
 
 func TestSkipArray(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name         string
 		json         string
@@ -581,37 +632,39 @@ func TestSkipArray(t *testing.T) {
 			name: "basic",
 			json: `"testbasic"]`,
 			expectations: func(t *testing.T, i int, err error) {
+				require.NoError(t, err)
 				assert.Equal(t, len(`"testbasic"]`), i)
-				assert.Nil(t, err)
 			},
 		},
 		{
 			name: "complex escape string",
 			json: `"test \\\\\" escape"]`,
 			expectations: func(t *testing.T, i int, err error) {
+				require.NoError(t, err)
 				assert.Equal(t, len(`"test \\\\\" escape"]`), i)
-				assert.Nil(t, err)
 			},
 		},
 		{
 			name: "complex escape slash",
 			json: `"test \\\\\\"]`,
 			expectations: func(t *testing.T, i int, err error) {
+				require.NoError(t, err)
 				assert.Equal(t, len(`"test \\\\\\"]`), i)
-				assert.Nil(t, err)
 			},
 		},
 		{
 			json: `"test \n"]`,
 			expectations: func(t *testing.T, i int, err error) {
+				require.NoError(t, err)
 				assert.Equal(t, len(`"test \n"]`), i)
-				assert.Nil(t, err)
 			},
 		},
 	}
 
 	for _, test := range testCases {
 		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
+
 			dec := NewDecoder(strings.NewReader(test.json))
 			i, err := dec.skipArray()
 			test.expectations(t, i, err)
@@ -620,30 +673,38 @@ func TestSkipArray(t *testing.T) {
 }
 
 func TestDecodeArrayEmpty(t *testing.T) {
+	t.Parallel()
+
 	v := new(testDecodeSlice)
 	dec := NewDecoder(strings.NewReader(""))
 	err := dec.Decode(v)
-	assert.NotNil(t, err, "err should not be nil")
+	require.Error(t, err)
 	assert.IsType(t, InvalidJSONError(""), err, "err should be of type InvalidJSONError")
 }
 
 func TestDecodeArraySkipError(t *testing.T) {
+	t.Parallel()
+
 	v := new(testDecodeSlice)
 	dec := NewDecoder(strings.NewReader("34fef"))
 	err := dec.Decode(v)
-	assert.NotNil(t, err, "err should not be nil")
+	require.Error(t, err)
 	assert.IsType(t, InvalidJSONError(""), err, "err should be of type InvalidJSONError")
 }
 
 func TestDecodeArrayNullError(t *testing.T) {
+	t.Parallel()
+
 	v := new(testDecodeSlice)
 	dec := NewDecoder(strings.NewReader("nall"))
 	err := dec.Decode(v)
-	assert.NotNil(t, err, "err should not be nil")
+	require.Error(t, err)
 	assert.IsType(t, InvalidJSONError(""), err, "err should be of type InvalidJSONError")
 }
 
 func TestDecoderArrayFunc(t *testing.T) {
+	t.Parallel()
+
 	var f DecodeArrayFunc
 	assert.True(t, f.IsNil())
 }
@@ -660,10 +721,12 @@ func (a *testArrayStrings) UnmarshalJSONArray(dec *Decoder) error {
 }
 
 func TestArrayStrings(t *testing.T) {
+	t.Parallel()
+
 	data := []byte(`["a", "b", "c"]`)
 	arr := testArrayStrings{}
 	err := Unmarshal(data, &arr)
-	assert.Nil(t, err, "err must be nil")
+	require.NoError(t, err)
 	assert.Equal(t, "a", arr[0], "arr[0] must be equal to 'a'")
 	assert.Equal(t, "b", arr[1], "arr[1] must be equal to 'b'")
 	assert.Equal(t, "c", arr[2], "arr[2] must be equal to 'c'")
@@ -686,6 +749,8 @@ func (s *testSliceArraysStrings) UnmarshalJSONArray(dec *Decoder) error {
 }
 
 func TestIndex(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name           string
 		json           string
@@ -705,12 +770,14 @@ func TestIndex(t *testing.T) {
 
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			s := make([]testArrayStrings, 0)
 			dec := BorrowDecoder(strings.NewReader(testCase.json))
 			defer dec.Release()
 			a := testSliceArraysStrings{arrays: s, t: t}
 			err := dec.Decode(&a)
-			assert.Nil(t, err, "err should be nil")
+			require.NoError(t, err)
 			assert.Zero(t, dec.Index(), "Index() must return zero after decoding")
 			for k, v := range testCase.expectedResult {
 				assert.Equal(t, v, a.arrays[k], "value at given index should be the same as expected results")
@@ -720,12 +787,14 @@ func TestIndex(t *testing.T) {
 }
 
 func TestDecoderArrayPoolError(t *testing.T) {
+	t.Parallel()
+
 	result := testSliceArraysStrings{}
 	dec := NewDecoder(nil)
 	dec.Release()
 	defer func() {
 		err := recover()
-		assert.NotNil(t, err, "err shouldnt be nil")
+		require.Error(t, err.(error), "err shouldn't be nil")
 		assert.IsType(t, InvalidUsagePooledDecoderError(""), err, "err should be of type InvalidUsagePooledDecoderError")
 	}()
 	_ = dec.DecodeArray(&result)

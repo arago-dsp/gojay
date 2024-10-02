@@ -4,9 +4,12 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestDecodeShouldNotModifyInput(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name string
 		data string
@@ -16,6 +19,8 @@ func TestDecodeShouldNotModifyInput(t *testing.T) {
 	}
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			var s string
 
 			data := []byte(testCase.data)
@@ -24,7 +29,7 @@ func TestDecodeShouldNotModifyInput(t *testing.T) {
 
 			err := Unmarshal(data, &s)
 
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, testCase.want, s)
 			assert.Equal(t, orig, data)
 		})

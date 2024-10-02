@@ -4,6 +4,7 @@ package gojay
 // It can be used to delay JSON decoding or precompute a JSON encoding.
 type EmbeddedJSON []byte
 
+//nolint:funlen,cyclop
 func (dec *Decoder) decodeEmbeddedJSON(ej *EmbeddedJSON) error {
 	var err error
 	if ej == nil {
@@ -40,17 +41,17 @@ func (dec *Decoder) decodeEmbeddedJSON(ej *EmbeddedJSON) error {
 		// is an object
 		case '{':
 			beginOfEmbeddedJSON = dec.cursor
-			dec.cursor = dec.cursor + 1
+			dec.cursor++
 			dec.cursor, err = dec.skipObject()
 		// is string
 		case '"':
 			beginOfEmbeddedJSON = dec.cursor
-			dec.cursor = dec.cursor + 1
+			dec.cursor++
 			err = dec.skipString() // why no new dec.cursor in result?
 		// is array
 		case '[':
 			beginOfEmbeddedJSON = dec.cursor
-			dec.cursor = dec.cursor + 1
+			dec.cursor++
 			dec.cursor, err = dec.skipArray()
 		case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-':
 			beginOfEmbeddedJSON = dec.cursor

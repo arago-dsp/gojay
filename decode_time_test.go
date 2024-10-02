@@ -7,9 +7,12 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestDecodeTime(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name         string
 		json         string
@@ -63,20 +66,24 @@ func TestDecodeTime(t *testing.T) {
 
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			tm := time.Time{}
 			dec := NewDecoder(strings.NewReader(testCase.json))
 			err := dec.DecodeTime(&tm, testCase.format)
 			if !testCase.err {
-				assert.Nil(t, err)
+				require.NoError(t, err)
 				assert.Equal(t, testCase.expectedTime, tm.Format(testCase.format))
 				return
 			}
-			assert.NotNil(t, err)
+			require.Error(t, err)
 		})
 	}
 }
 
 func TestDecodeAddTime(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name         string
 		json         string
@@ -109,23 +116,27 @@ func TestDecodeAddTime(t *testing.T) {
 
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			tm := time.Time{}
 			dec := NewDecoder(strings.NewReader(testCase.json))
 			err := dec.AddTime(&tm, testCase.format)
 			if !testCase.err {
-				assert.Nil(t, err)
+				require.NoError(t, err)
 				assert.Equal(t, testCase.expectedTime, tm.Format(testCase.format))
 				return
 			}
-			assert.NotNil(t, err)
+			require.Error(t, err)
 		})
 	}
 }
 
 func TestDecoderTimePoolError(t *testing.T) {
+	t.Parallel()
+
 	// reset the pool to make sure it's not full
 	decPool = sync.Pool{
-		New: func() interface{} {
+		New: func() any {
 			return NewDecoder(nil)
 		},
 	}
@@ -133,7 +144,7 @@ func TestDecoderTimePoolError(t *testing.T) {
 	dec.Release()
 	defer func() {
 		err := recover()
-		assert.NotNil(t, err, "err shouldnt be nil")
+		require.Error(t, err.(error), "err shouldn't be nil")
 		assert.IsType(t, InvalidUsagePooledDecoderError(""), err, "err should be of type InvalidUsagePooledDecoderError")
 	}()
 	_ = dec.DecodeTime(&time.Time{}, time.RFC3339)

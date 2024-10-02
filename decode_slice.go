@@ -53,6 +53,23 @@ func (dec *Decoder) SliceInt8(s *[]int8) error {
 	}))
 }
 
+// AddSliceUint8 unmarshal the next JSON array of integers to the given *[]uint8 s.
+func (dec *Decoder) AddSliceUint8(s *[]uint8) error {
+	return dec.SliceUint8(s)
+}
+
+// SliceUint8 unmarshal the next JSON array of integers to the given *[]uint8 s.
+func (dec *Decoder) SliceUint8(s *[]uint8) error {
+	var i uint8
+	return dec.Array(DecodeArrayFunc(func(dec *Decoder) error {
+		if err := dec.Uint8(&i); err != nil {
+			return err
+		}
+		*s = append(*s, i)
+		return nil
+	}))
+}
+
 // AddSliceFloat64 unmarshal the next JSON array of floats to the given *[]float64 s.
 func (dec *Decoder) AddSliceFloat64(s *[]float64) error {
 	return dec.SliceFloat64(s)

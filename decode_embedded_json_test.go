@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 type Request struct {
@@ -34,6 +35,8 @@ func (r *Request) NKeys() int {
 }
 
 func TestDecodeEmbeddedJSONUnmarshalAPI(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name             string
 		json             []byte
@@ -96,14 +99,16 @@ func TestDecodeEmbeddedJSONUnmarshalAPI(t *testing.T) {
 	}
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			req := &Request{}
 			err := Unmarshal(testCase.json, req)
 			t.Log(req)
 			t.Log(string(req.params))
 			if testCase.err {
-				assert.NotNil(t, err, "err should not be nil")
+				require.Error(t, err)
 			} else {
-				assert.Nil(t, err, "err should be nil")
+				require.NoError(t, err)
 			}
 			assert.Equal(t, testCase.expectedEmbedded, string(req.params), "r.params should be equal to expectedEmbeddedResult")
 		})
@@ -111,6 +116,8 @@ func TestDecodeEmbeddedJSONUnmarshalAPI(t *testing.T) {
 }
 
 func TestDecodeEmbeddedJSONDecodeAPI(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name             string
 		json             []byte
@@ -154,27 +161,33 @@ func TestDecodeEmbeddedJSONDecodeAPI(t *testing.T) {
 	}
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			ej := EmbeddedJSON([]byte{})
 			dec := BorrowDecoder(bytes.NewReader(testCase.json))
 			err := dec.Decode(&ej)
-			assert.Nil(t, err, "err should be nil")
+			require.NoError(t, err)
 			assert.Equal(t, string(testCase.json), string(ej), "r.params should be equal to expectedEmbeddedResult")
 		})
 	}
 }
 
-func TestDecodeEmbeededJSONNil(t *testing.T) {
+func TestDecodeEmbeddedJSONNil(t *testing.T) {
+	t.Parallel()
+
 	dec := BorrowDecoder(strings.NewReader(`"bar"`))
 	var ej *EmbeddedJSON
 	err := dec.decodeEmbeddedJSON(ej)
-	assert.NotNil(t, err, `err should not be nil a nil pointer is given`)
+	require.Error(t, err, `err should not be nil a nil pointer is given`)
 	assert.IsType(t, InvalidUnmarshalError(""), err, `err should not be of type InvalidUnmarshalError`)
 }
 
-func TestDecodeEmbeededJSONNil2(t *testing.T) {
+func TestDecodeEmbeddedJSONNil2(t *testing.T) {
+	t.Parallel()
+
 	dec := BorrowDecoder(strings.NewReader(`"bar"`))
 	var ej *EmbeddedJSON
 	err := dec.AddEmbeddedJSON(ej)
-	assert.NotNil(t, err, `err should not be nil a nil pointer is given`)
+	require.Error(t, err, `err should not be nil a nil pointer is given`)
 	assert.IsType(t, InvalidUnmarshalError(""), err, `err should not be of type InvalidUnmarshalError`)
 }

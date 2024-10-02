@@ -10,6 +10,8 @@ import (
 )
 
 func TestDecodeSQLNullString(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name               string
 		json               string
@@ -30,13 +32,15 @@ func TestDecodeSQLNullString(t *testing.T) {
 	}
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			nullString := sql.NullString{}
 			dec := NewDecoder(strings.NewReader(testCase.json))
 			err := dec.DecodeSQLNullString(&nullString)
 			if testCase.err {
-				assert.NotNil(t, err)
+				require.Error(t, err)
 			} else {
-				assert.Nil(t, err)
+				require.NoError(t, err)
 				assert.Equal(t, testCase.expectedNullString, nullString)
 			}
 		})
@@ -44,11 +48,13 @@ func TestDecodeSQLNullString(t *testing.T) {
 	t.Run(
 		"should panic because decoder is pooled",
 		func(t *testing.T) {
+			t.Parallel()
+
 			dec := NewDecoder(nil)
 			dec.Release()
 			defer func() {
 				err := recover()
-				assert.NotNil(t, err, "err shouldnt be nil")
+				require.Error(t, err.(error), "err shouldn't be nil")
 				assert.IsType(t, InvalidUsagePooledDecoderError(""), err, "err should be of type InvalidUsagePooledDecoderError")
 			}()
 			_ = dec.DecodeSQLNullString(&sql.NullString{})
@@ -58,6 +64,8 @@ func TestDecodeSQLNullString(t *testing.T) {
 }
 
 func TestDecodeSQLNullInt64(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name              string
 		json              string
@@ -78,13 +86,15 @@ func TestDecodeSQLNullInt64(t *testing.T) {
 	}
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			nullInt64 := sql.NullInt64{}
 			dec := NewDecoder(strings.NewReader(testCase.json))
 			err := dec.DecodeSQLNullInt64(&nullInt64)
 			if testCase.err {
-				assert.NotNil(t, err)
+				require.Error(t, err)
 			} else {
-				assert.Nil(t, err)
+				require.NoError(t, err)
 				assert.Equal(t, testCase.expectedNullInt64, nullInt64)
 			}
 		})
@@ -92,11 +102,13 @@ func TestDecodeSQLNullInt64(t *testing.T) {
 	t.Run(
 		"should panic because decoder is pooled",
 		func(t *testing.T) {
+			t.Parallel()
+
 			dec := NewDecoder(nil)
 			dec.Release()
 			defer func() {
 				err := recover()
-				assert.NotNil(t, err, "err shouldnt be nil")
+				require.Error(t, err.(error), "err shouldn't be nil")
 				assert.IsType(t, InvalidUsagePooledDecoderError(""), err, "err should be of type InvalidUsagePooledDecoderError")
 			}()
 			_ = dec.DecodeSQLNullInt64(&sql.NullInt64{})
@@ -106,6 +118,8 @@ func TestDecodeSQLNullInt64(t *testing.T) {
 }
 
 func TestDecodeSQLNullFloat64(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name                string
 		json                string
@@ -126,13 +140,15 @@ func TestDecodeSQLNullFloat64(t *testing.T) {
 	}
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			nullFloat64 := sql.NullFloat64{}
 			dec := NewDecoder(strings.NewReader(testCase.json))
 			err := dec.DecodeSQLNullFloat64(&nullFloat64)
 			if testCase.err {
-				assert.NotNil(t, err)
+				require.Error(t, err)
 			} else {
-				assert.Nil(t, err)
+				require.NoError(t, err)
 				assert.Equal(t, testCase.expectedNullFloat64, nullFloat64)
 			}
 		})
@@ -140,11 +156,13 @@ func TestDecodeSQLNullFloat64(t *testing.T) {
 	t.Run(
 		"should panic because decoder is pooled",
 		func(t *testing.T) {
+			t.Parallel()
+
 			dec := NewDecoder(nil)
 			dec.Release()
 			defer func() {
 				err := recover()
-				assert.NotNil(t, err, "err shouldnt be nil")
+				require.Error(t, err.(error), "err shouldn't be nil")
 				assert.IsType(t, InvalidUsagePooledDecoderError(""), err, "err should be of type InvalidUsagePooledDecoderError")
 			}()
 			_ = dec.DecodeSQLNullFloat64(&sql.NullFloat64{})
@@ -154,6 +172,8 @@ func TestDecodeSQLNullFloat64(t *testing.T) {
 }
 
 func TestDecodeSQLNullBool(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name             string
 		json             string
@@ -174,13 +194,15 @@ func TestDecodeSQLNullBool(t *testing.T) {
 	}
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			nullBool := sql.NullBool{}
 			dec := NewDecoder(strings.NewReader(testCase.json))
 			err := dec.DecodeSQLNullBool(&nullBool)
 			if testCase.err {
-				assert.NotNil(t, err)
+				require.Error(t, err)
 			} else {
-				assert.Nil(t, err)
+				require.NoError(t, err)
 				assert.Equal(t, testCase.expectedNullBool, nullBool)
 			}
 		})
@@ -188,11 +210,13 @@ func TestDecodeSQLNullBool(t *testing.T) {
 	t.Run(
 		"should panic because decoder is pooled",
 		func(t *testing.T) {
+			t.Parallel()
+
 			dec := NewDecoder(nil)
 			dec.Release()
 			defer func() {
 				err := recover()
-				assert.NotNil(t, err, "err shouldnt be nil")
+				require.Error(t, err.(error), "err shouldn't be nil")
 				assert.IsType(t, InvalidUsagePooledDecoderError(""), err, "err should be of type InvalidUsagePooledDecoderError")
 			}()
 			_ = dec.DecodeSQLNullBool(&sql.NullBool{})
@@ -227,6 +251,8 @@ func (s *SQLDecodeObject) NKeys() int {
 }
 
 func TestDecodeSQLNullKeys(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name           string
 		json           string
@@ -399,16 +425,18 @@ func TestDecodeSQLNullKeys(t *testing.T) {
 
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			o := &SQLDecodeObject{}
 			dec := NewDecoder(strings.NewReader(testCase.json))
 			err := dec.Decode(o)
 
 			if testCase.err {
-				require.NotNil(t, err)
+				require.Error(t, err)
 				return
 			}
 
-			require.Nil(t, err)
+			require.NoError(t, err)
 			require.Equal(
 				t,
 				testCase.expectedResult,

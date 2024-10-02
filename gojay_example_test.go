@@ -2,7 +2,6 @@ package gojay_test
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"strings"
 
@@ -51,15 +50,17 @@ func Example_decodeEncode() {
 	defer dec.Release()
 
 	u := &User{}
-	err := dec.Decode(u)
-	if err != nil {
-		log.Fatal(err)
+	if err := dec.Decode(u); err != nil {
+		fmt.Printf("%s", err)
+
+		return
 	}
 
 	enc := gojay.BorrowEncoder(os.Stdout)
-	err = enc.Encode(u)
-	if err != nil {
-		log.Fatal(err)
+	if err := enc.Encode(u); err != nil {
+		fmt.Printf("%s", err)
+
+		return
 	}
 
 	fmt.Printf("\nUser ID: %d\nName: %s\nEmail: %s\n",

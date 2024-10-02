@@ -36,8 +36,7 @@ func (enc *Encoder) writeString(s string) {
 }
 
 func (enc *Encoder) writeStringEscape(s string) {
-	l := len(s)
-	for i := 0; i < l; i++ {
+	for i := range len(s) {
 		c := s[i]
 		if c >= 0x20 && c != '\\' && c != '"' {
 			enc.writeByte(c)

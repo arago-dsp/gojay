@@ -18,15 +18,17 @@ func (dec *Decoder) DecodeObject(j UnmarshalerJSONObject) error {
 	return err
 }
 
+//nolint:funlen,gocognit,cyclop
 func (dec *Decoder) decodeObject(j UnmarshalerJSONObject) (int, error) {
 	keys := j.NKeys()
 	for ; dec.cursor < dec.length || dec.read(); dec.cursor++ {
 		switch dec.data[dec.cursor] {
 		case ' ', '\n', '\t', '\r', ',':
 		case '{':
-			dec.cursor = dec.cursor + 1
+			dec.cursor++
 			// if keys is zero we will parse all keys
 			// we run two loops for micro optimization
+			//nolint:nestif
 			if keys == 0 {
 				for dec.cursor < dec.length || dec.read() {
 					k, done, err := dec.nextKey()
@@ -101,7 +103,8 @@ func (dec *Decoder) decodeObject(j UnmarshalerJSONObject) (int, error) {
 	return 0, dec.raiseInvalidJSONErr(dec.cursor)
 }
 
-func (dec *Decoder) decodeObjectNull(v interface{}) (int, error) {
+//nolint:funlen,gocognit,cyclop
+func (dec *Decoder) decodeObjectNull(v any) (int, error) {
 	// make sure the value is a pointer
 	vv := reflect.ValueOf(v)
 	vvt := vv.Type()
@@ -123,9 +126,10 @@ func (dec *Decoder) decodeObjectNull(v interface{}) (int, error) {
 				return 0, dec.err
 			}
 			keys := j.NKeys()
-			dec.cursor = dec.cursor + 1
+			dec.cursor++
 			// if keys is zero we will parse all keys
 			// we run two loops for micro optimization
+			//nolint:nestif
 			if keys == 0 {
 				for dec.cursor < dec.length || dec.read() {
 					k, done, err := dec.nextKey()
@@ -200,6 +204,7 @@ func (dec *Decoder) decodeObjectNull(v interface{}) (int, error) {
 	return 0, dec.raiseInvalidJSONErr(dec.cursor)
 }
 
+//nolint:gocognit,cyclop
 func (dec *Decoder) skipObject() (int, error) {
 	objectsOpen := 1
 	objectsClosed := 0
@@ -224,9 +229,9 @@ func (dec *Decoder) skipObject() (int, error) {
 				}
 				if dec.data[j-1] != '\\' || (!isInEscapeSeq && !isFirstQuote) {
 					break
-				} else {
-					isInEscapeSeq = false
 				}
+
+				isInEscapeSeq = false
 				if isFirstQuote {
 					isFirstQuote = false
 				}
@@ -258,7 +263,7 @@ func (dec *Decoder) nextKey() (string, bool, error) {
 		case ' ', '\n', '\t', '\r', ',':
 			continue
 		case '"':
-			dec.cursor = dec.cursor + 1
+			dec.cursor++
 			start, end, err := dec.getStringNoEscape()
 			if err != nil {
 				return "", false, err
@@ -277,7 +282,7 @@ func (dec *Decoder) nextKey() (string, bool, error) {
 			}
 			return "", false, dec.raiseInvalidJSONErr(dec.cursor)
 		case '}':
-			dec.cursor = dec.cursor + 1
+			dec.cursor++
 			return "", true, nil
 		default:
 			// can't unmarshall to struct
@@ -287,6 +292,7 @@ func (dec *Decoder) nextKey() (string, bool, error) {
 	return "", false, dec.raiseInvalidJSONErr(dec.cursor)
 }
 
+//nolint:funlen
 func (dec *Decoder) skipData() error {
 	for ; dec.cursor < dec.length || dec.read(); dec.cursor++ {
 		switch dec.data[dec.cursor] {
@@ -317,18 +323,18 @@ func (dec *Decoder) skipData() error {
 			return nil
 		// is an object
 		case '{':
-			dec.cursor = dec.cursor + 1
+			dec.cursor++
 			end, err := dec.skipObject()
 			dec.cursor = end
 			return err
 		// is string
 		case '"':
-			dec.cursor = dec.cursor + 1
+			dec.cursor++
 			err := dec.skipString()
 			return err
 		// is array
 		case '[':
-			dec.cursor = dec.cursor + 1
+			dec.cursor++
 			end, err := dec.skipArray()
 			dec.cursor = end
 			return err
@@ -364,7 +370,7 @@ func (dec *Decoder) AddObject(v UnmarshalerJSONObject) error {
 }
 
 // AddObjectNull decodes the JSON value within an object or an array to a UnmarshalerJSONObject.
-func (dec *Decoder) AddObjectNull(v interface{}) error {
+func (dec *Decoder) AddObjectNull(v any) error {
 	return dec.ObjectNull(v)
 }
 
@@ -390,7 +396,7 @@ func (dec *Decoder) Object(value UnmarshalerJSONObject) error {
 // v should be a pointer to an UnmarshalerJSONObject,
 // if `null` value is encountered in JSON, it will leave the value v untouched,
 // else it will create a new instance of the UnmarshalerJSONObject behind v.
-func (dec *Decoder) ObjectNull(v interface{}) error {
+func (dec *Decoder) ObjectNull(v any) error {
 	initialKeysDone := dec.keysDone
 	initialChild := dec.child
 	dec.keysDone = 0

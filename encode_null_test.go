@@ -5,9 +5,12 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestEncodeNull(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name         string
 		baseJSON     string
@@ -27,19 +30,23 @@ func TestEncodeNull(t *testing.T) {
 
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			var b strings.Builder
 			enc := NewEncoder(&b)
 			enc.writeString(testCase.baseJSON)
 			enc.Null()
 			enc.AddNull()
 			_, err := enc.Write()
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, testCase.expectedJSON, b.String())
 		})
 	}
 }
 
 func TestEncodeNullKey(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name         string
 		baseJSON     string
@@ -59,13 +66,15 @@ func TestEncodeNullKey(t *testing.T) {
 
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			var b strings.Builder
 			enc := NewEncoder(&b)
 			enc.writeString(testCase.baseJSON)
 			enc.NullKey("foo")
 			enc.AddNullKey("bar")
 			_, err := enc.Write()
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, testCase.expectedJSON, b.String())
 		})
 	}

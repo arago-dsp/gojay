@@ -1,23 +1,25 @@
 package gojay
 
 import (
-	"fmt"
 	"math"
 	"reflect"
 	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestDecoderFloat64(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name           string
 		json           string
 		expectedResult float64
 		skipResult     bool
 		err            bool
-		errType        interface{}
+		errType        any
 	}{
 		{
 			name:           "basic-float",
@@ -274,73 +276,93 @@ func TestDecoderFloat64(t *testing.T) {
 	}
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			json := []byte(testCase.json)
 			var v float64
 			err := Unmarshal(json, &v)
 			if testCase.err {
-				assert.NotNil(t, err, "Err must not be nil")
+				require.Error(t, err)
 				if testCase.errType != nil {
 					assert.IsType(
 						t,
 						testCase.errType,
 						err,
-						fmt.Sprintf("err should be of type %s", reflect.TypeOf(err).String()),
+						"err should be of type %s",
+						reflect.TypeOf(err).String(),
 					)
 				}
 			} else {
-				assert.Nil(t, err, "Err must be nil")
+				require.NoError(t, err)
 			}
 			if !testCase.skipResult {
-				assert.Equal(t, math.Round(testCase.expectedResult*1000000), math.Round(v*1000000), fmt.Sprintf("v must be equal to %f", testCase.expectedResult))
+				assert.InDeltaf(
+					t,
+					math.Round(testCase.expectedResult*1000000),
+					math.Round(v*1000000),
+					0,
+					"v must be equal to %f",
+					testCase.expectedResult,
+				)
 			}
 		})
 	}
 	t.Run("pool-error", func(t *testing.T) {
+		t.Parallel()
+
 		result := float64(1)
 		dec := NewDecoder(nil)
 		dec.Release()
 		defer func() {
 			err := recover()
-			assert.NotNil(t, err, "err shouldnt be nil")
+			require.Error(t, err.(error), "err shouldn't be nil")
 			assert.IsType(t, InvalidUsagePooledDecoderError(""), err, "err should be of type InvalidUsagePooledDecoderError")
 		}()
 		_ = dec.DecodeFloat64(&result)
 		assert.True(t, false, "should not be called as decoder should have panicked")
 	})
 	t.Run("decoder-api", func(t *testing.T) {
+		t.Parallel()
+
 		var v float64
 		dec := NewDecoder(strings.NewReader(`1.25`))
 		defer dec.Release()
 		err := dec.DecodeFloat64(&v)
-		assert.Nil(t, err, "Err must be nil")
-		assert.Equal(t, 1.25, v, "v must be equal to 1.25")
+		require.NoError(t, err)
+		assert.InDeltaf(t, 1.25, v, 0, "v must be equal to 1.25")
 	})
 	t.Run("decoder-api2", func(t *testing.T) {
+		t.Parallel()
+
 		var v float64
 		dec := NewDecoder(strings.NewReader(`1.25`))
 		defer dec.Release()
 		err := dec.DecodeFloat64(&v)
-		assert.Nil(t, err, "Err must be nil")
-		assert.Equal(t, 1.25, v, "v must be equal to 1.25")
+		require.NoError(t, err)
+		assert.InDeltaf(t, 1.25, v, 0., "v must be equal to 1.25")
 	})
 	t.Run("decoder-api-json-error", func(t *testing.T) {
+		t.Parallel()
+
 		var v float64
 		dec := NewDecoder(strings.NewReader(``))
 		defer dec.Release()
 		err := dec.DecodeFloat64(&v)
-		assert.NotNil(t, err, "Err must not be nil")
+		require.Error(t, err)
 		assert.IsType(t, InvalidJSONError(""), err, "err should be of type InvalidJSONError")
 	})
 }
 
 func TestDecoderFloat64Null(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name           string
 		json           string
 		expectedResult float64
 		resultIsNil    bool
 		err            bool
-		errType        interface{}
+		errType        any
 	}{
 		{
 			name:           "basic-float",
@@ -607,59 +629,76 @@ func TestDecoderFloat64Null(t *testing.T) {
 	}
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			json := []byte(testCase.json)
 			v := (*float64)(nil)
 			err := Unmarshal(json, &v)
 			if testCase.err {
-				assert.NotNil(t, err, "Err must not be nil")
+				require.Error(t, err)
 				if testCase.errType != nil {
 					assert.IsType(
 						t,
 						testCase.errType,
 						err,
-						fmt.Sprintf("err should be of type %s", reflect.TypeOf(err).String()),
+						"err should be of type %s", reflect.TypeOf(err).String(),
 					)
 				}
 			} else {
-				assert.Nil(t, err, "Err must be nil")
+				require.NoError(t, err)
 			}
 			if testCase.resultIsNil {
 				assert.Nil(t, v)
 			} else {
-				assert.Equal(t, math.Round(testCase.expectedResult*1000000), math.Round(*v*1000000), fmt.Sprintf("v must be equal to %f", testCase.expectedResult))
+				assert.InDeltaf(
+					t,
+					math.Round(testCase.expectedResult*1000000),
+					math.Round(*v*1000000),
+					0,
+					"v must be equal to %f",
+					testCase.expectedResult,
+				)
 			}
 		})
 	}
 	t.Run("decoder-api-invalid-json", func(t *testing.T) {
+		t.Parallel()
+
 		v := new(float64)
 		err := Unmarshal([]byte(``), &v)
-		assert.NotNil(t, err, "Err must not be nil")
+		require.Error(t, err)
 		assert.IsType(t, InvalidJSONError(""), err, "err should be of type InvalidJSONError")
 	})
 	t.Run("decoder-api-invalid-json2", func(t *testing.T) {
+		t.Parallel()
+
 		v := new(float64)
 		dec := NewDecoder(strings.NewReader(``))
 		err := dec.FloatNull(&v)
-		assert.NotNil(t, err, "Err must not be nil")
+		require.Error(t, err)
 		assert.IsType(t, InvalidJSONError(""), err, "err should be of type InvalidJSONError")
 	})
 	t.Run("decoder-api-invalid-json2", func(t *testing.T) {
+		t.Parallel()
+
 		v := new(float64)
 		dec := NewDecoder(strings.NewReader(``))
 		err := dec.AddFloat64Null(&v)
-		assert.NotNil(t, err, "Err must not be nil")
+		require.Error(t, err)
 		assert.IsType(t, InvalidJSONError(""), err, "err should be of type InvalidJSONError")
 	})
 }
 
 func TestDecoderFloat32(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name           string
 		json           string
 		expectedResult float32
 		skipResult     bool
 		err            bool
-		errType        interface{}
+		errType        any
 	}{
 		{
 			name:           "basic-float",
@@ -908,77 +947,92 @@ func TestDecoderFloat32(t *testing.T) {
 	}
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			json := []byte(testCase.json)
 			var v float32
 			err := Unmarshal(json, &v)
 			if testCase.err {
-				assert.NotNil(t, err, "Err must not be nil")
+				require.Error(t, err)
 				if testCase.errType != nil {
 					assert.IsType(
 						t,
 						testCase.errType,
 						err,
-						fmt.Sprintf("err should be of type %s", reflect.TypeOf(err).String()),
+						"err should be of type %s", reflect.TypeOf(err).String(),
 					)
 				}
 			} else {
-				assert.Nil(t, err, "Err must be nil")
+				require.NoError(t, err)
 			}
 			if !testCase.skipResult {
-				assert.Equal(
+				assert.InDeltaf(
 					t,
-					math.Round(float64(testCase.expectedResult*1000000)), math.Round(float64(v*1000000)),
-					fmt.Sprintf("v must be equal to %f", testCase.expectedResult),
+					math.Round(float64(testCase.expectedResult*1000000)),
+					math.Round(float64(v*1000000)),
+					0.,
+					"v must be equal to %f",
+					testCase.expectedResult,
 				)
 			}
 		})
 	}
 	t.Run("pool-error", func(t *testing.T) {
+		t.Parallel()
+
 		result := float32(1)
 		dec := NewDecoder(nil)
 		dec.Release()
 		defer func() {
 			err := recover()
-			assert.NotNil(t, err, "err shouldnt be nil")
+			require.Error(t, err.(error), "err shouldn't be nil")
 			assert.IsType(t, InvalidUsagePooledDecoderError(""), err, "err should be of type InvalidUsagePooledDecoderError")
 		}()
 		_ = dec.DecodeFloat32(&result)
 		assert.True(t, false, "should not be called as decoder should have panicked")
 	})
 	t.Run("decoder-api", func(t *testing.T) {
+		t.Parallel()
+
 		var v float32
 		dec := NewDecoder(strings.NewReader(`1.25`))
 		defer dec.Release()
 		err := dec.DecodeFloat32(&v)
-		assert.Nil(t, err, "Err must be nil")
-		assert.Equal(t, float32(1.25), v, "v must be equal to 1.25")
+		require.NoError(t, err)
+		assert.InDeltaf(t, float32(1.25), v, 0, "v must be equal to 1.25")
 	})
 	t.Run("decoder-api2", func(t *testing.T) {
+		t.Parallel()
+
 		var v float32
 		dec := NewDecoder(strings.NewReader(`1.25`))
 		defer dec.Release()
 		err := dec.Decode(&v)
-		assert.Nil(t, err, "Err must be nil")
-		assert.Equal(t, float32(1.25), v, "v must be equal to 1.25")
+		require.NoError(t, err)
+		assert.InDeltaf(t, float32(1.25), v, 0, "v must be equal to 1.25")
 	})
 	t.Run("decoder-api-json-error", func(t *testing.T) {
+		t.Parallel()
+
 		var v float32
 		dec := NewDecoder(strings.NewReader(``))
 		defer dec.Release()
 		err := dec.DecodeFloat32(&v)
-		assert.NotNil(t, err, "Err must not be nil")
+		require.Error(t, err)
 		assert.IsType(t, InvalidJSONError(""), err, "err should be of type InvalidJSONError")
 	})
 }
 
 func TestDecoderFloat32Null(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name           string
 		json           string
 		expectedResult float32
 		resultIsNil    bool
 		err            bool
-		errType        interface{}
+		errType        any
 	}{
 		{
 			name:           "basic-float",
@@ -1243,49 +1297,60 @@ func TestDecoderFloat32Null(t *testing.T) {
 	}
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			json := []byte(testCase.json)
 			v := (*float32)(nil)
 			err := Unmarshal(json, &v)
 			if testCase.err {
-				assert.NotNil(t, err, "Err must not be nil")
+				require.Error(t, err)
 				if testCase.errType != nil {
 					assert.IsType(
 						t,
 						testCase.errType,
 						err,
-						fmt.Sprintf("err should be of type %s", reflect.TypeOf(err).String()),
+						"err should be of type %s", reflect.TypeOf(err).String(),
 					)
 				}
 			} else {
-				assert.Nil(t, err, "Err must be nil")
+				require.NoError(t, err)
 			}
 			if testCase.resultIsNil {
 				assert.Nil(t, v)
 			} else {
-				assert.Equal(
+				assert.InDeltaf(
 					t,
-					math.Round(float64(testCase.expectedResult*1000000)), math.Round(float64(*v*1000000)),
-					fmt.Sprintf("v must be equal to %f", testCase.expectedResult),
+					math.Round(float64(testCase.expectedResult*1000000)),
+					math.Round(float64(*v*1000000)),
+					0,
+					"v must be equal to %f",
+					testCase.expectedResult,
 				)
 			}
 		})
 	}
 	t.Run("decoder-api-invalid-json", func(t *testing.T) {
+		t.Parallel()
+
 		v := new(float32)
 		err := Unmarshal([]byte(``), &v)
-		assert.NotNil(t, err, "Err must not be nil")
+		require.Error(t, err)
 		assert.IsType(t, InvalidJSONError(""), err, "err should be of type InvalidJSONError")
 	})
 	t.Run("decoder-api-invalid-json2", func(t *testing.T) {
+		t.Parallel()
+
 		v := new(float32)
 		dec := NewDecoder(strings.NewReader(``))
 		err := dec.Float32Null(&v)
-		assert.NotNil(t, err, "Err must not be nil")
+		require.Error(t, err)
 		assert.IsType(t, InvalidJSONError(""), err, "err should be of type InvalidJSONError")
 	})
 }
 
 func TestDecoderFloat64Field(t *testing.T) {
+	t.Parallel()
+
 	testCasesBasic := []struct {
 		name  string
 		json  string
@@ -1309,8 +1374,8 @@ func TestDecoderFloat64Field(t *testing.T) {
 			err := dec.DecodeArray(DecodeArrayFunc(func(dec *Decoder) error {
 				return dec.AddFloat64(&v)
 			}))
-			assert.NoError(t, err)
-			assert.Equal(t, testCase.value, v)
+			require.NoError(t, err)
+			assert.InDelta(t, testCase.value, v, 0)
 		})
 	}
 	testCasesBasicAlt := []struct {
@@ -1331,13 +1396,15 @@ func TestDecoderFloat64Field(t *testing.T) {
 	}
 	for _, testCase := range testCasesBasicAlt {
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			dec := NewDecoder(strings.NewReader(testCase.json))
 			var v float64
 			err := dec.DecodeArray(DecodeArrayFunc(func(dec *Decoder) error {
 				return dec.Float(&v)
 			}))
-			assert.NoError(t, err)
-			assert.Equal(t, testCase.value, v)
+			require.NoError(t, err)
+			assert.InDelta(t, testCase.value, v, 0)
 		})
 	}
 }

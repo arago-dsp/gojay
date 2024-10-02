@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 type testObjectWithUnknownType struct {
@@ -27,7 +28,7 @@ type TestEncoding struct {
 	testBool      bool
 	testF32       float32
 	testF64       float64
-	testInterface interface{}
+	testInterface any
 	testArr       TestEncodingArr
 	sub           *SubObject
 }
@@ -69,7 +70,7 @@ func (t *SubObject) MarshalJSONObject(enc *Encoder) {
 }
 
 type testEncodingObjInterfaces struct {
-	interfaceVal interface{}
+	interfaceVal any
 }
 
 func (t *testEncodingObjInterfaces) IsNil() bool {
@@ -81,7 +82,11 @@ func (t *testEncodingObjInterfaces) MarshalJSONObject(enc *Encoder) {
 }
 
 func TestEncoderObjectEncodeAPI(t *testing.T) {
+	t.Parallel()
+
 	t.Run("encode-basic", func(t *testing.T) {
+		t.Parallel()
+
 		builder := &strings.Builder{}
 		enc := NewEncoder(builder)
 		err := enc.EncodeObject(&testObject{
@@ -89,9 +94,9 @@ func TestEncoderObjectEncodeAPI(t *testing.T) {
 			1, nil, 1, nil, 1.1, nil, 1.1, nil, true, nil,
 			&testObject{},
 			testSliceInts{},
-			interface{}("test"),
+			any("test"),
 		})
-		assert.Nil(t, err, "Error should be nil")
+		require.NoError(t, err)
 		assert.Equal(
 			t,
 			`{"testStr":"漢字","testInt":1,"testInt64":1,"testInt32":1,"testInt16":1,"testInt8":1,"testUint64":1,"testUint32":1,"testUint16":1,"testUint8":1,"testFloat64":1.1,"testFloat32":1.1,"testBool":true}`,
@@ -102,15 +107,19 @@ func TestEncoderObjectEncodeAPI(t *testing.T) {
 }
 
 func TestEncoderObjectMarshalAPI(t *testing.T) {
+	t.Parallel()
+
 	t.Run("marshal-basic", func(t *testing.T) {
+		t.Parallel()
+
 		r, err := Marshal(&testObject{
 			"漢字", nil, 1, nil, 1, nil, 1, nil, 1, nil, 1, nil, 1, nil, 1,
 			nil, 1, nil, 1, nil, 1.1, nil, 1.1, nil, true, nil,
 			&testObject{},
 			testSliceInts{},
-			[]interface{}{"h", "o", "l", "a"},
+			[]any{"h", "o", "l", "a"},
 		})
-		assert.Nil(t, err, "Error should be nil")
+		require.NoError(t, err)
 		assert.Equal(
 			t,
 			`{"testStr":"漢字","testInt":1,"testInt64":1,"testInt32":1,"testInt16":1,"testInt8":1,"testUint64":1,"testUint32":1,"testUint16":1,"testUint8":1,"testFloat64":1.1,"testFloat32":1.1,"testBool":true}`,
@@ -120,6 +129,8 @@ func TestEncoderObjectMarshalAPI(t *testing.T) {
 	})
 
 	t.Run("marshal-complex", func(t *testing.T) {
+		t.Parallel()
+
 		v := &TestEncoding{
 			test:          "hello world",
 			test2:         "foobar",
@@ -146,7 +157,7 @@ func TestEncoderObjectMarshalAPI(t *testing.T) {
 			},
 		}
 		r, err := MarshalJSONObject(v)
-		assert.Nil(t, err, "Error should be nil")
+		require.NoError(t, err)
 		assert.Equal(
 			t,
 			`{"test":"hello world","test2":"foobar","testInt":1,"testBool":true,"testArr":[{"test":"1","test2":"","testInt":0,"testBool":false,"testArr":[],"testF64":0,"testF32":0,"sub":{}}],"testF64":120.15,"testF32":120.53,"testInterface":true,"sub":{"test1":10,"test2":"hello world","test3":1.23543,"testBool":true,"sub":{"test1":10,"test2":"hello world","test3":0,"testBool":false,"sub":{}}}}`,
@@ -156,9 +167,11 @@ func TestEncoderObjectMarshalAPI(t *testing.T) {
 	})
 
 	t.Run("marshal-interface-string", func(t *testing.T) {
+		t.Parallel()
+
 		v := testEncodingObjInterfaces{"string"}
 		r, err := Marshal(&v)
-		assert.Nil(t, err, "Error should be nil")
+		require.NoError(t, err)
 		assert.Equal(
 			t,
 			`{"interfaceVal":"string"}`,
@@ -166,9 +179,11 @@ func TestEncoderObjectMarshalAPI(t *testing.T) {
 			"Result of marshalling is different as the one expected")
 	})
 	t.Run("marshal-interface-int", func(t *testing.T) {
+		t.Parallel()
+
 		v := testEncodingObjInterfaces{1}
 		r, err := Marshal(&v)
-		assert.Nil(t, err, "Error should be nil")
+		require.NoError(t, err)
 		assert.Equal(
 			t,
 			`{"interfaceVal":1}`,
@@ -176,9 +191,11 @@ func TestEncoderObjectMarshalAPI(t *testing.T) {
 			"Result of marshalling is different as the one expected")
 	})
 	t.Run("marshal-interface-int64", func(t *testing.T) {
+		t.Parallel()
+
 		v := testEncodingObjInterfaces{int64(1)}
 		r, err := Marshal(&v)
-		assert.Nil(t, err, "Error should be nil")
+		require.NoError(t, err)
 		assert.Equal(
 			t,
 			`{"interfaceVal":1}`,
@@ -186,9 +203,11 @@ func TestEncoderObjectMarshalAPI(t *testing.T) {
 			"Result of marshalling is different as the one expected")
 	})
 	t.Run("marshal-interface-int32", func(t *testing.T) {
+		t.Parallel()
+
 		v := testEncodingObjInterfaces{int32(1)}
 		r, err := Marshal(&v)
-		assert.Nil(t, err, "Error should be nil")
+		require.NoError(t, err)
 		assert.Equal(
 			t,
 			`{"interfaceVal":1}`,
@@ -196,9 +215,11 @@ func TestEncoderObjectMarshalAPI(t *testing.T) {
 			"Result of marshalling is different as the one expected")
 	})
 	t.Run("marshal-interface-int16", func(t *testing.T) {
+		t.Parallel()
+
 		v := testEncodingObjInterfaces{int16(1)}
 		r, err := Marshal(&v)
-		assert.Nil(t, err, "Error should be nil")
+		require.NoError(t, err)
 		assert.Equal(
 			t,
 			`{"interfaceVal":1}`,
@@ -206,9 +227,11 @@ func TestEncoderObjectMarshalAPI(t *testing.T) {
 			"Result of marshalling is different as the one expected")
 	})
 	t.Run("marshal-interface-int8", func(t *testing.T) {
+		t.Parallel()
+
 		v := testEncodingObjInterfaces{int8(1)}
 		r, err := Marshal(&v)
-		assert.Nil(t, err, "Error should be nil")
+		require.NoError(t, err)
 		assert.Equal(
 			t,
 			`{"interfaceVal":1}`,
@@ -216,9 +239,11 @@ func TestEncoderObjectMarshalAPI(t *testing.T) {
 			"Result of marshalling is different as the one expected")
 	})
 	t.Run("marshal-interface-uint64", func(t *testing.T) {
+		t.Parallel()
+
 		v := testEncodingObjInterfaces{uint64(1)}
 		r, err := Marshal(&v)
-		assert.Nil(t, err, "Error should be nil")
+		require.NoError(t, err)
 		assert.Equal(
 			t,
 			`{"interfaceVal":1}`,
@@ -226,9 +251,11 @@ func TestEncoderObjectMarshalAPI(t *testing.T) {
 			"Result of marshalling is different as the one expected")
 	})
 	t.Run("marshal-interface-uint32", func(t *testing.T) {
+		t.Parallel()
+
 		v := testEncodingObjInterfaces{uint32(1)}
 		r, err := Marshal(&v)
-		assert.Nil(t, err, "Error should be nil")
+		require.NoError(t, err)
 		assert.Equal(
 			t,
 			`{"interfaceVal":1}`,
@@ -236,9 +263,11 @@ func TestEncoderObjectMarshalAPI(t *testing.T) {
 			"Result of marshalling is different as the one expected")
 	})
 	t.Run("marshal-interface-uint16", func(t *testing.T) {
+		t.Parallel()
+
 		v := testEncodingObjInterfaces{uint16(1)}
 		r, err := Marshal(&v)
-		assert.Nil(t, err, "Error should be nil")
+		require.NoError(t, err)
 		assert.Equal(
 			t,
 			`{"interfaceVal":1}`,
@@ -246,9 +275,11 @@ func TestEncoderObjectMarshalAPI(t *testing.T) {
 			"Result of marshalling is different as the one expected")
 	})
 	t.Run("marshal-interface-uint8", func(t *testing.T) {
+		t.Parallel()
+
 		v := testEncodingObjInterfaces{uint8(1)}
 		r, err := Marshal(&v)
-		assert.Nil(t, err, "Error should be nil")
+		require.NoError(t, err)
 		assert.Equal(
 			t,
 			`{"interfaceVal":1}`,
@@ -256,9 +287,11 @@ func TestEncoderObjectMarshalAPI(t *testing.T) {
 			"Result of marshalling is different as the one expected")
 	})
 	t.Run("marshal-interface-float64", func(t *testing.T) {
+		t.Parallel()
+
 		v := testEncodingObjInterfaces{float64(1.1)}
 		r, err := Marshal(&v)
-		assert.Nil(t, err, "Error should be nil")
+		require.NoError(t, err)
 		assert.Equal(
 			t,
 			`{"interfaceVal":1.1}`,
@@ -266,9 +299,11 @@ func TestEncoderObjectMarshalAPI(t *testing.T) {
 			"Result of marshalling is different as the one expected")
 	})
 	t.Run("marshal-interface-float32", func(t *testing.T) {
+		t.Parallel()
+
 		v := testEncodingObjInterfaces{float32(1.1)}
 		r, err := Marshal(&v)
-		assert.Nil(t, err, "Error should be nil")
+		require.NoError(t, err)
 		assert.Equal(
 			t,
 			`{"interfaceVal":1.1}`,
@@ -276,11 +311,13 @@ func TestEncoderObjectMarshalAPI(t *testing.T) {
 			"Result of marshalling is different as the one expected")
 	})
 	t.Run("marshal-object-func", func(t *testing.T) {
+		t.Parallel()
+
 		f := EncodeObjectFunc(func(enc *Encoder) {
 			enc.AddStringKeyOmitEmpty("test", "test")
 		})
 		r, err := Marshal(f)
-		assert.Nil(t, err, "Error should be nil")
+		require.NoError(t, err)
 		assert.Equal(
 			t,
 			`{"test":"test"}`,
@@ -288,6 +325,8 @@ func TestEncoderObjectMarshalAPI(t *testing.T) {
 			"Result of marshalling is different as the one expected")
 	})
 	t.Run("marshal-any-object", func(t *testing.T) {
+		t.Parallel()
+
 		test := struct {
 			Foo string
 			Bar int
@@ -296,7 +335,7 @@ func TestEncoderObjectMarshalAPI(t *testing.T) {
 			100,
 		}
 		r, err := MarshalAny(test)
-		assert.Nil(t, err, "Error should be nil")
+		require.NoError(t, err)
 		assert.Equal(
 			t,
 			`{"Foo":"test","Bar":100}`,
@@ -337,13 +376,13 @@ func (t *TestObectOmitEmpty) MarshalJSONObject(enc *Encoder) {
 	enc.AddArrayKeyOmitEmpty("testArray", TestEncodingArrStrings{"foo"})
 }
 
-type TestObectOmitEmptyInterface struct{}
+type TestObjectOmitEmptyInterface struct{}
 
-func (t *TestObectOmitEmptyInterface) IsNil() bool {
+func (t *TestObjectOmitEmptyInterface) IsNil() bool {
 	return t == nil
 }
 
-func (t *TestObectOmitEmptyInterface) MarshalJSONObject(enc *Encoder) {
+func (t *TestObjectOmitEmptyInterface) MarshalJSONObject(enc *Encoder) {
 	enc.AddInterfaceKeyOmitEmpty("testInt", 0)
 	enc.AddInterfaceKeyOmitEmpty("testInt64", int64(0))
 	enc.AddInterfaceKeyOmitEmpty("testInt32", int32(0))
@@ -368,14 +407,18 @@ func (t *TestObectOmitEmptyInterface) MarshalJSONObject(enc *Encoder) {
 }
 
 func TestEncoderObjectOmitEmpty(t *testing.T) {
+	t.Parallel()
+
 	t.Run("encoder-omit-empty-all-types", func(t *testing.T) {
+		t.Parallel()
+
 		v := &TestObectOmitEmpty{
 			nonNiler:  1,
 			testInt:   0,
 			testObect: &TestObectOmitEmpty{testInt: 1},
 		}
 		r, err := MarshalJSONObject(v)
-		assert.Nil(t, err, "Error should be nil")
+		require.NoError(t, err)
 		assert.Equal(
 			t,
 			`{"testIntNotEmpty":1,"testFloatNotEmpty":1.1,"testFloat32NotEmpty":1.1,"testStringNotEmpty":"foo","testBoolNotEmpty":true,"testObect":{"testInt":1,"testIntNotEmpty":1,"testFloatNotEmpty":1.1,"testFloat32NotEmpty":1.1,"testStringNotEmpty":"foo","testBoolNotEmpty":true,"testArray":["foo"]},"testArray":["foo"]}`,
@@ -385,9 +428,11 @@ func TestEncoderObjectOmitEmpty(t *testing.T) {
 	})
 
 	t.Run("encoder-omit-empty-interface", func(t *testing.T) {
-		v := &TestObectOmitEmptyInterface{}
+		t.Parallel()
+
+		v := &TestObjectOmitEmptyInterface{}
 		r, err := MarshalJSONObject(v)
-		assert.Nil(t, err, "Error should be nil")
+		require.NoError(t, err)
 		assert.Equal(
 			t,
 			`{"testIntNotEmpty":1,"testFloatNotEmpty":1.1,"testFloat32NotEmpty":1.1,"testStringNotEmpty":"foo","testBoolNotEmpty":true,"testObect":{"test":"","test2":"","testInt":0,"testBool":false,"testArr":[],"testF64":0,"testF32":0,"sub":{}}}`,
@@ -398,33 +443,43 @@ func TestEncoderObjectOmitEmpty(t *testing.T) {
 }
 
 func TestEncoderObjectEncodeAPIError(t *testing.T) {
+	t.Parallel()
+
 	t.Run("interface-key-error", func(t *testing.T) {
+		t.Parallel()
+
 		builder := &strings.Builder{}
 		enc := NewEncoder(builder)
 		err := enc.EncodeObject(&testObjectWithUnknownType{struct{}{}})
-		assert.NotNil(t, err, "Error should not be nil")
+		require.Error(t, err, "Error should not be nil")
 		assert.Equal(t, "Invalid type struct {} provided to Marshal", err.Error(), "err.Error() should be 'Invalid type struct {} provided to Marshal'")
 	})
 	t.Run("write-error", func(t *testing.T) {
+		t.Parallel()
+
 		w := TestWriterError("")
 		enc := NewEncoder(w)
 		err := enc.EncodeObject(&testObject{})
-		assert.NotNil(t, err, "Error should not be nil")
+		require.Error(t, err, "Error should not be nil")
 		assert.Equal(t, "Test Error", err.Error(), "err.Error() should be 'Test Error'")
 	})
 	t.Run("interface-error", func(t *testing.T) {
+		t.Parallel()
+
 		builder := &strings.Builder{}
 		enc := NewEncoder(builder)
 		enc.AddInterfaceKeyOmitEmpty("test", struct{}{})
-		assert.NotNil(t, enc.err, "enc.Err() should not be nil")
+		require.Error(t, enc.err, "enc.Err() should not be nil")
 	})
 	t.Run("pool-error", func(t *testing.T) {
+		t.Parallel()
+
 		v := &TestEncoding{}
 		enc := BorrowEncoder(nil)
 		enc.isPooled = 1
 		defer func() {
 			err := recover()
-			assert.NotNil(t, err, "err shouldnt be nil")
+			require.Error(t, err.(error), "err shouldn't be nil")
 			assert.IsType(t, InvalidUsagePooledEncoderError(""), err, "err should be of type InvalidUsagePooledEncoderError")
 			assert.Equal(t, "Invalid usage of pooled encoder", err.(InvalidUsagePooledEncoderError).Error(), "err should be of type InvalidUsagePooledDecoderError")
 		}()
@@ -434,6 +489,8 @@ func TestEncoderObjectEncodeAPIError(t *testing.T) {
 }
 
 func TestEncoderObjectKeyNullEmpty(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name         string
 		baseJSON     string
@@ -452,19 +509,23 @@ func TestEncoderObjectKeyNullEmpty(t *testing.T) {
 	}
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			var b strings.Builder
 			enc := NewEncoder(&b)
 			enc.writeString(testCase.baseJSON)
 			enc.AddObjectKeyNullEmpty("foo", (*TestEncoding)(nil))
 			enc.ObjectKeyNullEmpty("bar", &TestEncoding{})
 			_, err := enc.Write()
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, testCase.expectedJSON, b.String())
 		})
 	}
 }
 
 func TestEncoderObjectNullEmpty(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name         string
 		baseJSON     string
@@ -483,13 +544,15 @@ func TestEncoderObjectNullEmpty(t *testing.T) {
 	}
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			var b strings.Builder
 			enc := NewEncoder(&b)
 			enc.writeString(testCase.baseJSON)
 			enc.AddObjectNullEmpty((*TestEncoding)(nil))
 			enc.ObjectNullEmpty(&TestEncoding{})
 			_, err := enc.Write()
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, testCase.expectedJSON, b.String())
 		})
 	}
@@ -573,29 +636,35 @@ func (o *ObjectWithKeys) IsNil() bool {
 
 type NilObject struct{}
 
-func (n *NilObject) MarshalJSONObject(enc *Encoder) {}
-func (n *NilObject) IsNil() bool                    { return true }
+func (n *NilObject) MarshalJSONObject(_ *Encoder) {}
+func (n *NilObject) IsNil() bool                  { return true }
 
 func TestEncodeObjectWithKeys(t *testing.T) {
+	t.Parallel()
+
 	t.Run(
 		"should not encode any key",
 		func(t *testing.T) {
+			t.Parallel()
+
 			var b strings.Builder
 			enc := NewEncoder(&b)
 			o := &ObjectWithKeys{}
 			err := enc.EncodeObjectKeys(o, []string{})
-			assert.Nil(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, `{}`, b.String())
 		},
 	)
 	t.Run(
 		"should encode some keys",
 		func(t *testing.T) {
+			t.Parallel()
+
 			var b strings.Builder
 			enc := NewEncoder(&b)
 			o := &ObjectWithKeys{Str: "hello", Int: 420}
 			err := enc.EncodeObjectKeys(o, []string{"string", "int"})
-			assert.Nil(t, err)
+			require.NoError(t, err)
 			assert.Equal(
 				t,
 				`{"string":"hello","string":"hello","string":"hello","int":420,"int":420,"int":420}`,
@@ -604,20 +673,24 @@ func TestEncodeObjectWithKeys(t *testing.T) {
 		},
 	)
 	t.Run("write-error", func(t *testing.T) {
+		t.Parallel()
+
 		w := TestWriterError("")
 		enc := NewEncoder(w)
 		o := &ObjectWithKeys{Str: "hello", Int: 420}
 		err := enc.EncodeObjectKeys(o, []string{"string", "int"})
-		assert.NotNil(t, err, "Error should not be nil")
+		require.Error(t, err, "Error should not be nil")
 		assert.Equal(t, "Test Error", err.Error(), "err.Error() should be 'Test Error'")
 	})
 	t.Run("pool-error", func(t *testing.T) {
+		t.Parallel()
+
 		v := &TestEncoding{}
 		enc := BorrowEncoder(nil)
 		enc.isPooled = 1
 		defer func() {
 			err := recover()
-			assert.NotNil(t, err, "err shouldnt be nil")
+			require.Error(t, err.(error), "err shouldn't be nil")
 			assert.IsType(t, InvalidUsagePooledEncoderError(""), err, "err should be of type InvalidUsagePooledEncoderError")
 			assert.Equal(t, "Invalid usage of pooled encoder", err.(InvalidUsagePooledEncoderError).Error(), "err should be of type InvalidUsagePooledDecoderError")
 		}()
@@ -625,13 +698,17 @@ func TestEncodeObjectWithKeys(t *testing.T) {
 		assert.True(t, false, "should not be called as it should have panicked")
 	})
 	t.Run("interface-key-error", func(t *testing.T) {
+		t.Parallel()
+
 		builder := &strings.Builder{}
 		enc := NewEncoder(builder)
 		err := enc.EncodeObjectKeys(&testObjectWithUnknownType{struct{}{}}, []string{})
-		assert.NotNil(t, err, "Error should not be nil")
+		require.Error(t, err, "Error should not be nil")
 		assert.Equal(t, "Invalid type struct {} provided to Marshal", err.Error(), "err.Error() should be 'Invalid type struct {} provided to Marshal'")
 	})
 	t.Run("encode-object-with-keys", func(t *testing.T) {
+		t.Parallel()
+
 		b := &strings.Builder{}
 		enc := NewEncoder(b)
 		err := enc.EncodeObjectKeys(EncodeObjectFunc(func(enc *Encoder) {
@@ -640,10 +717,12 @@ func TestEncodeObjectWithKeys(t *testing.T) {
 				enc.StringKey("test2", "hello")
 			}), []string{"test"})
 		}), []string{})
-		assert.Nil(t, err, "Error should not be nil")
+		require.NoError(t, err)
 		assert.Equal(t, `{}`, b.String())
 	})
 	t.Run("encode-object-with-keys", func(t *testing.T) {
+		t.Parallel()
+
 		b := &strings.Builder{}
 		enc := NewEncoder(b)
 		err := enc.EncodeObject(EncodeObjectFunc(func(enc *Encoder) {
@@ -653,10 +732,12 @@ func TestEncodeObjectWithKeys(t *testing.T) {
 				enc.StringKey("test2", "hello")
 			}), []string{"test"})
 		}))
-		assert.Nil(t, err, "Error should not be nil")
+		require.NoError(t, err)
 		assert.Equal(t, `{"test":{}}`, b.String())
 	})
 	t.Run("encode-object-with-keys", func(t *testing.T) {
+		t.Parallel()
+
 		b := &strings.Builder{}
 		enc := NewEncoder(b)
 		err := enc.EncodeObject(EncodeObjectFunc(func(enc *Encoder) {
@@ -665,10 +746,12 @@ func TestEncodeObjectWithKeys(t *testing.T) {
 				enc.StringKey("test2", "hello")
 			}), []string{"test"})
 		}))
-		assert.Nil(t, err, "Error should not be nil")
+		require.NoError(t, err)
 		assert.Equal(t, `{"test":{"test":"hello"}}`, b.String())
 	})
 	t.Run("encode-object-with-keys", func(t *testing.T) {
+		t.Parallel()
+
 		b := &strings.Builder{}
 		enc := NewEncoder(b)
 		err := enc.EncodeObject(EncodeObjectFunc(func(enc *Encoder) {
@@ -678,20 +761,24 @@ func TestEncodeObjectWithKeys(t *testing.T) {
 				enc.StringKey("test2", "hello")
 			}), []string{"test"})
 		}))
-		assert.Nil(t, err, "Error should not be nil")
+		require.NoError(t, err)
 		assert.Equal(t, `{ ,"test":{"test":"hello"}}`, b.String())
 	})
 	t.Run("encode-object-with-keys", func(t *testing.T) {
+		t.Parallel()
+
 		b := &strings.Builder{}
 		enc := NewEncoder(b)
 		err := enc.EncodeObject(EncodeObjectFunc(func(enc *Encoder) {
 			enc.writeByte(' ')
 			enc.ObjectKeyWithKeys("test", &NilObject{}, []string{})
 		}))
-		assert.Nil(t, err, "Error should not be nil")
+		require.NoError(t, err)
 		assert.Equal(t, `{ ,"test":{}}`, b.String())
 	})
 	t.Run("encode-object-with-keys", func(t *testing.T) {
+		t.Parallel()
+
 		b := &strings.Builder{}
 		enc := NewEncoder(b)
 		err := enc.EncodeArray(EncodeArrayFunc(func(enc *Encoder) {
@@ -700,10 +787,12 @@ func TestEncodeObjectWithKeys(t *testing.T) {
 				enc.StringKey("test2", "hello")
 			}), []string{"test"})
 		}))
-		assert.Nil(t, err, "Error should not be nil")
+		require.NoError(t, err)
 		assert.Equal(t, `[{"test":"hello"}]`, b.String())
 	})
 	t.Run("encode-object-with-keys", func(t *testing.T) {
+		t.Parallel()
+
 		b := &strings.Builder{}
 		enc := NewEncoder(b)
 		err := enc.EncodeArray(EncodeArrayFunc(func(enc *Encoder) {
@@ -713,26 +802,30 @@ func TestEncodeObjectWithKeys(t *testing.T) {
 				enc.StringKey("test2", "hello")
 			}), []string{"test"})
 		}))
-		assert.Nil(t, err, "Error should not be nil")
+		require.NoError(t, err)
 		assert.Equal(t, `[ ,{"test":"hello"}]`, b.String())
 	})
 	t.Run("encode-object-with-keys", func(t *testing.T) {
+		t.Parallel()
+
 		b := &strings.Builder{}
 		enc := NewEncoder(b)
 		err := enc.EncodeArray(EncodeArrayFunc(func(enc *Encoder) {
 			enc.ObjectWithKeys(&NilObject{}, []string{})
 		}))
-		assert.Nil(t, err, "Error should not be nil")
+		require.NoError(t, err)
 		assert.Equal(t, `[{}]`, b.String())
 	})
 	t.Run("encode-object-with-keys", func(t *testing.T) {
+		t.Parallel()
+
 		b := &strings.Builder{}
 		enc := NewEncoder(b)
 		err := enc.EncodeArray(EncodeArrayFunc(func(enc *Encoder) {
 			enc.writeByte(' ')
 			enc.ObjectWithKeys(&NilObject{}, []string{})
 		}))
-		assert.Nil(t, err, "Error should not be nil")
+		require.NoError(t, err)
 		assert.Equal(t, `[ ,{}]`, b.String())
 	})
 }

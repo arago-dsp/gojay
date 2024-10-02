@@ -36,6 +36,8 @@ func (u *user) NKeys() int {
 }
 
 func TestMarshal(t *testing.T) {
+	t.Parallel()
+
 	assert.JSONEq(t,
 		`{"age":1, "created":1, "email":"foo@example.com", "id":1, "name":"foo"}`,
 		string(marshalHelper(t, 1, 1, 1, "foo", "foo@example.com")))

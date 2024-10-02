@@ -8,7 +8,9 @@ import (
 //
 // If Encode cannot find a way to encode the type to JSON
 // it will return an InvalidMarshalError.
-func (enc *Encoder) Encode(v interface{}) error {
+//
+//nolint:cyclop
+func (enc *Encoder) Encode(v any) error {
 	if enc.isPooled == 1 {
 		panic(InvalidUsagePooledEncoderError("Invalid usage of pooled encoder"))
 	}
@@ -48,8 +50,10 @@ func (enc *Encoder) Encode(v interface{}) error {
 	}
 }
 
-// AddInterface adds an interface{} to be encoded, must be used inside a slice or array encoding (does not encode a key).
-func (enc *Encoder) AddInterface(value interface{}) {
+// AddInterface adds an any to be encoded, must be used inside a slice or array encoding (does not encode a key).
+//
+//nolint:cyclop
+func (enc *Encoder) AddInterface(value any) {
 	switch vt := value.(type) {
 	case string:
 		enc.AddString(vt)
@@ -88,8 +92,10 @@ func (enc *Encoder) AddInterface(value interface{}) {
 	}
 }
 
-// AddInterfaceKey adds an interface{} to be encoded, must be used inside an object as it will encode a key.
-func (enc *Encoder) AddInterfaceKey(key string, value interface{}) {
+// AddInterfaceKey adds an any to be encoded, must be used inside an object as it will encode a key.
+//
+//nolint:cyclop
+func (enc *Encoder) AddInterfaceKey(key string, value any) {
 	switch vt := value.(type) {
 	case string:
 		enc.AddStringKey(key, vt)
@@ -130,8 +136,10 @@ func (enc *Encoder) AddInterfaceKey(key string, value interface{}) {
 	}
 }
 
-// AddInterfaceKeyOmitEmpty adds an interface{} to be encoded, must be used inside an object as it will encode a key.
-func (enc *Encoder) AddInterfaceKeyOmitEmpty(key string, v interface{}) {
+// AddInterfaceKeyOmitEmpty adds an any to be encoded, must be used inside an object as it will encode a key.
+//
+//nolint:cyclop
+func (enc *Encoder) AddInterfaceKeyOmitEmpty(key string, v any) {
 	switch vt := v.(type) {
 	case string:
 		enc.AddStringKeyOmitEmpty(key, vt)

@@ -9,6 +9,8 @@ import (
 )
 
 func TestConcurrencyMarshal(t *testing.T) {
+	t.Parallel()
+
 	f := func(num int, t *testing.T) {
 		for {
 			b, err := Marshal(num)
@@ -25,7 +27,7 @@ func TestConcurrencyMarshal(t *testing.T) {
 		}
 	}
 
-	for i := 0; i < 100; i++ {
+	for i := range 100 {
 		go f(i, t)
 	}
 	time.Sleep(2 * time.Second)

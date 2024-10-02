@@ -6,9 +6,12 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestEncodeTime(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name         string
 		tt           string
@@ -27,39 +30,47 @@ func TestEncodeTime(t *testing.T) {
 
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			b := strings.Builder{}
 			tt, err := time.Parse(testCase.format, testCase.tt)
-			assert.Nil(t, err)
+			require.NoError(t, err)
 			enc := NewEncoder(&b)
 			err = enc.EncodeTime(&tt, testCase.format)
 			if !testCase.err {
-				assert.Nil(t, err)
+				require.NoError(t, err)
 				assert.Equal(t, testCase.expectedJSON, b.String())
 			}
 		})
 	}
 	t.Run("encode-time-pool-error", func(t *testing.T) {
+		t.Parallel()
+
 		builder := &strings.Builder{}
 		enc := NewEncoder(builder)
 		enc.isPooled = 1
 		defer func() {
 			err := recover()
-			assert.NotNil(t, err, "err should not be nil")
+			require.NotNil(t, err, "err should not be nil")
 			assert.IsType(t, InvalidUsagePooledEncoderError(""), err, "err should be of type InvalidUsagePooledEncoderError")
 		}()
 		_ = enc.EncodeTime(&time.Time{}, "")
 		assert.True(t, false, "should not be called as encoder should have panicked")
 	})
 	t.Run("write-error", func(t *testing.T) {
+		t.Parallel()
+
 		w := TestWriterError("")
 		enc := BorrowEncoder(w)
 		defer enc.Release()
 		err := enc.EncodeTime(&time.Time{}, "")
-		assert.NotNil(t, err, "err should not be nil")
+		require.Error(t, err)
 	})
 }
 
 func TestAddTimeKey(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name         string
 		tt           string
@@ -88,16 +99,18 @@ func TestAddTimeKey(t *testing.T) {
 
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			b := strings.Builder{}
 			tt, err := time.Parse(testCase.format, testCase.tt)
-			assert.Nil(t, err)
+			require.NoError(t, err)
 			enc := NewEncoder(&b)
 			enc.writeString(testCase.baseJSON)
 			enc.AddTimeKey("test", &tt, testCase.format)
 			_, err = enc.Write()
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			if !testCase.err {
-				assert.Nil(t, err)
+				require.NoError(t, err)
 				assert.Equal(t, testCase.expectedJSON, b.String())
 			}
 		})
@@ -105,6 +118,8 @@ func TestAddTimeKey(t *testing.T) {
 }
 
 func TestAddTime(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name         string
 		tt           string
@@ -141,16 +156,18 @@ func TestAddTime(t *testing.T) {
 
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			b := strings.Builder{}
 			tt, err := time.Parse(testCase.format, testCase.tt)
-			assert.Nil(t, err)
+			require.NoError(t, err)
 			enc := NewEncoder(&b)
 			enc.writeString(testCase.baseJSON)
 			enc.AddTime(&tt, testCase.format)
 			_, err = enc.Write()
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			if !testCase.err {
-				assert.Nil(t, err)
+				require.NoError(t, err)
 				assert.Equal(t, testCase.expectedJSON, b.String())
 			}
 		})

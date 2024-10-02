@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/arago-dsp/gojay"
 	"github.com/arago-dsp/gojay/benchmarks"
@@ -12,7 +13,7 @@ import (
 func TestGoJayDecodeObjSmall(t *testing.T) {
 	result := benchmarks.SmallPayload{}
 	err := gojay.Unmarshal(benchmarks.SmallFixture, &result)
-	assert.Nil(t, err, "err should be nil")
+	require.NoError(t, err)
 	assert.Equal(t, result.St, 1, "result.St should be 1")
 	assert.Equal(t, result.Sid, 486, "result.Sid should be 486")
 	assert.Equal(t, result.Tt, "active", "result.Sid should be 'active'")
